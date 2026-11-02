@@ -15,7 +15,7 @@ Satu layar dua kolom, tanpa navigasi antar-layar. Margin aman TV: 48 dp kiri/kan
 - Daftar: header negara (nama Indonesia + kode, mis. "Indonesia (ID)"), diurutkan abjad menurut nama negara. Urutan channel dalam satu negara mengikuti urutan di `channels.json`.
 - Header negara tidak bisa difokus. Hanya baris channel yang bisa.
 - Tidak ada logo di daftar. Field `logo` di skema belum dipakai.
-- Baris yang difokus: isi warna aksen transparan 25% + border 3 dp warna aksen. Warna aksen = ungu tema (normal), kuning atau merah (channel gagal, lihat Error).
+- Baris yang difokus: isi warna aksen transparan 25% + border 3 dp warna aksen. Warna aksen = biru tema ikon `#3CA6FB` (normal, `MaterialTheme.colorScheme.primary`), kuning atau merah (channel gagal, lihat Error).
 
 ## Preview dan player
 
@@ -75,3 +75,9 @@ App tidak boleh crash karena error stream: semua kegagalan pemutaran masuk ke st
 - Tidak ada favorit, EPG, atau pengingat posisi daftar di luar sesi.
 - Rebuffering saat fullscreen menampilkan spinner "Memuat…" di atas video.
 - Pemetaan error teruji lewat tes unit (`DescribeErrorTest`). Alur reconnect dan fokus belum punya tes otomatis.
+
+## Ikon dan splash
+
+- Ikon launcher `mipmap/ic_launcher` (PNG), banner TV `drawable/banner` (320×180). Master ada di `design/` (`icon_512.png`, `banner_1280x720.png`); turunkan ukuran lain dari sana.
+- Splash memakai `androidx.core:core-splashscreen`: latar `#060B24`, ikon `drawable-xxhdpi/splash_icon.png` (kanvas 288 dp, ikon 52% kanvas agar muat di lingkaran splash = 2/3 kanvas).
+- Splash ditahan sampai `channels.json` selesai dibaca (berhasil atau gagal), jadi layar "Memuat channel…" tidak pernah tampil.
