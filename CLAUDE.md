@@ -21,3 +21,8 @@ Daftar channel per negara/kategori, player, favorit. EPG menyusul.
 - Tangani error stream (timeout, 403/geo-block) dengan baik.
 - Hanya gunakan stream resmi/legal.
 - Jawab dalam Bahasa Indonesia, kode & komentar dalam bahasa Inggris.
+
+## Dokumen
+- `docs/ui-spec.md`: layout, preview, navigasi remote, penanganan error.
+- `docs/channels-schema.md`: skema `channels.json` + contoh.
+- Aturan: setiap keputusan desain baru (UI, navigasi, error, skema) wajib diperbarui di docs/ pada commit yang sama dengan perubahan kodenya.
