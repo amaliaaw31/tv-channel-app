@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Build data/channels.json from the iptv-org API.
+"""Bulk list from the iptv-org API (legacy; the app now uses the curated list, see finalize.py and docs/sources.md).
 
 Fetches channels/streams/blocklist/categories/logos, drops blocked, NSFW and closed
 channels, keeps the categories listed in config.json, probes each channel's streams
 (first valid HLS playlist wins) and writes the app's channels.json schema.
 
-    python3 tools/build-channels/build_channels.py              # write data/channels.json
-    python3 tools/build-channels/build_channels.py --publish    # ...then git commit + push
+    python3 tools/build-channels/build_channels.py              # write data/bulk-channels.json (git-ignored)
     python3 tools/build-channels/build_channels.py --limit 50   # quick trial run (not for publishing)
 
 Stdlib only. Rules and sources: docs/sources.md.
@@ -14,7 +13,6 @@ Stdlib only. Rules and sources: docs/sources.md.
 import argparse
 import json
 import re
-import subprocess
 import sys
 import time
 import urllib.request
@@ -24,7 +22,7 @@ from pathlib import Path
 API = "https://iptv-org.github.io/api/"
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
-OUT = ROOT / "data" / "channels.json"
+OUT = ROOT / "data" / "bulk-channels.json"  # not data/channels.json: that one is built by finalize.py
 EXCLUDE = HERE / "exclude.json"
 ISO2 = re.compile(r"^[A-Z]{2}$")
 COUNTRY_FIXES = {"UK": "GB"}  # iptv-org writes UK; ISO 3166-1 alpha-2 is GB
@@ -152,22 +150,8 @@ def previous_count(path):
         return 0
 
 
-def git(*args):
-    subprocess.run(["git", "-C", str(ROOT), *args], check=True)
-
-
-def publish(count):
-    git("add", "data/channels.json")
-    if subprocess.run(["git", "-C", str(ROOT), "diff", "--cached", "--quiet", "--", "data/channels.json"]).returncode == 0:
-        print("publish: no changes")
-        return
-    git("commit", "-m", f"Update channels data ({count} channels)", "--", "data/channels.json")
-    git("push")
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--publish", action="store_true", help="git commit + push data/channels.json")
     ap.add_argument("--limit", type=int, help="only probe the first N candidate channels")
     ap.add_argument("--out", type=Path, default=OUT)
     ap.add_argument("--force", action="store_true", help="write even if the result is suspiciously small")
@@ -206,8 +190,6 @@ def main():
 
     write_entries(args.out, entries)
     print(f"wrote {args.out} ({args.out.stat().st_size // 1024} KB)")
-    if args.publish:
-        publish(len(entries))
 
 
 if __name__ == "__main__":

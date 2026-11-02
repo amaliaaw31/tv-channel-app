@@ -1,0 +1,26 @@
+{
+  "note": "Tier A = aktif. Tier B = aktif dengan label 'perlu dicek di TV'. Selain itu = Tier C (data/excluded.json, tidak masuk app). Id berasal dari data/curated.json.",
+  "A": [
+    "TVRI.id#HD", "TVRIWorld.id",
+    "CNNIndonesia.id", "CNBCIndonesia.id", "MetroTV.id", "GarudaTV.id", "NusantaraTV.id", "IndonesianaTV.id",
+    "AlJazeera.qa#English", "DW.de", "France24.fr", "TRTWorld.tr", "CBSNews247.us", "BloombergTV.us", "ABCNewsLive.us", "RedBullTV.at"
+  ],
+  "A_groups": ["TVRI Daerah"],
+  "B": [
+    "NBCNewsNOW.us", "CNNInternational.us", "CNA.sg", "NHKWorldJapan.jp", "EuronewsEnglish.fr", "Cartoonito.it",
+    "OlympicChannel.es", "RCTI.id", "GTV.id", "Indosiar.id", "TVRISport.id"
+  ],
+  "B_note": "perlu dicek di TV",
+  "group_countries": ["ID"],
+  "aggregator_domains": ["freem3u.xyz", "jmp2.uk", "aynascope.net", "cinerama.uz", "pishow.tv"],
+  "overrides": {
+    "TVRI.id#HD": {"name": "TVRI HD"},
+    "TVRISport.id": {
+      "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/SportHD/hls/SportHD.m3u8",
+      "domain": "ott-balancer.tvri.go.id",
+      "quality": "1080p",
+      "status": "hidup",
+      "why": "Tidak ada di iptv-org. Ditemukan dengan memeriksa server TVRI (pola .../live/eds/<Nama>/hls/<Nama>.m3u8); cuplikan gambar menampilkan logo TVRI SPORT. Menggantikan stream iptv-org (IP mentah 202.150.172.59 dan dens.tv)."
+    }
+  }
+}

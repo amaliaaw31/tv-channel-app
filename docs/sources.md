@@ -1,87 +1,84 @@
 # Sumber data channel
 
-`data/channels.json` dibuat otomatis oleh `tools/build-channels/build_channels.py` dari API komunitas **iptv-org**.
-Jangan edit file itu manual; ubah `tools/build-channels/config.json` lalu jalankan ulang skrip.
+Daftar channel app **dikurasi manual**, bukan lagi dump massal. Alurnya:
+
+```
+curated_wanted.json ──curate.py──▶ data/curated.json ──(tiers.json)──finalize.py──▶ data/channels.json   (Tier A + B, masuk app)
+   nama yang dicari      cocokkan + tes stream      semua kandidat + status                └──────────────▶ data/excluded.json  (Tier C + tidak ditemukan, dengan alasan)
+```
+
+`data/channels.json` dan `data/excluded.json` dihasilkan skrip; jangan diedit manual (ubah `tiers.json` atau `curated_wanted.json`, jalankan ulang).
 
 ## Sumber
 
-Semua dari `https://iptv-org.github.io/api/`:
+- **iptv-org** (`https://iptv-org.github.io/api/`): `channels`, `streams`, `blocklist`. Indeks komunitas; mereka tidak menyimpan atau menjamin stream-nya dan **tidak menandai mana yang resmi**.
+- **Satu pengecualian di luar iptv-org**: TVRI Sport memakai `https://ott-balancer.tvri.go.id/live/eds/SportHD/hls/SportHD.m3u8`. iptv-org tidak punya feed ini (hanya IP mentah `202.150.172.59` dan `dens.tv`). Jalur ini ditemukan dengan memeriksa server TVRI mengikuti pola feed lain (`.../live/eds/<Nama>/hls/<Nama>.m3u8`); cuplikan gambarnya menampilkan logo TVRI SPORT. Dicatat sebagai `overrides` di `tiers.json`.
 
-| File | Dipakai untuk |
+## Kurasi (`curate.py`)
+
+Input: `tools/build-channels/curated_wanted.json` (nama yang dicari, varian, negara, grup, preferensi).
+
+1. Buang channel di blocklist, yang ditutup (`closed`), dan NSFW.
+2. Cocokkan nama dengan toleransi: huruf besar/kecil, aksen, spasi, tanda baca, "HD/SD/TV/Channel", bagian dalam kurung. Huruf non-Latin tidak dihapus (`MBC忠北` bukan `MBC`).
+3. Urutan kecocokan: nama channel yang sama (≥90) → judul stream yang sama (mis. "Al Jazeera English" adalah feed di channel "Al Jazeera"; TVRI daerah adalah feed di channel "TVRI") → kecocokan sebagian.
+4. Bila ada beberapa versi: utamakan yang cocok `prefer` (negara/nama), lalu yang punya stream, lalu yang hidup. Versi lain dicatat di `alternatives`.
+5. Tiap kandidat dites dari VPS (**Singapura**, timeout 5 dtk, maks. 4 stream): `hidup` (HTTP 200 + playlist HLS), `geo-block` (HTTP 403/451), `mati` (lainnya), `tanpa stream`. Label **Geo-blocked** dari iptv-org dicatat terpisah (`geoLabel`).
+6. Yang tidak ditemukan di iptv-org tidak dimasukkan; dicatat di `notFound`.
+
+Hasil tes dari VPS bisa berbeda dengan dari TV (wilayah dan decoder), jadi status bukan keputusan akhir.
+
+## Tier (`tiers.json` + `finalize.py`)
+
+| Tier | Arti | Masuk app? |
+|---|---|---|
+| **A** | Aktif. Sumber hidup di tes dan domainnya dianggap resmi, atau diterima pemilik proyek (lihat tabel di bawah). | ya |
+| **B** | Aktif dengan label **"perlu dicek di TV"** (`note` di data, tampil di info preview). Gagal/terblokir dari VPS, atau domain sumber kurang jelas. | ya |
+| **C** | Sisanya. Disimpan di `data/excluded.json` dengan alasan: `IP mentah`, `agregator`, `tanpa stream`, `mati (...)`, `geo-block (...)`, `tidak dipilih (tier C)`, `tidak ditemukan`. | **tidak** |
+
+Keputusan tier ditentukan pemilik proyek per channel (daftar id di `tiers.json`). Aturan otomatis: entri berkelompok `TVRI Daerah` selalu Tier A. Hasil terakhir (2026-11-02): **57 channel di app (A=46, B=11)**, 64 di `excluded.json`.
+
+### Domain sumber yang dianggap resmi
+
+Penilaian dari **nama domain**; belum diverifikasi ke pemilik channel kecuali disebut.
+
+| Penilaian | Domain → channel |
 |---|---|
-| `channels.json` | nama, negara, kategori, status tutup, flag NSFW |
-| `streams.json` | URL stream, kualitas, `user_agent`, `referrer` |
-| `blocklist.json` | channel yang diblokir (alasan: nsfw, dmca, dll.), dibuang |
-| `categories.json` | validasi nama kategori di config (typo membuat skrip berhenti) |
-| `logos.json` | URL logo (`channels.json` API tidak punya kolom logo) |
+| Resmi: milik stasiun/pemerintah | `ott-balancer.tvri.go.id` → TVRI HD, TVRI World, TVRI Daerah ×30, TVRI Sport · `getaj.net` → Al Jazeera English · `medya.trt.com.tr` → TRT World · `cbsnstream.cbsnews.com` → CBS News 24/7 |
+| Grup media yang sama dengan channel (dugaan) | `video.detik.com` → CNN Indonesia, CNBC Indonesia · `edge.medcom.id` → Metro TV |
+| Mitra distribusi resmi (FAST/OTT) (dugaan) | `amagi.tv` → DW, France 24 · `wurl.com` → Bloomberg TV · `tubi.video` → ABC News Live · `mediatailor...amazonaws.com` → Red Bull TV |
+| CDN tanpa nama pemilik (Tier B) | `cloudfront.net` → NBC News NOW, CNN International, CNA · `akamaized.net` → Cartoonito (IT), Olympic Channel |
+| **Diterima pemilik proyek, belum diverifikasi (Tier A)** | `hgmtv.com` → Garuda TV · `nusantaratv.siar.us` → Nusantara TV · `tvstreamcast.com` → Indonesiana.TV |
+| **Kurang jelas, perlu dicek (Tier B)** | `202.150.172.59` (IP mentah) → RCTI, GTV, Indosiar · `cdn.pishow.tv` → NHK World-Japan · `a-cdn.klowdtv.com` → Euronews English |
 
-iptv-org hanya mengindeks stream yang bisa diakses publik; mereka tidak menyimpan atau menjamin stream-nya.
+Domain yang **tidak** dianggap resmi (alasan masuk Tier C): alamat IP mentah, dan agregator/siaran ulang seperti `freem3u.xyz`, `jmp2.uk`, `aynascope.net`, `cinerama.uz` (daftar di `aggregator_domains`, `tiers.json`). Satu IP yang sama (`23.237.104.106`) menyiarkan banyak channel berbeda, itu tanda siaran ulang pihak ketiga.
 
-## Aturan filter (berurutan)
+### Menambah channel baru (wajib)
 
-1. Buang channel di blocklist, di `exclude.json` (hasil audit TV), `is_nsfw = true`, dan yang sudah ditutup (`closed`).
-2. Simpan hanya kategori di `config.json` → `categories` (sekarang: sports, documentary, science, news, travel, kids, movies). Channel di beberapa kategori memakai yang **pertama di urutan config**.
-3. Kode negara harus 2 huruf kapital. `UK` (tulisan iptv-org) dipetakan ke `GB`. Selain itu dibuang.
-4. Channel harus punya minimal satu stream `http(s)`.
-5. Stream diurutkan: resolusi tertinggi dulu, lalu `https` sebelum `http`. Maksimal `max_streams_tried_per_channel` (3) dicoba per channel.
-6. Stream dianggap valid jika menjawab **HTTP 200** dalam `timeout_seconds` (5 detik) dan 16 KB pertamanya berisi playlist HLS (`#EXTM3U` **dan** `#EXT-X-`). Playlist m3u biasa (`#EXTINF` saja) ditolak. Stream valid pertama dipakai; satu stream per channel.
-7. Header `User-Agent` dan `Referer` dari data iptv-org disimpan di field `headers`.
-8. Hasil diurutkan (negara, nama, id) dan ditulis satu channel per baris agar diff git mudah dibaca.
-
-Pengecekan berjalan paralel (`workers`, 64 thread).
-
-**Pengaman:** skrip menolak menulis jika hasilnya kurang dari `min_channels` (100) atau kurang dari `min_keep_ratio` (50%) hasil sebelumnya, supaya masalah jaringan di VPS tidak menimpa data bagus dengan daftar kosong. Paksa dengan `--force`.
+1. Tambahkan namanya di `curated_wanted.json`, jalankan `curate.py`, lihat tabel `--report`.
+2. **Cek domain sumber** (kolom Domain). IP mentah atau agregator → Tier C. Domain milik stasiun, grup medianya, atau mitra distribusi resmi → boleh Tier A. Ragu → Tier B.
+3. Tambahkan id-nya ke `A` atau `B` di `tiers.json` (mereka yang belum dipilih otomatis Tier C), jalankan `finalize.py`.
+4. Catat domain barunya di tabel di atas bila dianggap resmi.
 
 ## Menjalankan
 
 ```bash
 cd ~/projectyaya/tv-channel-app
-python3 tools/build-channels/build_channels.py             # tulis data/channels.json
-python3 tools/build-channels/build_channels.py --publish   # ... lalu git commit + push
-python3 tools/build-channels/build_channels.py --limit 50 --out /tmp/trial.json   # uji cepat
-python3 -m unittest discover -s tools/build-channels       # tes offline
+python3 tools/build-channels/curate.py --search     # cek pencocokan nama saja
+python3 tools/build-channels/curate.py              # cocokkan + tes stream -> data/curated.json (beberapa menit)
+python3 tools/build-channels/curate.py --report     # tabel: hidup / gagal / tidak ditemukan
+python3 tools/build-channels/finalize.py            # -> data/channels.json + data/excluded.json
+python3 -m unittest discover -s tools/build-channels
 ```
 
-Hanya butuh Python 3 (stdlib). Satu kali jalan sekitar beberapa menit.
+Hanya butuh Python 3 (stdlib). Setelah `finalize.py`, build ulang app (data ikut di APK sebagai cadangan offline).
 
-## Hasil terakhir (2026-11-02)
+## Alat lain (arsip)
 
-- 2.681 channel kandidat → **1.945 lolos** validasi, 113 negara.
-- Per kategori: news 761, movies 462, kids 264, sports 261, documentary 151, travel 35, science 11.
-- 381 stream `http://`, 172 butuh header, 1.926 punya logo.
+- `build_channels.py`: dump massal iptv-org per kategori ke `data/bulk-channels.json` (git-ignored, **tidak dipakai app**). Dipakai juga sebagai pustaka oleh `curate.py`. Dulu (commit `c6b888c`) hasilnya 1.945 channel, dihentikan karena stream tidak jelas asalnya dan start app di TV sangat lambat.
+- `AuditActivity` (hanya build debug): memutar tiap channel di `channels.json` di TV (bisu) dan mencatat hasilnya di `files/audit.jsonl`: `adb shell am start -n com.projectyaya.tvchannel/.AuditActivity`. Berguna untuk memeriksa Tier B langsung di TV (±1 menit per 10 channel). `prune_audit.py` memangkas daftar berdasarkan hasilnya (untuk `bulk-channels.json`).
 
-## Batasan dan kebijakan "resmi/legal"
+## Batasan
 
-Aturan proyek: hanya stream resmi/legal. **Skrip tidak bisa memastikan itu.**
-
-- Daftar iptv-org bercampur: ada stream yang disiarkan langsung oleh stasiunnya, ada juga siaran ulang tidak resmi. Tidak ada penanda "resmi" di datanya. Blocklist hanya membuang yang sudah dilaporkan.
-- Kategori **movies** paling berisiko memuat siaran ulang tidak resmi. Kalau ragu, keluarkan dari `categories` di config.
-- Validasi dilakukan dari VPS. Stream yang dibatasi wilayah bisa lolos di VPS tetapi gagal di TV (app menampilkan "Dibatasi wilayah"), atau sebaliknya terbuang padahal bisa diputar di TV.
-- Lolos validasi berarti playlist-nya terbaca saat itu, bukan bahwa siarannya hidup atau legal. Stream sering mati; jalankan ulang skrip berkala.
-- Channel yang terbukti gagal di TV dikeluarkan lewat daftar pengecualian `tools/build-channels/exclude.json` (lihat bagian audit di bawah). Mengedit `data/channels.json` manual akan tertimpa di jalan berikutnya; tambahkan id ke `exclude.json` agar permanen.
-
-## Audit di TV dan pemangkasan
-
-Validasi HLS dari VPS (Singapura) tidak tahu apakah stream bisa diputar di TV (Indonesia): pembatasan wilayah dan dukungan decoder berbeda per perangkat. Karena itu ada alat audit yang memutar **setiap channel di TV**.
-
-- `AuditActivity` (hanya di build debug, tanpa ikon launcher) memutar tiap channel di `data/channels.json` satu per satu, **bisu**, memakai player dan pemetaan error yang sama dengan app. Batas 25 detik per channel. Satu baris JSON per channel ditulis ke `files/audit.jsonl` di TV: `{"id", "ms", "result": ok|error|timeout, "title", "errorCode", "http"}`.
-- Bisa dilanjutkan: channel yang sudah ada di file dilewati bila dijalankan ulang. `files/audit.done` muncul saat selesai.
-- Lama: ±4 sampai 8 detik per channel (±2 sampai 4 jam untuk ±1.900 channel). Selama itu TV dipakai audit.
-
-```bash
-cd ~/projectyaya/tv-channel-app && export PATH=$HOME/android-sdk/platform-tools:$PATH
-T=100.108.220.15:5555; P=com.projectyaya.tvchannel
-./gradlew assembleDebug && adb -s $T install -r app/build/outputs/apk/debug/app-debug.apk
-adb -s $T shell am force-stop $P
-adb -s $T shell run-as $P rm -f files/audit.jsonl files/audit.done      # mulai dari nol (lewati untuk melanjutkan)
-adb -s $T shell am start -n $P/.AuditActivity
-adb -s $T exec-out run-as $P cat files/audit.jsonl | wc -l              # kemajuan
-adb -s $T shell run-as $P test -f files/audit.done && echo selesai
-adb -s $T exec-out run-as $P cat files/audit.jsonl > /tmp/audit.jsonl   # ambil hasil
-python3 tools/build-channels/prune_audit.py /tmp/audit.jsonl --dry-run  # lihat dulu
-python3 tools/build-channels/prune_audit.py /tmp/audit.jsonl            # pangkas + tulis exclude.json
-```
-
-`prune_audit.py` membuang channel yang audit terakhirnya **error** dengan judul "Format tidak didukung" atau "Dibatasi wilayah" (ubah dengan `--titles`). Channel dengan hasil lain (timeout, tidak ditemukan, dll.) **tidak** dibuang, karena bisa sementara. Id yang dibuang dicatat di `exclude.json` (id, alasan, tanggal audit) dan dilewati oleh `build_channels.py`.
-
-Hasil audit hanya berlaku untuk TV dan jaringan yang dipakai saat audit. Ulangi setelah mengganti TV atau ISP, atau secara berkala.
+- Lolos tes berarti playlist terbaca saat itu, bukan bahwa siarannya legal atau akan tetap hidup. Stream sering mati; jalankan ulang kurasi berkala.
+- Penilaian "resmi" di atas adalah tebakan dari nama domain, bukan konfirmasi dari pemilik channel.
+- Tes dari VPS di Singapura; channel Indonesia yang dibatasi wilayah (mis. RCTI, GTV, Indosiar) kemungkinan hidup di TV tapi belum terbukti.

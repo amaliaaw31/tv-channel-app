@@ -1,0 +1,3387 @@
+{
+ "found": [
+  {
+   "id": "RCTI.id",
+   "name": "RCTI",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://202.150.172.59/RCTIHD/index.m3u8",
+   "groups": [
+    "MNC",
+    "Nasional"
+   ],
+   "requested": [
+    "RCTI HD",
+    "RCTI",
+    "\\bMNC\\b|Media Nusantara Citra|Global Mediacom"
+   ],
+   "matchedChannel": "RCTI",
+   "matchScore": 90,
+   "status": "geo-block",
+   "detail": "HTTP 403",
+   "domain": "202.150.172.59",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "SCTV.id",
+   "name": "SCTV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://op-group1-swiftservehd-1.dens.tv/h/h217/index.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 Windows NT 10.0; Win64; x64 AppleWebKit/537.36 KHTML, like Gecko Chrome/144.0.0.0 Safari/537.36",
+    "Referer": "https://www.dens.tv/"
+   },
+   "groups": [
+    "Nasional"
+   ],
+   "requested": [
+    "SCTV"
+   ],
+   "matchedChannel": "SCTV",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "op-group1-swiftservehd-1.dens.tv",
+   "quality": null,
+   "geoLabel": true,
+   "alternatives": []
+  },
+  {
+   "id": "Indosiar.id",
+   "name": "Indosiar",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://202.150.172.59/Indosiar/index.m3u8",
+   "groups": [
+    "Nasional"
+   ],
+   "requested": [
+    "Indosiar HD"
+   ],
+   "matchedChannel": "Indosiar",
+   "matchScore": 90,
+   "status": "geo-block",
+   "detail": "HTTP 403",
+   "domain": "202.150.172.59",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "ANTV.id",
+   "name": "ANTV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://103.58.160.157:8278/720-ANTV/playlist.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36"
+   },
+   "groups": [
+    "Nasional"
+   ],
+   "requested": [
+    "ANTV"
+   ],
+   "matchedChannel": "ANTV",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "HTTP 401",
+   "domain": "103.58.160.157",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "GTV.id",
+   "name": "GTV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://202.150.172.59/GTVHD/index.m3u8",
+   "groups": [
+    "MNC",
+    "Nasional"
+   ],
+   "requested": [
+    "GTV (Indonesia) HD",
+    "GTV",
+    "\\bMNC\\b|Media Nusantara Citra|Global Mediacom"
+   ],
+   "matchedChannel": "GTV",
+   "matchScore": 100,
+   "status": "geo-block",
+   "detail": "HTTP 403",
+   "domain": "202.150.172.59",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "MDTV.id",
+   "name": "MDTV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://op-flashcon-digdayahd-1.dens.tv/h/h223/index.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 Windows NT 10.0; Win64; x64 AppleWebKit/537.36 KHTML, like Gecko Chrome/144.0.0.0 Safari/537.36",
+    "Referer": "dens.tv/tv-local"
+   },
+   "groups": [
+    "Nasional"
+   ],
+   "requested": [
+    "MDTV"
+   ],
+   "matchedChannel": "MDTV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "op-flashcon-digdayahd-1.dens.tv",
+   "quality": "720p",
+   "geoLabel": true,
+   "alternatives": []
+  },
+  {
+   "id": "NusantaraTV.id",
+   "name": "Nusantara TV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://nusantaratv.siar.us/nusantaratv/live/playlist.m3u8",
+   "groups": [
+    "Nasional"
+   ],
+   "requested": [
+    "Nusantara TV"
+   ],
+   "matchedChannel": "Nusantara TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "nusantaratv.siar.us",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "TV9Nusantara.id",
+     "name": "TV 9 Nusantara",
+     "country": "ID"
+    },
+    {
+     "id": "OnlineTVNusantara.id",
+     "name": "Online TV Nusantara",
+     "country": "ID"
+    }
+   ]
+  },
+  {
+   "id": "GarudaTV.id",
+   "name": "Garuda TV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://hgmtv.com:19360/garudatvlivestreaming/garudatvlivestreaming.m3u8",
+   "groups": [
+    "Nasional"
+   ],
+   "requested": [
+    "Garuda TV"
+   ],
+   "matchedChannel": "Garuda TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "hgmtv.com",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "iNews.id",
+   "name": "iNews",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "iNews",
+    "\\bMNC\\b|Media Nusantara Citra|Global Mediacom"
+   ],
+   "matchedChannel": "iNews",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "MagnaChannel.id",
+   "name": "Magna Channel",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://edge.medcom.id/live-edge/smil:magna.smil/playlist.m3u8",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "Magna Channel"
+   ],
+   "matchedChannel": "Magna Channel",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "edge.medcom.id",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "SindoNewsTV.id",
+   "name": "Sindo News TV",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "Sindo TV"
+   ],
+   "matchedChannel": "Sindo News TV",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraBioskop.id",
+   "name": "Citra Bioskop",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Bioskop",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraCulinaryTravel.id",
+   "name": "Citra Culinary & Travel",
+   "country": "ID",
+   "category": "cooking",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Culinary & Travel",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraDangdut.id",
+   "name": "Citra Dangdut",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Dangdut",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraDrama.id",
+   "name": "Citra Drama",
+   "country": "ID",
+   "category": "series",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Drama",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraDramaPlus.id",
+   "name": "Citra Drama Plus",
+   "country": "ID",
+   "category": "series",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Drama Plus",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraEntertainment.id",
+   "name": "Citra Entertainment",
+   "country": "ID",
+   "category": "entertainment",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Entertainment",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CitraMuslim.id",
+   "name": "Citra Muslim",
+   "country": "ID",
+   "category": "religious",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Citra Muslim",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "KidsTV.id",
+   "name": "Kids TV",
+   "country": "ID",
+   "category": "kids",
+   "streamUrl": "http://origin5.mediacdn.ru/live/kidstv/index.m3u8",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Kids TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "origin5.mediacdn.ru",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "Life.id",
+   "name": "Life",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Life",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "MShopSignature.id",
+   "name": "M Shop Signature",
+   "country": "ID",
+   "category": "shop",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "M Shop Signature",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "MShopSuperSale.id",
+   "name": "M Shop Super Sale!",
+   "country": "ID",
+   "category": "shop",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "M Shop Super Sale!",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "Sportstars.id",
+   "name": "Sportstars",
+   "country": "ID",
+   "category": "sports",
+   "streamUrl": "",
+   "groups": [
+    "MNC"
+   ],
+   "requested": [
+    "~pemilik"
+   ],
+   "matchedChannel": "Sportstars",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "MetroTV.id",
+   "name": "Metro TV",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Metro TV"
+   ],
+   "matchedChannel": "Metro TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "edge.medcom.id",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "MetroGlobeNetwork.id",
+     "name": "Metro Globe Network",
+     "country": "ID"
+    }
+   ]
+  },
+  {
+   "id": "CNNIndonesia.id",
+   "name": "CNN Indonesia",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "https://video.detik.com/livecnn/smil:cnntv/chunklist_w268557525_b384000_sleng.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
+   },
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "CNN Indonesia"
+   ],
+   "matchedChannel": "CNN Indonesia",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "video.detik.com",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CNBCIndonesia.id",
+   "name": "CNBC Indonesia",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "https://video.detik.com/livecnbc/smil:cnbctv/chunklist_w1279679883_b384000_sleng.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
+   },
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "CNBC Indonesia"
+   ],
+   "matchedChannel": "CNBC Indonesia",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "video.detik.com",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "BeritaSatu.id",
+   "name": "BeritaSatu",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "https://xtdslboppkkv-pull.bpmedialive.com/live/beritasatu/abr.m3u8",
+   "headers": {
+    "Referer": "https://www.beritasatu.com/beritasatu-live-streaming"
+   },
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "BeritaSatu"
+   ],
+   "matchedChannel": "BeritaSatu",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "xtdslboppkkv-pull.bpmedialive.com",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "KompasTV.id",
+   "name": "Kompas TV",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "https://op-group1-swiftservehd-1.dens.tv/h/h234/index.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 Windows NT 10.0; Win64; x64 AppleWebKit/537.36 KHTML, like Gecko Chrome/144.0.0.0 Safari/537.36",
+    "Referer": "https://www.dens.tv/"
+   },
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Kompas TV"
+   ],
+   "matchedChannel": "Kompas TV",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "op-group1-swiftservehd-1.dens.tv",
+   "quality": null,
+   "geoLabel": true,
+   "alternatives": []
+  },
+  {
+   "id": "tvOne.id",
+   "name": "tvOne",
+   "country": "ID",
+   "category": "news",
+   "streamUrl": "https://op-group1-swiftservehd-1.dens.tv/h/h40/index.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 Windows NT 10.0; Win64; x64 AppleWebKit/537.36 KHTML, like Gecko Chrome/144.0.0.0 Safari/537.36",
+    "Referer": "https://www.dens.tv/"
+   },
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "tvOne"
+   ],
+   "matchedChannel": "tvOne",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "op-group1-swiftservehd-1.dens.tv",
+   "quality": null,
+   "geoLabel": true,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#HD",
+   "name": "TVRI",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8",
+   "groups": [
+    "Publik"
+   ],
+   "requested": [
+    "TVRI HD"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 90,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "1080i",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "TVRISport.id",
+     "name": "TVRI Sport",
+     "country": "ID"
+    },
+    {
+     "id": "TVRIWorld.id",
+     "name": "TVRI World",
+     "country": "ID"
+    }
+   ]
+  },
+  {
+   "id": "TVRISport.id",
+   "name": "TVRI Sport",
+   "country": "ID",
+   "category": "sports",
+   "streamUrl": "http://202.150.172.59/TVRISport/index.m3u8",
+   "groups": [
+    "Publik"
+   ],
+   "requested": [
+    "TVRI Sport"
+   ],
+   "matchedChannel": "TVRI Sport",
+   "matchScore": 100,
+   "status": "geo-block",
+   "detail": "HTTP 403",
+   "domain": "202.150.172.59",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRIWorld.id",
+   "name": "TVRI World",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/TVRIWorld/hls/TVRIWorld.m3u8",
+   "groups": [
+    "Publik"
+   ],
+   "requested": [
+    "TVRI World"
+   ],
+   "matchedChannel": "TVRI World",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "RRINet.id",
+   "name": "RRI Net",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://private-streaming.rri.go.id/memfs/6f77c7b5-feb2-4935-9f89-e7e9fca0a54a_output_0.m3u8",
+   "groups": [
+    "Publik"
+   ],
+   "requested": [
+    "RRI Net"
+   ],
+   "matchedChannel": "RRI Net",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "HTTP 404",
+   "domain": "private-streaming.rri.go.id",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Aceh",
+   "name": "TVRI Aceh",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Aceh/hls/Aceh.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Bali",
+   "name": "TVRI Bali",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Bali/hls/Bali.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#BangkaBelitung",
+   "name": "TVRI Bangka Belitung",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Babel/hls/Babel.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Bengkulu",
+   "name": "TVRI Bengkulu",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Bengkulu/hls/Bengkulu.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Gorontalo",
+   "name": "TVRI Gorontalo",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Gorontalo/hls/Gorontalo.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Jakarta",
+   "name": "TVRI Jakarta",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/DKI/hls/DKI.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "576i",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Jambi",
+   "name": "TVRI Jambi",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Jambi/hls/Jambi.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#WestJava",
+   "name": "TVRI Jawa Barat",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Jabar/hls/Jabar.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#CentralJava",
+   "name": "TVRI Jawa Tengah",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Jateng/hls/Jateng.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#EastJava",
+   "name": "TVRI Jawa Timur",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Jatim/hls/Jatim.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#WestKalimantan",
+   "name": "TVRI Kalimantan Barat",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Kalbar/hls/Kalbar.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#SouthKalimantan",
+   "name": "TVRI Kalimantan Selatan",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Kalsel/hls/Kalsel.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#CentralKalimantan",
+   "name": "TVRI Kalimantan Tengah",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Kalteng/hls/Kalteng.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#EastKalimantan",
+   "name": "TVRI Kalimantan Timur",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Kaltim/hls/Kaltim.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Lampung",
+   "name": "TVRI Lampung",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Lampung/hls/Lampung.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Maluku",
+   "name": "TVRI Maluku",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Ambon/hls/Ambon.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#NorthSulawesi",
+   "name": "TVRI North Sulawesi",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sulut/hls/Sulut.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#NorthSumatra",
+   "name": "TVRI North Sumatra",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sumut/hls/Sumut.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#WestNusaTenggara",
+   "name": "TVRI Nusa Tenggara Barat",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/NTB/hls/NTB.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#EastNusaTenggara",
+   "name": "TVRI Nusa Tenggara Timur",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/NTT/hls/NTT.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Papua",
+   "name": "TVRI Papua",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Papua/hls/Papua.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Riau",
+   "name": "TVRI Riau",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Riau/hls/Riau.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#WestSulawesi",
+   "name": "TVRI Sulawesi Barat",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sulbar/hls/Sulbar.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#SouthSulawesi",
+   "name": "TVRI Sulawesi Selatan",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sulsel/hls/Sulsel.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#CentralSulawesi",
+   "name": "TVRI Sulawesi Tengah",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sulteng/hls/Sulteng.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#SoutheastSulawesi",
+   "name": "TVRI Sulawesi Tenggara",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sultra/hls/Sultra.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#WestSumatra",
+   "name": "TVRI Sumatera Barat",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sumbar/hls/Sumbar.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#SouthSumatra",
+   "name": "TVRI Sumatera Selatan",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Sumsel/hls/Sumsel.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "480p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#WestPapua",
+   "name": "TVRI West Papua",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Pabar/hls/Pabar.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "TVRI.id#Yogyakarta",
+   "name": "TVRI Yogyakarta",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Jogjakarta/hls/Jogjakarta.m3u8",
+   "groups": [
+    "TVRI Daerah"
+   ],
+   "requested": [
+    "~feed TVRI.id"
+   ],
+   "matchedChannel": "TVRI",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "ott-balancer.tvri.go.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "JTV.id",
+   "name": "JTV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://122.248.43.242:1935/JTVKEDIRI/_definst_/myStream/playlist.m3u8",
+   "groups": [
+    "Daerah"
+   ],
+   "requested": [
+    "JTV"
+   ],
+   "matchedChannel": "JTV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "122.248.43.242",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "JawaPosTV.id#Jakarta",
+   "name": "Jawa Pos TV Jakarta",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://122.248.43.242:1935/JAWAPOSTVJKT/_definst_/myStream/playlist.m3u8",
+   "groups": [
+    "Daerah"
+   ],
+   "requested": [
+    "Jawa Pos TV Jakarta"
+   ],
+   "matchedChannel": "Jawa Pos TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "122.248.43.242",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "JakTV.id",
+   "name": "Jak TV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://op-group1-swiftservesd-1.dens.tv/s/s123/index2.m3u8",
+   "headers": {
+    "User-Agent": "Mozilla/5.0 Windows NT 10.0; Win64; x64 AppleWebKit/537.36 KHTML, like Gecko Chrome/144.0.0.0 Safari/537.36",
+    "Referer": "https://www.dens.tv/"
+   },
+   "groups": [
+    "Daerah"
+   ],
+   "requested": [
+    "Jak TV"
+   ],
+   "matchedChannel": "Jak TV",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "op-group1-swiftservesd-1.dens.tv",
+   "quality": null,
+   "geoLabel": true,
+   "alternatives": []
+  },
+  {
+   "id": "BandungTV.id",
+   "name": "Bandung TV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "http://202.150.153.254:65500/bandungtvWEBSITE.m3u8",
+   "groups": [
+    "Daerah"
+   ],
+   "requested": [
+    "Bandung TV"
+   ],
+   "matchedChannel": "Bandung TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "202.150.153.254",
+   "quality": "360p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "JogjaTV.id",
+   "name": "Jogja TV",
+   "country": "ID",
+   "category": "general",
+   "streamUrl": "https://stream.jogjatv.co.id/jtvlive/stream/index.m3u8",
+   "groups": [
+    "Daerah"
+   ],
+   "requested": [
+    "Jogja TV"
+   ],
+   "matchedChannel": "Jogja TV",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "stream.jogjatv.co.id",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "RBTVJogja.id",
+     "name": "RBTV Jogja",
+     "country": "ID"
+    },
+    {
+     "id": "JogjaIstimewaTV.id",
+     "name": "Jogja Istimewa TV",
+     "country": "ID"
+    },
+    {
+     "id": "TegarTVJogja.id",
+     "name": "Tegar TV Jogja",
+     "country": "ID"
+    }
+   ]
+  },
+  {
+   "id": "IndonesianaTV.id",
+   "name": "Indonesiana.TV",
+   "country": "ID",
+   "category": "entertainment",
+   "streamUrl": "https://tvstreamcast.com/indonesiana.m3u8",
+   "headers": {
+    "Referer": "https://indonesiana.tv/"
+   },
+   "groups": [
+    "Daerah"
+   ],
+   "requested": [
+    "Indonesiana.TV"
+   ],
+   "matchedChannel": "Indonesiana.TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "tvstreamcast.com",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "AlJazeera.qa#English",
+   "name": "Al Jazeera English",
+   "country": "QA",
+   "category": "news",
+   "streamUrl": "https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Al Jazeera English"
+   ],
+   "matchedChannel": "Al Jazeera",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "live-hls-apps-aje-fa.getaj.net",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "DW.de",
+   "name": "DW",
+   "country": "DE",
+   "category": "news",
+   "streamUrl": "https://amg01644-amg01644c1-amgplt0343.playout.now3.amagi.tv/ts-eu-w1-n2/playlist/amg01644-amg01644c1-amgplt0343/playlist.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "DW"
+   ],
+   "matchedChannel": "DW",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "amg01644-amg01644c1-amgplt0343.playout.now3.amagi.tv",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "DimtsiWeyaneTV.et",
+     "name": "Dimtsi Weyane TV",
+     "country": "ET"
+    }
+   ]
+  },
+  {
+   "id": "France24.fr",
+   "name": "France 24",
+   "country": "FR",
+   "category": "news",
+   "streamUrl": "https://amg00106-france24-france24-samsunguk-qvpp8.amagi.tv/playlist/amg00106-france24-france24-samsunguk/playlist.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "France 24"
+   ],
+   "matchedChannel": "France 24",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "amg00106-france24-france24-samsunguk-qvpp8.amagi.tv",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "NHKWorldJapan.jp",
+   "name": "NHK World-Japan",
+   "country": "JP",
+   "category": "news",
+   "streamUrl": "https://cdn.pishow.tv/ott/live/455/master.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "NHK World"
+   ],
+   "matchedChannel": "NHK World-Japan",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "cdn.pishow.tv",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "NHKWorldPremium.jp",
+     "name": "NHK World Premium",
+     "country": "JP"
+    },
+    {
+     "id": "NHKWorldEspanol.jp",
+     "name": "NHK World Espanol",
+     "country": "JP"
+    }
+   ]
+  },
+  {
+   "id": "CNA.sg",
+   "name": "CNA",
+   "country": "SG",
+   "category": "news",
+   "streamUrl": "https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "CNA"
+   ],
+   "matchedChannel": "CNA",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "d2e1asnsl7br7b.cloudfront.net",
+   "quality": "1080p",
+   "geoLabel": true,
+   "alternatives": [
+    {
+     "id": "CNAOriginals.sg",
+     "name": "CNA Originals",
+     "country": "SG"
+    },
+    {
+     "id": "CNAInternational.sg",
+     "name": "CNA International",
+     "country": "SG"
+    }
+   ]
+  },
+  {
+   "id": "EuronewsEnglish.fr",
+   "name": "Euronews English",
+   "country": "FR",
+   "category": "news",
+   "streamUrl": "https://a-cdn.klowdtv.com/live3/euronews_720p/playlist.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Euronews"
+   ],
+   "matchedChannel": "Euronews English",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "a-cdn.klowdtv.com",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "Euronews.pl",
+     "name": "Euronews",
+     "country": "PL"
+    },
+    {
+     "id": "EuronewsGreek.fr",
+     "name": "Euronews Greek",
+     "country": "FR"
+    },
+    {
+     "id": "EuronewsFrench.fr",
+     "name": "Euronews French",
+     "country": "FR"
+    },
+    {
+     "id": "EuronewsGerman.fr",
+     "name": "Euronews German",
+     "country": "FR"
+    }
+   ]
+  },
+  {
+   "id": "TRTWorld.tr",
+   "name": "TRT World",
+   "country": "TR",
+   "category": "news",
+   "streamUrl": "https://tv-trtworld.medya.trt.com.tr/master.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "TRT World"
+   ],
+   "matchedChannel": "TRT World",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "tv-trtworld.medya.trt.com.tr",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "ArirangTV.kr",
+   "name": "Arirang TV",
+   "country": "KR",
+   "category": "news",
+   "streamUrl": "https://freem3u.xyz/api/live/play.m3u8?vid=111",
+   "groups": [
+    "Berita",
+    "Korea"
+   ],
+   "requested": [
+    "Arirang"
+   ],
+   "matchedChannel": "Arirang TV",
+   "matchScore": 90,
+   "status": "hidup",
+   "detail": "",
+   "domain": "freem3u.xyz",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "ArirangUN.kr",
+     "name": "Arirang UN",
+     "country": "KR"
+    },
+    {
+     "id": "ArirangRadio.kr",
+     "name": "Arirang Radio",
+     "country": "KR"
+    },
+    {
+     "id": "ArirangWorld.kr",
+     "name": "Arirang World",
+     "country": "KR"
+    }
+   ]
+  },
+  {
+   "id": "CNNInternational.us",
+   "name": "CNN International",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "https://d2sybdl23b9psq.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-bocx3i7bjz0dg/CNNFAST_GB.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "CNN International"
+   ],
+   "matchedChannel": "CNN International",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "d2sybdl23b9psq.cloudfront.net",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "BBCNews.uk",
+   "name": "BBC News",
+   "country": "GB",
+   "category": "news",
+   "streamUrl": "http://23.237.104.106:8080/USA_BBC_NEWS/index.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "BBC News"
+   ],
+   "matchedChannel": "BBC News",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "23.237.104.106",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "BBCNewsPashto.uk",
+     "name": "BBC News Pashto",
+     "country": "GB"
+    },
+    {
+     "id": "BBCNewsHindi.in",
+     "name": "BBC News Hindi",
+     "country": "IN"
+    },
+    {
+     "id": "BBCNewsMarathi.in",
+     "name": "BBC News Marathi",
+     "country": "IN"
+    },
+    {
+     "id": "BBCNewsGujarati.in",
+     "name": "BBC News Gujarati",
+     "country": "IN"
+    }
+   ]
+  },
+  {
+   "id": "SkyNews.ie",
+   "name": "Sky News",
+   "country": "IE",
+   "category": "news",
+   "streamUrl": "",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Sky News"
+   ],
+   "matchedChannel": "Sky News",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "SkyNewsWeather.uk",
+     "name": "Sky News Weather",
+     "country": "GB"
+    },
+    {
+     "id": "SkySportsNews.uk",
+     "name": "Sky Sports News",
+     "country": "GB"
+    },
+    {
+     "id": "SkyNewsUrdu.pk",
+     "name": "Sky News Urdu",
+     "country": "PK"
+    },
+    {
+     "id": "SkyNewsArabia.ae",
+     "name": "Sky News Arabia",
+     "country": "AE"
+    }
+   ]
+  },
+  {
+   "id": "BloombergTV.us",
+   "name": "Bloomberg TV",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "https://66e4bbba.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctZ2JfQmxvb21iZXJnVFZQbHVzX0hMUw/playlist.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Bloomberg"
+   ],
+   "matchedChannel": "Bloomberg TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "66e4bbba.wurl.com",
+   "quality": "2160p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "BloombergOriginals.us",
+     "name": "Bloomberg Originals",
+     "country": "US"
+    },
+    {
+     "id": "BloombergQuicktake.us",
+     "name": "Bloomberg Quicktake",
+     "country": "US"
+    },
+    {
+     "id": "BloombergHT.tr",
+     "name": "Bloomberg HT",
+     "country": "TR"
+    },
+    {
+     "id": "BNNBloomberg.ca",
+     "name": "BNN Bloomberg",
+     "country": "CA"
+    }
+   ]
+  },
+  {
+   "id": "CNBC.us",
+   "name": "CNBC",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "http://41.205.93.154/CNBC/index.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "CNBC"
+   ],
+   "matchedChannel": "CNBC",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "HTTP 404",
+   "domain": "41.205.93.154",
+   "quality": "720p",
+   "geoLabel": true,
+   "alternatives": [
+    {
+     "id": "CNBCWorld.us",
+     "name": "CNBC World",
+     "country": "US"
+    },
+    {
+     "id": "CNBCMarathon.us",
+     "name": "CNBC Marathon",
+     "country": "US"
+    },
+    {
+     "id": "CNBCe.tr",
+     "name": "CNBC-e",
+     "country": "TR"
+    },
+    {
+     "id": "CNBCUK.uk",
+     "name": "CNBC UK",
+     "country": "GB"
+    }
+   ]
+  },
+  {
+   "id": "ABCNewsLive.us",
+   "name": "ABC News Live",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "https://aegis-cloudfront-1.tubi.video/d6cbb0de-68e4-4f3b-82f9-bf5d526e0bde/index.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "ABC News"
+   ],
+   "matchedChannel": "ABC News Live",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "aegis-cloudfront-1.tubi.video",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "ABCNews.au",
+     "name": "ABC News",
+     "country": "AU"
+    },
+    {
+     "id": "ABCNews.al",
+     "name": "ABC News",
+     "country": "AL"
+    },
+    {
+     "id": "ABCNews.in",
+     "name": "ABC News",
+     "country": "IN"
+    },
+    {
+     "id": "ABCNewsLive1.us",
+     "name": "ABC News Live 1",
+     "country": "US"
+    }
+   ]
+  },
+  {
+   "id": "NBCNewsNOW.us",
+   "name": "NBC News NOW",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "https://d1bl6tskrpq9ze.cloudfront.net/hls/master.m3u8?ads.xumo_channelId=99984003",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "NBC News"
+   ],
+   "matchedChannel": "NBC News NOW",
+   "matchScore": 74,
+   "status": "hidup",
+   "detail": "",
+   "domain": "d1bl6tskrpq9ze.cloudfront.net",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "CBSNews247.us",
+   "name": "CBS News 24/7",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "https://cbsn-us-vtt.cbsnstream.cbsnews.com/out/v1/ef868690d34144509eda696884bf1619/master.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "CBS News"
+   ],
+   "matchedChannel": "CBS News 24/7",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "cbsn-us-vtt.cbsnstream.cbsnews.com",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "CBSNewsMiami.us",
+     "name": "CBS News Miami",
+     "country": "US"
+    },
+    {
+     "id": "CBSNewsBoston.us",
+     "name": "CBS News Boston",
+     "country": "US"
+    },
+    {
+     "id": "CBSNewsPhilly.us",
+     "name": "CBS News Philly",
+     "country": "US"
+    },
+    {
+     "id": "CBSNewsChicago.us",
+     "name": "CBS News Chicago",
+     "country": "US"
+    }
+   ]
+  },
+  {
+   "id": "FoxNewsChannel.us",
+   "name": "Fox News Channel",
+   "country": "US",
+   "category": "news",
+   "streamUrl": "http://138.121.15.230:9002/FOX-NEWS/index.m3u8",
+   "groups": [
+    "Berita"
+   ],
+   "requested": [
+    "Fox News"
+   ],
+   "matchedChannel": "Fox News Channel",
+   "matchScore": 90,
+   "status": "hidup",
+   "detail": "",
+   "domain": "138.121.15.230",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "FoxNewsRadio.us",
+     "name": "Fox News Radio",
+     "country": "US"
+    },
+    {
+     "id": "FoxNewsInternational.us",
+     "name": "Fox News International",
+     "country": "US"
+    },
+    {
+     "id": "KJTVCD321.us",
+     "name": "KJTV-CD 32.1",
+     "country": "US"
+    },
+    {
+     "id": "KJTVTV342.us",
+     "name": "KJTV-TV 34.2",
+     "country": "US"
+    }
+   ]
+  },
+  {
+   "id": "NationalGeographic.us",
+   "name": "National Geographic",
+   "country": "US",
+   "category": "documentary",
+   "streamUrl": "http://198.58.104.90:8989/natgeo/index.m3u8",
+   "groups": [
+    "Dokumenter"
+   ],
+   "requested": [
+    "National Geographic"
+   ],
+   "matchedChannel": "National Geographic",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "198.58.104.90",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "NationalGeographic.bg",
+     "name": "National Geographic",
+     "country": "BG"
+    },
+    {
+     "id": "NationalGeographic.cz",
+     "name": "National Geographic",
+     "country": "CZ"
+    },
+    {
+     "id": "NationalGeographic.fi",
+     "name": "National Geographic",
+     "country": "FI"
+    },
+    {
+     "id": "NationalGeographic.hr",
+     "name": "National Geographic",
+     "country": "HR"
+    }
+   ]
+  },
+  {
+   "id": "NationalGeographicWild.us",
+   "name": "National Geographic Wild",
+   "country": "US",
+   "category": "documentary",
+   "streamUrl": "http://198.58.104.90:8989/natgeowild/index.m3u8",
+   "groups": [
+    "Dokumenter"
+   ],
+   "requested": [
+    "Nat Geo Wild"
+   ],
+   "matchedChannel": "National Geographic Wild",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "198.58.104.90",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "NationalGeographicWild.bg",
+     "name": "National Geographic Wild",
+     "country": "BG"
+    },
+    {
+     "id": "NationalGeographicWild.cz",
+     "name": "National Geographic Wild",
+     "country": "CZ"
+    },
+    {
+     "id": "NationalGeographicWild.hu",
+     "name": "National Geographic Wild",
+     "country": "HU"
+    },
+    {
+     "id": "NationalGeographicWild.pl",
+     "name": "National Geographic Wild",
+     "country": "PL"
+    }
+   ]
+  },
+  {
+   "id": "DiscoveryChannel.cz",
+   "name": "Discovery Channel",
+   "country": "CZ",
+   "category": "documentary",
+   "streamUrl": "http://88.212.15.50/live/test_discovery_hd_hevc/playlist.m3u8",
+   "groups": [
+    "Dokumenter"
+   ],
+   "requested": [
+    "Discovery"
+   ],
+   "matchedChannel": "Discovery Channel",
+   "matchScore": 90,
+   "status": "hidup",
+   "detail": "",
+   "domain": "88.212.15.50",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "DiscoveryChannel.us",
+     "name": "Discovery Channel",
+     "country": "US"
+    },
+    {
+     "id": "DiscoveryChannel.hu",
+     "name": "Discovery Channel",
+     "country": "HU"
+    },
+    {
+     "id": "DiscoveryChannel.in",
+     "name": "Discovery Channel",
+     "country": "IN"
+    },
+    {
+     "id": "DiscoveryChannel.it",
+     "name": "Discovery Channel",
+     "country": "IT"
+    }
+   ]
+  },
+  {
+   "id": "AnimalPlanet.us",
+   "name": "Animal Planet",
+   "country": "US",
+   "category": "documentary",
+   "streamUrl": "http://23.237.104.106:8080/USA_ANIMAL_PLANET/index.m3u8",
+   "groups": [
+    "Dokumenter"
+   ],
+   "requested": [
+    "Animal Planet"
+   ],
+   "matchedChannel": "Animal Planet",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "23.237.104.106",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "AnimalPlanet.cz",
+     "name": "Animal Planet",
+     "country": "CZ"
+    },
+    {
+     "id": "AnimalPlanet.hu",
+     "name": "Animal Planet",
+     "country": "HU"
+    },
+    {
+     "id": "AnimalPlanet.in",
+     "name": "Animal Planet",
+     "country": "IN"
+    },
+    {
+     "id": "AnimalPlanet.uk",
+     "name": "Animal Planet",
+     "country": "GB"
+    }
+   ]
+  },
+  {
+   "id": "History.br",
+   "name": "History",
+   "country": "BR",
+   "category": "documentary",
+   "streamUrl": "http://170.83.16.50/HISTORY/index.m3u8",
+   "groups": [
+    "Dokumenter"
+   ],
+   "requested": [
+    "History"
+   ],
+   "matchedChannel": "History",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "170.83.16.50",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "History.us",
+     "name": "History",
+     "country": "US"
+    },
+    {
+     "id": "History.bg",
+     "name": "History",
+     "country": "BG"
+    },
+    {
+     "id": "History.cz",
+     "name": "History",
+     "country": "CZ"
+    },
+    {
+     "id": "History.hu",
+     "name": "History",
+     "country": "HU"
+    }
+   ]
+  },
+  {
+   "id": "Nickelodeon.us",
+   "name": "Nickelodeon",
+   "country": "US",
+   "category": "kids",
+   "streamUrl": "http://198.58.104.90:8989/nickelodeon/index.m3u8",
+   "groups": [
+    "Anak"
+   ],
+   "requested": [
+    "Nickelodeon"
+   ],
+   "matchedChannel": "Nickelodeon",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "198.58.104.90",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "Nickelodeon.bg",
+     "name": "Nickelodeon",
+     "country": "BG"
+    },
+    {
+     "id": "Nickelodeon.cz",
+     "name": "Nickelodeon",
+     "country": "CZ"
+    },
+    {
+     "id": "Nickelodeon.de",
+     "name": "Nickelodeon",
+     "country": "DE"
+    },
+    {
+     "id": "Nickelodeon.fr",
+     "name": "Nickelodeon",
+     "country": "FR"
+    }
+   ]
+  },
+  {
+   "id": "CartoonNetwork.in",
+   "name": "Cartoon Network",
+   "country": "IN",
+   "category": "kids",
+   "streamUrl": "https://drk6xq0vhn.gpcdn.net/live/cn_sd_abr/index.m3u8",
+   "groups": [
+    "Anak"
+   ],
+   "requested": [
+    "Cartoon Network"
+   ],
+   "matchedChannel": "Cartoon Network",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "drk6xq0vhn.gpcdn.net",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "CartoonNetwork.us",
+     "name": "Cartoon Network",
+     "country": "US"
+    },
+    {
+     "id": "CartoonNetwork.pk",
+     "name": "Cartoon Network",
+     "country": "PK"
+    },
+    {
+     "id": "CartoonNetwork.tr",
+     "name": "Cartoon Network",
+     "country": "TR"
+    },
+    {
+     "id": "CartoonNetworkCEE.uk",
+     "name": "Cartoon Network CEE",
+     "country": "GB"
+    }
+   ]
+  },
+  {
+   "id": "DisneyChannel.cz",
+   "name": "Disney Channel",
+   "country": "CZ",
+   "category": "kids",
+   "streamUrl": "http://88.212.15.50/live/test_disney/playlist.m3u8",
+   "groups": [
+    "Anak"
+   ],
+   "requested": [
+    "Disney Channel"
+   ],
+   "matchedChannel": "Disney Channel",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "88.212.15.50",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "DisneyChannel.us",
+     "name": "Disney Channel",
+     "country": "US"
+    },
+    {
+     "id": "DisneyChannel.bg",
+     "name": "Disney Channel",
+     "country": "BG"
+    },
+    {
+     "id": "DisneyChannel.de",
+     "name": "Disney Channel",
+     "country": "DE"
+    },
+    {
+     "id": "DisneyChannel.hu",
+     "name": "Disney Channel",
+     "country": "HU"
+    }
+   ]
+  },
+  {
+   "id": "Cartoonito.it",
+   "name": "Cartoonito",
+   "country": "IT",
+   "category": "kids",
+   "streamUrl": "https://boing.akamaized.net/6380673432112/eu-central-1/6284318116001/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJob3N0Ijoib3dwbnN1LmVncmVzcy5haGc3NmwiLCJhY2NvdW50X2lkIjoiNjI4NDMxODExNjAwMSIsImVobiI6ImJvaW5nLmFrYW1haXplZC5uZXQiLCJpc3MiOiJibGl2ZS1wbGF5YmFjay1zb3VyY2UtYXBpIiwic3ViIjoicGF0aG1hcHRva2VuIiwiYXVkIjpbIjYyODQzMTgxMTYwMDEiXSwianRpIjoiNjM4MDY3MzQzMjExMiJ9.WACYETOZxZYmZHRpxwRrATxVZQBdSoeaWdfhtLKx1kI/playlist-hls.m3u8",
+   "groups": [
+    "Anak"
+   ],
+   "requested": [
+    "Cartoonito"
+   ],
+   "matchedChannel": "Cartoonito",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "boing.akamaized.net",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "CartoonitoCEE.uk",
+     "name": "Cartoonito CEE",
+     "country": "GB"
+    },
+    {
+     "id": "Cartoonito.uk",
+     "name": "Cartoonito",
+     "country": "GB"
+    },
+    {
+     "id": "CartoonitoAsia.sg",
+     "name": "Cartoonito Asia",
+     "country": "SG"
+    },
+    {
+     "id": "CartoonitoLatinAmerica.us",
+     "name": "Cartoonito Latin America",
+     "country": "US"
+    }
+   ]
+  },
+  {
+   "id": "Boomerang.us",
+   "name": "Boomerang",
+   "country": "US",
+   "category": "kids",
+   "streamUrl": "http://23.237.104.106:8080/USA_BOOMERANG/index.m3u8",
+   "groups": [
+    "Anak"
+   ],
+   "requested": [
+    "Boomerang"
+   ],
+   "matchedChannel": "Boomerang",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "23.237.104.106",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "Boomerang.ca",
+     "name": "Boomerang",
+     "country": "CA"
+    },
+    {
+     "id": "Boomerang.it",
+     "name": "Boomerang",
+     "country": "IT"
+    },
+    {
+     "id": "Boomerang.th",
+     "name": "Boomerang",
+     "country": "TH"
+    },
+    {
+     "id": "Boomerang.uk",
+     "name": "Boomerang",
+     "country": "GB"
+    }
+   ]
+  },
+  {
+   "id": "RedBullTV.at",
+   "name": "Red Bull TV",
+   "country": "AT",
+   "category": "sports",
+   "streamUrl": "https://0b73ace69ebb45eaa249bb87837cb958.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-644-WORBUSENFAST-LG_US/644/lgtv/hls/master/playlist.m3u8",
+   "groups": [
+    "Olahraga"
+   ],
+   "requested": [
+    "Red Bull TV"
+   ],
+   "matchedChannel": "Red Bull TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "0b73ace69ebb45eaa249bb87837cb958.mediatailor.us-west-2.amazonaws.com",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "RedBullBatalladelosGallos.cl",
+     "name": "Red Bull Batalla de los Gallos",
+     "country": "CL"
+    }
+   ]
+  },
+  {
+   "id": "ESPN.us",
+   "name": "ESPN",
+   "country": "US",
+   "category": "sports",
+   "streamUrl": "http://85.237.89.160:9590/usa-s/ESPN-HD/index.m3u8",
+   "groups": [
+    "Olahraga"
+   ],
+   "requested": [
+    "ESPN"
+   ],
+   "matchedChannel": "ESPN",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "85.237.89.160",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "ESPN.br",
+     "name": "ESPN",
+     "country": "BR"
+    },
+    {
+     "id": "ESPN.nl",
+     "name": "ESPN",
+     "country": "NL"
+    },
+    {
+     "id": "TNTSports4.uk",
+     "name": "TNT Sports 4",
+     "country": "GB"
+    },
+    {
+     "id": "ESPN.au",
+     "name": "ESPN",
+     "country": "AU"
+    }
+   ]
+  },
+  {
+   "id": "beINSports.qa",
+   "name": "beIN Sports",
+   "country": "QA",
+   "category": "sports",
+   "streamUrl": "",
+   "groups": [
+    "Olahraga"
+   ],
+   "requested": [
+    "beIN Sports"
+   ],
+   "matchedChannel": "beIN Sports",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "beINSports1.qa",
+     "name": "beIN Sports 1",
+     "country": "QA"
+    },
+    {
+     "id": "beINSports2.qa",
+     "name": "beIN Sports 2",
+     "country": "QA"
+    },
+    {
+     "id": "beINSports3.qa",
+     "name": "beIN Sports 3",
+     "country": "QA"
+    },
+    {
+     "id": "beINSports4.qa",
+     "name": "beIN Sports 4",
+     "country": "QA"
+    }
+   ]
+  },
+  {
+   "id": "Eurosport.in",
+   "name": "Eurosport",
+   "country": "IN",
+   "category": "sports",
+   "streamUrl": "https://drk6xq0vhn.gpcdn.net/live/euro_sports_hd_abr/index.m3u8",
+   "groups": [
+    "Olahraga"
+   ],
+   "requested": [
+    "Eurosport"
+   ],
+   "matchedChannel": "Eurosport",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "drk6xq0vhn.gpcdn.net",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "Eurosport.fr",
+     "name": "Eurosport",
+     "country": "FR"
+    },
+    {
+     "id": "Eurosport1.fr",
+     "name": "Eurosport 1",
+     "country": "FR"
+    },
+    {
+     "id": "Eurosport2.fr",
+     "name": "Eurosport 2",
+     "country": "FR"
+    },
+    {
+     "id": "Eurosport4K.fr",
+     "name": "Eurosport 4K",
+     "country": "FR"
+    }
+   ]
+  },
+  {
+   "id": "SkySportsPlus.uk",
+   "name": "Sky Sports+",
+   "country": "GB",
+   "category": "sports",
+   "streamUrl": "",
+   "groups": [
+    "Olahraga"
+   ],
+   "requested": [
+    "Sky Sports"
+   ],
+   "matchedChannel": "Sky Sports+",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "skySports.kr",
+     "name": "skySports",
+     "country": "KR"
+    },
+    {
+     "id": "SkySportsF1.uk",
+     "name": "Sky Sports F1",
+     "country": "GB"
+    },
+    {
+     "id": "SkySportsNFL.uk",
+     "name": "Sky Sports NFL",
+     "country": "GB"
+    },
+    {
+     "id": "SkySportsMix.uk",
+     "name": "Sky Sports Mix",
+     "country": "GB"
+    }
+   ]
+  },
+  {
+   "id": "OlympicChannel.es",
+   "name": "Olympic Channel",
+   "country": "ES",
+   "category": "sports",
+   "streamUrl": "https://ocshls-2-olympicchannel.akamaized.net/ocshls/OCTV_1.m3u8",
+   "groups": [
+    "Olahraga"
+   ],
+   "requested": [
+    "Olympic Channel"
+   ],
+   "matchedChannel": "Olympic Channel",
+   "matchScore": 100,
+   "status": "geo-block",
+   "detail": "HTTP 403",
+   "domain": "ocshls-2-olympicchannel.akamaized.net",
+   "quality": "1080p",
+   "geoLabel": true,
+   "alternatives": []
+  },
+  {
+   "id": "HBO.us",
+   "name": "HBO",
+   "country": "US",
+   "category": "movies",
+   "streamUrl": "http://tvsen7.aynascope.net/hbo/index.m3u8",
+   "groups": [
+    "Film"
+   ],
+   "requested": [
+    "HBO"
+   ],
+   "matchedChannel": "HBO",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "tvsen7.aynascope.net",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "HBO.cz",
+     "name": "HBO",
+     "country": "CZ"
+    },
+    {
+     "id": "HBO.br",
+     "name": "HBO",
+     "country": "BR"
+    },
+    {
+     "id": "HBO.pl",
+     "name": "HBO",
+     "country": "PL"
+    },
+    {
+     "id": "HBO.ro",
+     "name": "HBO",
+     "country": "RO"
+    }
+   ]
+  },
+  {
+   "id": "AXN.br",
+   "name": "AXN",
+   "country": "BR",
+   "category": "movies",
+   "streamUrl": "http://170.83.16.50/AXN/index.m3u8",
+   "groups": [
+    "Film"
+   ],
+   "requested": [
+    "AXN"
+   ],
+   "matchedChannel": "AXN",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "170.83.16.50",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "AXN.pt",
+     "name": "AXN",
+     "country": "PT"
+    },
+    {
+     "id": "AXN.es",
+     "name": "AXN",
+     "country": "ES"
+    },
+    {
+     "id": "AXN.kr",
+     "name": "AXN",
+     "country": "KR"
+    },
+    {
+     "id": "AXNCEE.es",
+     "name": "AXN CEE",
+     "country": "ES"
+    }
+   ]
+  },
+  {
+   "id": "Cinemax.us",
+   "name": "Cinemax",
+   "country": "US",
+   "category": "movies",
+   "streamUrl": "http://23.237.104.106:8080/USA_CINEMAX_WEST/index.m3u8",
+   "groups": [
+    "Film"
+   ],
+   "requested": [
+    "Cinemax"
+   ],
+   "matchedChannel": "Cinemax",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "23.237.104.106",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "Cinemax.cz",
+     "name": "Cinemax",
+     "country": "CZ"
+    },
+    {
+     "id": "Cinemax.br",
+     "name": "Cinemax",
+     "country": "BR"
+    },
+    {
+     "id": "CineMax.ci",
+     "name": "Cine Max",
+     "country": "CI"
+    },
+    {
+     "id": "CinemaxHits.us",
+     "name": "Cinemax Hits",
+     "country": "US"
+    }
+   ]
+  },
+  {
+   "id": "WarnerTV.cz",
+   "name": "Warner TV",
+   "country": "CZ",
+   "category": "movies",
+   "streamUrl": "http://88.212.15.50/live/warner_tv/index.m3u8",
+   "groups": [
+    "Film"
+   ],
+   "requested": [
+    "Warner TV"
+   ],
+   "matchedChannel": "Warner TV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "88.212.15.50",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "WarnerChannel.us",
+     "name": "Warner Channel",
+     "country": "US"
+    },
+    {
+     "id": "WarnerTV.es",
+     "name": "Warner TV",
+     "country": "ES"
+    },
+    {
+     "id": "WarnerTV.fr",
+     "name": "Warner TV",
+     "country": "FR"
+    },
+    {
+     "id": "WarnerTV.ph",
+     "name": "Warner TV",
+     "country": "PH"
+    }
+   ]
+  },
+  {
+   "id": "ComedyCentral.us",
+   "name": "Comedy Central",
+   "country": "US",
+   "category": "movies",
+   "streamUrl": "https://jmp2.uk/plu-64f8a408bd341e000818fcda.m3u8",
+   "groups": [
+    "Film"
+   ],
+   "requested": [
+    "Comedy Central"
+   ],
+   "matchedChannel": "Comedy Central",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "jmp2.uk",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "ComedyCentral.de",
+     "name": "Comedy Central",
+     "country": "DE"
+    },
+    {
+     "id": "ComedyCentral.it",
+     "name": "Comedy Central",
+     "country": "IT"
+    },
+    {
+     "id": "ComedyCentral.ro",
+     "name": "Comedy Central",
+     "country": "RO"
+    },
+    {
+     "id": "ComedyCentral.se",
+     "name": "Comedy Central",
+     "country": "SE"
+    }
+   ]
+  },
+  {
+   "id": "MTV.us",
+   "name": "MTV",
+   "country": "US",
+   "category": "music",
+   "streamUrl": "http://23.237.104.106:8080/USA_MTV/index.m3u8",
+   "groups": [
+    "Musik"
+   ],
+   "requested": [
+    "MTV"
+   ],
+   "matchedChannel": "MTV",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "23.237.104.106",
+   "quality": "1080p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "MTV.de",
+     "name": "MTV",
+     "country": "DE"
+    },
+    {
+     "id": "MTV.fr",
+     "name": "MTV",
+     "country": "FR"
+    },
+    {
+     "id": "MTV.in",
+     "name": "MTV",
+     "country": "IN"
+    },
+    {
+     "id": "TV8.it",
+     "name": "TV8",
+     "country": "IT"
+    }
+   ]
+  },
+  {
+   "id": "VH1.us",
+   "name": "VH1",
+   "country": "US",
+   "category": "music",
+   "streamUrl": "",
+   "groups": [
+    "Musik"
+   ],
+   "requested": [
+    "VH1"
+   ],
+   "matchedChannel": "VH1",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "VH1.it",
+     "name": "VH1",
+     "country": "IT"
+    },
+    {
+     "id": "VH1QueensofReality.us",
+     "name": "VH1 Queens of Reality",
+     "country": "US"
+    },
+    {
+     "id": "AmericasNextTopModel.us",
+     "name": "America's Next Top Model",
+     "country": "US"
+    },
+    {
+     "id": "PlutoTVVH1Plus.us",
+     "name": "Pluto TV VH1+",
+     "country": "US"
+    }
+   ]
+  },
+  {
+   "id": "KBSWorld.kr",
+   "name": "KBS World",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "https://stream8.cinerama.uz/1448/playlist.m3u8",
+   "headers": {
+    "Referer": "https://cinerama.uz/"
+   },
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "KBS World"
+   ],
+   "matchedChannel": "KBS World",
+   "matchScore": 100,
+   "status": "hidup",
+   "detail": "",
+   "domain": "stream8.cinerama.uz",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "YTN.kr",
+   "name": "YTN",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "http://202.60.106.14:21585/214/playlist.m3u8",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "YTN"
+   ],
+   "matchedChannel": "YTN",
+   "matchScore": 100,
+   "status": "mati",
+   "detail": "URLError",
+   "domain": "202.60.106.14",
+   "quality": "720p",
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "YTNDMB.kr",
+     "name": "YTN DMB",
+     "country": "KR"
+    },
+    {
+     "id": "YTNWorld.kr",
+     "name": "YTN World",
+     "country": "KR"
+    },
+    {
+     "id": "YTNScience.kr",
+     "name": "YTN Science",
+     "country": "KR"
+    }
+   ]
+  },
+  {
+   "id": "YonhapNewsTV.kr",
+   "name": "Yonhap News TV",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "Yonhap"
+   ],
+   "matchedChannel": "Yonhap News TV",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": []
+  },
+  {
+   "id": "JTBC.kr",
+   "name": "JTBC",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "JTBC"
+   ],
+   "matchedChannel": "JTBC",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "JTBCGolf.kr",
+     "name": "JTBC Golf",
+     "country": "KR"
+    },
+    {
+     "id": "JTBCGolfSports.kr",
+     "name": "JTBC Golf & Sports",
+     "country": "KR"
+    }
+   ]
+  },
+  {
+   "id": "KBS1TV.kr",
+   "name": "KBS 1TV",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "KBS"
+   ],
+   "matchedChannel": "KBS 1TV",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "HLKADTV.kr",
+     "name": "HLKA-DTV",
+     "country": "KR"
+    },
+    {
+     "id": "KBSWorld.kr",
+     "name": "KBS World",
+     "country": "KR"
+    },
+    {
+     "id": "KBS2TV.kr",
+     "name": "KBS 2TV",
+     "country": "KR"
+    },
+    {
+     "id": "KBSJoy.kr",
+     "name": "KBS Joy",
+     "country": "KR"
+    }
+   ]
+  },
+  {
+   "id": "MBCTV.kr",
+   "name": "MBC TV",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "MBC"
+   ],
+   "matchedChannel": "MBC TV",
+   "matchScore": 90,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "MBCNet.kr",
+     "name": "MBC Net",
+     "country": "KR"
+    },
+    {
+     "id": "HLAJDTV.kr",
+     "name": "HLAJ-DTV",
+     "country": "KR"
+    },
+    {
+     "id": "HLAMDTV.kr",
+     "name": "HLAM-DTV",
+     "country": "KR"
+    },
+    {
+     "id": "HLANDTV.kr",
+     "name": "HLAN-DTV",
+     "country": "KR"
+    }
+   ]
+  },
+  {
+   "id": "SBS.kr",
+   "name": "SBS",
+   "country": "KR",
+   "category": "general",
+   "streamUrl": "",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "SBS"
+   ],
+   "matchedChannel": "SBS",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "SBSM.kr",
+     "name": "SBS M",
+     "country": "KR"
+    },
+    {
+     "id": "SBSBiz.kr",
+     "name": "SBS Biz",
+     "country": "KR"
+    },
+    {
+     "id": "SBSFL.kr",
+     "name": "SBS F!L",
+     "country": "KR"
+    },
+    {
+     "id": "SBSGolf.kr",
+     "name": "SBS Golf",
+     "country": "KR"
+    }
+   ]
+  },
+  {
+   "id": "tvN.kr",
+   "name": "tvN",
+   "country": "KR",
+   "category": "entertainment",
+   "streamUrl": "",
+   "groups": [
+    "Korea"
+   ],
+   "requested": [
+    "tvN"
+   ],
+   "matchedChannel": "tvN",
+   "matchScore": 100,
+   "status": "tidak ada stream",
+   "detail": "",
+   "domain": "",
+   "quality": null,
+   "geoLabel": false,
+   "alternatives": [
+    {
+     "id": "tvNShow.kr",
+     "name": "tvN Show",
+     "country": "KR"
+    },
+    {
+     "id": "tvNDrama.kr",
+     "name": "tvN Drama",
+     "country": "KR"
+    },
+    {
+     "id": "tvNStory.kr",
+     "name": "tvN Story",
+     "country": "KR"
+    },
+    {
+     "id": "tvNSports.kr",
+     "name": "tvN Sports",
+     "country": "KR"
+    }
+   ]
+  }
+ ],
+ "notFound": [
+  {
+   "requested": "MNCTV",
+   "groups": [
+    "MNC"
+   ],
+   "country": "ID",
+   "onlyRejected": [
+    {
+     "name": "MNCTV",
+     "why": "blocklist (dmca)"
+    },
+    {
+     "name": "MNC News",
+     "why": "channel ditutup"
+    }
+   ]
+  },
+  {
+   "requested": "MNC News",
+   "groups": [
+    "MNC"
+   ],
+   "country": "ID",
+   "onlyRejected": [
+    {
+     "name": "MNC News",
+     "why": "channel ditutup"
+    }
+   ]
+  },
+  {
+   "requested": "MNC Sports",
+   "groups": [
+    "MNC"
+   ],
+   "country": "ID",
+   "onlyRejected": [
+    {
+     "name": "MNC Sports",
+     "why": "channel ditutup"
+    },
+    {
+     "name": "MNC Sports 1",
+     "why": "channel ditutup"
+    }
+   ]
+  },
+  {
+   "requested": "NASA TV",
+   "groups": [
+    "Dokumenter"
+   ],
+   "country": null,
+   "onlyRejected": [
+    {
+     "name": "NASA TV",
+     "why": "channel ditutup"
+    },
+    {
+     "name": "NASA TV UHD",
+     "why": "channel ditutup"
+    }
+   ]
+  }
+ ]
+}
