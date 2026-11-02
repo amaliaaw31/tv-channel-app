@@ -35,4 +35,5 @@ Daftar channel per negara/kategori, player, favorit. EPG menyusul.
 ## Dokumen
 - `docs/ui-spec.md`: layout, preview, navigasi remote, penanganan error.
 - `docs/channels-schema.md`: skema `channels.json` + contoh.
+- `docs/sources.md`: sumber data (iptv-org), aturan filter, cara menjalankan `tools/build-channels`, batasan legal. `data/channels.json` dihasilkan skrip, jangan diedit manual.
 - Aturan: setiap keputusan desain baru (UI, navigasi, error, skema) wajib diperbarui di docs/ pada commit yang sama dengan perubahan kodenya.
