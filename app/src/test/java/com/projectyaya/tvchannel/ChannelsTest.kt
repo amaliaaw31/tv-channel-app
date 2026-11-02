@@ -49,6 +49,31 @@ class ChannelsTest {
         assertEquals(5, skipped.size)
     }
 
+    private fun channel(id: String, name: String, category: String) =
+        Channel(id, name, "ID", category, null, "https://x/$id.m3u8", emptyMap())
+
+    @Test
+    fun filtersByCategoryAndNameQuery() {
+        val all = listOf(
+            channel("1", "CNN International", "news"),
+            channel("2", "Sport 24", "sports"),
+            channel("3", "News Sport", "news"),
+        )
+        assertEquals(listOf("1", "2", "3"), filterChannels(all, null, "").map { it.id })
+        assertEquals(listOf("1", "3"), filterChannels(all, "news", "  ").map { it.id })
+        assertEquals(listOf("2", "3"), filterChannels(all, null, "SPORT").map { it.id })
+        assertEquals(listOf("3"), filterChannels(all, "news", " sport ").map { it.id })
+        assertEquals(emptyList<String>(), filterChannels(all, "sports", "cnn").map { it.id })
+    }
+
+    @Test
+    fun categoriesFollowTabOrderWithUnknownLast() {
+        val all = listOf("movies", "zeta", "sports", "alpha", "news", "sports").map { channel(it + "-id", it, it) }
+        assertEquals(listOf("sports", "news", "movies", "alpha", "zeta"), categoriesOf(all))
+        assertEquals("Olahraga", categoryLabel("sports"))
+        assertEquals("Alpha", categoryLabel("alpha"))
+    }
+
     @Test
     fun remoteWinsAndIsHandedToTheCache() {
         var cached: String? = null

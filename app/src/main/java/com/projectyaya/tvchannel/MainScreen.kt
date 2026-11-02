@@ -10,6 +10,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,8 +84,12 @@ private const val PREVIEW_DEBOUNCE_MS = 700L
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MainScreen(channels: List<Channel>, controller: PlayerController) {
-    val groups = remember(channels) { groupByCountry(channels) }
-    val firstId = groups.first().channels.first().id
+    val categories = remember(channels) { categoriesOf(channels) }
+    var category by remember { mutableStateOf<String?>(null) }
+    var query by remember { mutableStateOf("") }
+    val visible = remember(channels, category, query) { filterChannels(channels, category, query) }
+    val groups = remember(visible) { groupByCountry(visible) }
+    val firstId = groups.firstOrNull()?.channels?.firstOrNull()?.id
     val requesters = remember { HashMap<String, FocusRequester>() }
     val fullscreenFocus = remember { FocusRequester() }
     var focusedId by remember { mutableStateOf<String?>(null) }
@@ -104,11 +121,17 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
         controller.ensure(channel)
     }
 
-    // Fullscreen takes D-pad focus; on exit focus returns to the last focused channel (first one at startup).
+    // Fullscreen takes D-pad focus; on exit focus returns to the last focused channel if the filter
+    // still shows it, else the first visible one (also the startup case).
     LaunchedEffect(fullscreen) {
         repeat(2) { withFrameNanos { } } // let lazy items compose before asking for focus
         runCatching {
-            if (fullscreen) fullscreenFocus.requestFocus() else requesters[focusedId ?: firstId]?.requestFocus()
+            if (fullscreen) {
+                fullscreenFocus.requestFocus()
+            } else {
+                val target = focusedId?.takeIf { id -> visible.any { it.id == id } } ?: firstId
+                target?.let { requesters[it] }?.requestFocus()
+            }
         }
     }
 
@@ -124,34 +147,18 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
                 Spacer(Modifier.height(16.dp))
                 focused?.let { ChannelInfo(it) }
             }
-            LazyColumn(
-                Modifier.weight(0.42f).fillMaxHeight(),
-                contentPadding = PaddingValues(start = 24.dp, end = 48.dp, top = 27.dp, bottom = 27.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                groups.forEach { group ->
-                    item(key = "header-${group.code}") {
-                        Text(
-                            group.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
-                        )
-                    }
-                    items(group.channels, key = { it.id }) { channel ->
-                        // The highlight turns yellow/red when this channel is the loaded one and has failed.
-                        val failed = controller.status.takeIf { controller.loadedId == channel.id } as? PlaybackStatus.Failed
-                        ChannelRow(
-                            channel,
-                            // Disabled while fullscreen so D-pad keys cannot move focus under the video.
-                            enabled = !fullscreen,
-                            tint = failed?.let { describeError(it.errorCode, it.httpStatus).severity.color() }
-                                ?: MaterialTheme.colorScheme.primary,
-                            requester = requesters.getOrPut(channel.id) { FocusRequester() },
-                            onFocus = { focusedId = channel.id },
-                            onOk = { onOk(channel) },
-                        )
-                    }
+            Column(Modifier.weight(0.42f).fillMaxHeight().padding(start = 24.dp, end = 48.dp, top = 27.dp)) {
+                // Disabled while fullscreen so D-pad keys cannot move focus under the video.
+                SearchField(query, onChange = { query = it }, enabled = !fullscreen)
+                CategoryTabs(categories, selected = category, onSelect = { category = it }, enabled = !fullscreen)
+                if (groups.isEmpty()) {
+                    Text(
+                        "Tidak ada channel yang cocok.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(16.dp),
+                    )
+                } else {
+                    ChannelList(groups, controller, enabled = !fullscreen, requesters, onFocus = { focusedId = it.id }, onOk = ::onOk)
                 }
             }
         }
@@ -186,6 +193,117 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
                 onRetry = controller::retry,
                 onBack = ::exitFullscreen,
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun SearchField(query: String, onChange: (String) -> Unit, enabled: Boolean) {
+    val keyboard = LocalSoftwareKeyboardController.current
+    val accent = MaterialTheme.colorScheme.primary
+    var focused by remember { mutableStateOf(false) }
+    val shape = RoundedCornerShape(8.dp)
+    BasicTextField(
+        value = query,
+        onValueChange = onChange,
+        enabled = enabled,
+        singleLine = true,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+        cursorBrush = SolidColor(Color.White),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focused = it.isFocused }
+            // A D-pad focus alone does not always open the on-screen keyboard; OK does.
+            .onKeyEvent { e ->
+                val ok = e.key == Key.DirectionCenter || e.key == Key.Enter || e.key == Key.NumPadEnter
+                if (ok && e.type == KeyEventType.KeyUp) keyboard?.show()
+                ok
+            }
+            .background(if (focused) accent.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.08f), shape)
+            .border(if (focused) 3.dp else 1.dp, if (focused) accent else Color.White.copy(alpha = 0.2f), shape)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        decorationBox = { inner ->
+            Box {
+                if (query.isEmpty()) Text("Cari channel…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                inner()
+            }
+        },
+    )
+}
+
+/** Selection follows focus, like Android TV tab rows: moving onto a tab filters immediately. */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun CategoryTabs(categories: List<String>, selected: String?, onSelect: (String?) -> Unit, enabled: Boolean) {
+    val tabs = listOf<String?>(null) + categories
+    val accent = MaterialTheme.colorScheme.primary
+    val shape = RoundedCornerShape(50)
+    LazyRow(contentPadding = PaddingValues(vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(tabs, key = { it ?: "all" }) { id ->
+            Surface(
+                onClick = { onSelect(id) },
+                enabled = enabled,
+                modifier = Modifier.onFocusChanged { if (it.hasFocus) onSelect(id) },
+                shape = ClickableSurfaceDefaults.shape(shape),
+                colors = ClickableSurfaceDefaults.colors(
+                    containerColor = if (id == selected) accent.copy(alpha = 0.35f) else Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    focusedContainerColor = accent.copy(alpha = 0.55f),
+                    focusedContentColor = Color.White,
+                ),
+                scale = ClickableSurfaceDefaults.scale(focusedScale = 1f),
+                border = ClickableSurfaceDefaults.border(focusedBorder = Border(BorderStroke(3.dp, accent), shape = shape)),
+            ) {
+                Text(
+                    if (id == null) "Semua" else categoryLabel(id),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun ChannelList(
+    groups: List<CountryGroup>,
+    controller: PlayerController,
+    enabled: Boolean,
+    requesters: MutableMap<String, FocusRequester>,
+    onFocus: (Channel) -> Unit,
+    onOk: (Channel) -> Unit,
+) {
+    LazyColumn(
+        Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 27.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        groups.forEach { group ->
+            item(key = "header-${group.code}") {
+                Text(
+                    group.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
+                )
+            }
+            items(group.channels, key = { it.id }) { channel ->
+                // The highlight turns yellow/red when this channel is the loaded one and has failed.
+                val failed = controller.status.takeIf { controller.loadedId == channel.id } as? PlaybackStatus.Failed
+                ChannelRow(
+                    channel,
+                    enabled = enabled,
+                    tint = failed?.let { describeError(it.errorCode, it.httpStatus).severity.color() }
+                        ?: MaterialTheme.colorScheme.primary,
+                    requester = requesters.getOrPut(channel.id) { FocusRequester() },
+                    onFocus = { onFocus(channel) },
+                    onOk = { onOk(channel) },
+                )
+            }
         }
     }
 }

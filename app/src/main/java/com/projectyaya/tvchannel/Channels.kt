@@ -1,6 +1,7 @@
 package com.projectyaya.tvchannel
 
 import android.content.Context
+import android.os.SystemClock
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
@@ -76,6 +77,34 @@ fun groupByCountry(channels: List<Channel>): List<CountryGroup> =
         .map { (code, list) -> CountryGroup(code, countryName(code), list) }
         .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
 
+/** Channels in [category] (null = all) whose name contains [query] (trimmed, case-insensitive). */
+fun filterChannels(channels: List<Channel>, category: String?, query: String): List<Channel> {
+    val q = query.trim()
+    return channels.filter {
+        (category == null || it.category == category) && (q.isEmpty() || it.name.contains(q, ignoreCase = true))
+    }
+}
+
+// Tab order and labels for the categories build-channels can produce; unknown ones go last, by id.
+private val CATEGORY_LABELS = linkedMapOf(
+    "sports" to "Olahraga",
+    "documentary" to "Dokumenter",
+    "science" to "Sains",
+    "news" to "Berita",
+    "travel" to "Wisata",
+    "kids" to "Anak",
+    "movies" to "Film",
+)
+
+fun categoryLabel(id: String): String = CATEGORY_LABELS[id] ?: id.replaceFirstChar { it.uppercase() }
+
+/** Distinct categories present in [channels], in tab order. */
+fun categoriesOf(channels: List<Channel>): List<String> {
+    val order = CATEGORY_LABELS.keys.toList()
+    return channels.map { it.category }.distinct()
+        .sortedWith(compareBy({ order.indexOf(it).takeIf { i -> i >= 0 } ?: Int.MAX_VALUE }, { it }))
+}
+
 enum class Source { Remote, Cache, Bundled }
 
 class Loaded(val channels: List<Channel>, val source: Source)
@@ -108,8 +137,16 @@ private const val TAG = "Channels"
 /** Blocking; call off the main thread. Order: GitHub raw URL (refreshes the cache) -> cache -> bundled assets. */
 fun loadChannels(context: Context): List<Channel> {
     val cacheFile = File(context.filesDir, "channels-cache.json")
+    val start = SystemClock.elapsedRealtime()
     val loaded = pickChannels(
-        remote = ::download,
+        remote = {
+            try {
+                download().also { Log.i(TAG, "remote: ${it.length / 1024} KB in ${SystemClock.elapsedRealtime() - start} ms") }
+            } catch (e: Exception) {
+                Log.w(TAG, "remote failed after ${SystemClock.elapsedRealtime() - start} ms: $e")
+                throw e
+            }
+        },
         cache = { cacheFile.readText() },
         bundled = { context.assets.open("channels.json").bufferedReader().use { it.readText() } },
         onSkip = { Log.w(TAG, "skipped: $it") },
@@ -122,7 +159,7 @@ fun loadChannels(context: Context): List<Channel> {
             }.onFailure { Log.w(TAG, "cache write failed: $it") }
         },
     )
-    Log.i(TAG, "loaded ${loaded.channels.size} channels from ${loaded.source}")
+    Log.i(TAG, "loaded ${loaded.channels.size} channels from ${loaded.source} in ${SystemClock.elapsedRealtime() - start} ms")
     return loaded.channels
 }
 
