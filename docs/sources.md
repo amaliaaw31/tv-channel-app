@@ -37,6 +37,13 @@ Hasil tes dari VPS bisa berbeda dengan dari TV (wilayah dan decoder), jadi statu
 
 Keputusan tier ditentukan pemilik proyek per channel (daftar id di `tiers.json`). Aturan otomatis: entri berkelompok `TVRI Daerah` selalu Tier A. Hasil terakhir (2026-11-02): **57 channel di app (A=46, B=11)**, 64 di `excluded.json`.
 
+### Hasil cek di TV (2026-11-02)
+
+Dijalankan dengan `AuditActivity` di TV SWTV_24AE_FHD (Indonesia), 57 channel, batas 25 detik per channel:
+
+- **Tier A: 46 dari 46 hidup** (termasuk 30 TVRI Daerah).
+- **Tier B: 7 hidup** (Cartoonito, CNA, CNN International, Euronews English, NBC News NOW, NHK World-Japan, TVRI Sport). **Olympic Channel**: "Dibatasi wilayah" (403 dari TV juga). **RCTI, GTV, Indosiar**: timeout 25 detik; sumbernya IP mentah `202.150.172.59` (http) tidak terjangkau dari TV, jadi bukan soal pembatasan wilayah. Tier tidak diubah otomatis; keputusan di pemilik proyek.
+
 ### Domain sumber yang dianggap resmi
 
 Penilaian dari **nama domain**; belum diverifikasi ke pemilik channel kecuali disebut.

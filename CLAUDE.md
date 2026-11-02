@@ -16,7 +16,7 @@ Aplikasi Android TV pribadi untuk menonton channel nasional & internasional. Tid
 - Daftar channel: `data/channels.json` (URL raw GitHub, lalu cache lokal, lalu salinan yang ikut di APK; lihat docs/channels-schema.md)
 
 ## MVP
-Daftar channel per negara/kategori, player, favorit. EPG menyusul.
+Daftar channel per grup/negara dengan filter kategori dan pencarian, player, favorit. EPG menyusul.
 
 ## Aturan
 - Beri perintah shell lengkap & file utuh, output ringkas (layar HP).
@@ -24,6 +24,11 @@ Daftar channel per negara/kategori, player, favorit. EPG menyusul.
 - Tangani error stream (timeout, 403/geo-block) dengan baik.
 - Hanya gunakan stream resmi/legal.
 - Jawab dalam Bahasa Indonesia, kode & komentar dalam bahasa Inggris.
+
+## Channel (kurasi)
+- **Hanya Tier A dan B yang masuk app** (`data/channels.json`). Tier C (IP mentah, agregator, tanpa stream, mati, tidak dipilih) hanya ada di `data/excluded.json` dan tidak boleh masuk app.
+- **Channel baru wajib cek domain sumber** (kolom Domain di `python3 tools/build-channels/curate.py --report`): IP mentah atau agregator berarti Tier C; domain milik stasiun, grup medianya, atau mitra distribusi resmi boleh Tier A; ragu berarti Tier B (label "perlu dicek di TV"). Catat domain barunya di `docs/sources.md`.
+- Jangan edit `data/channels.json` / `data/excluded.json` manual. Ubah `tools/build-channels/curated_wanted.json` atau `tiers.json`, lalu jalankan `curate.py` dan `finalize.py` (urutannya di `docs/sources.md`).
 
 ## Git & GitHub
 - Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik.
@@ -33,7 +38,7 @@ Daftar channel per negara/kategori, player, favorit. EPG menyusul.
 - Push hanya atas permintaan user.
 
 ## Dokumen
-- `docs/ui-spec.md`: layout, preview, navigasi remote, penanganan error.
-- `docs/channels-schema.md`: skema `channels.json` + contoh.
-- `docs/sources.md`: sumber data (iptv-org), aturan filter, cara menjalankan `tools/build-channels`, batasan legal. `data/channels.json` dihasilkan skrip, jangan diedit manual.
+- `docs/ui-spec.md`: layout, daftar berbagian (grup/negara), tab kategori, pencarian, preview, navigasi remote, penanganan error, kinerja start.
+- `docs/channels-schema.md`: skema `channels.json` (termasuk `groups`, `note`, `tier`), pemuatan remote/cache/bundled, contoh.
+- `docs/sources.md`: alur kurasi (iptv-org), definisi Tier A/B/C, domain yang dianggap resmi, cara menambah channel, cara menjalankan `tools/build-channels`, batasan legal.
 - Aturan: setiap keputusan desain baru (UI, navigasi, error, skema) wajib diperbarui di docs/ pada commit yang sama dengan perubahan kodenya.
