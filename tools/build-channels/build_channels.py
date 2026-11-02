@@ -25,6 +25,7 @@ API = "https://iptv-org.github.io/api/"
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 OUT = ROOT / "data" / "channels.json"
+EXCLUDE = HERE / "exclude.json"
 ISO2 = re.compile(r"^[A-Z]{2}$")
 COUNTRY_FIXES = {"UK": "GB"}  # iptv-org writes UK; ISO 3166-1 alpha-2 is GB
 PROBE_BYTES = 16384
@@ -129,6 +130,21 @@ def probe(candidate, streams, cfg):
 
 # ---- main -------------------------------------------------------------------
 
+def write_entries(path, entries):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # One channel per line keeps git diffs reviewable.
+    body = ",\n".join("  " + json.dumps(e, ensure_ascii=False) for e in entries)
+    path.write_text("[\n" + body + "\n]\n")
+
+
+def load_excluded():
+    """Ids in exclude.json (written by prune_audit.py): channels known not to work on the target TV."""
+    try:
+        return {e["id"] for e in json.loads(EXCLUDE.read_text())}
+    except (OSError, ValueError):
+        return set()
+
+
 def previous_count(path):
     try:
         return len(json.loads(path.read_text()))
@@ -166,7 +182,8 @@ def main():
         sys.exit(f"config.json: unknown categories {unknown}; valid: {sorted(known)}")
     logos = pick_logos(fetch_json("logos"))
 
-    candidates = select_channels(channels, {b["channel"] for b in blocklist}, cfg["categories"])
+    excluded = load_excluded()
+    candidates = select_channels(channels, {b["channel"] for b in blocklist} | excluded, cfg["categories"])
     by_channel = {}
     for s in streams:
         if s.get("channel"):
@@ -174,7 +191,7 @@ def main():
     candidates = [c for c in candidates if c["id"] in by_channel]
     if args.limit:
         candidates = candidates[: args.limit]
-    print(f"candidates: {len(candidates)} channels with streams (blocklist={len(blocklist)})")
+    print(f"candidates: {len(candidates)} channels with streams (blocklist={len(blocklist)}, excluded={len(excluded)})")
 
     with ThreadPoolExecutor(cfg["workers"]) as pool:
         results = list(pool.map(lambda c: probe(c, by_channel[c["id"]], cfg), candidates))
@@ -187,10 +204,7 @@ def main():
         sys.exit(f"refusing to write: {len(entries)} channels is below the safety floor {floor} "
                  "(network problem on this machine?). Use --force to override.")
 
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    # One channel per line keeps git diffs reviewable.
-    body = ",\n".join("  " + json.dumps(e, ensure_ascii=False) for e in entries)
-    args.out.write_text("[\n" + body + "\n]\n")
+    write_entries(args.out, entries)
     print(f"wrote {args.out} ({args.out.stat().st_size // 1024} KB)")
     if args.publish:
         publish(len(entries))
