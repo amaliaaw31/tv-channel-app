@@ -24,7 +24,7 @@ Daftar channel per negara/kategori, player, favorit. EPG menyusul.
 
 ## Git & GitHub
 - Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik.
-- Branch lokal `master` ↔ remote `main` (push dengan `git push origin master:main`).
+- Branch utama `main` (lokal dan remote sama namanya); push dengan `git push`.
 - Remote `origin` memakai alias SSH `github-tvchannel` (key khusus repo ini `~/.ssh/id_ed25519_tvchannel`). Jangan pakai key lain di `~/.ssh`, itu milik proyek lain.
 - Email commit wajib `113813839+amaliaaw31@users.noreply.github.com` (sudah di `git config --local`). Email pribadi ditolak GitHub (GH007) dan tidak boleh masuk history.
 - Push hanya atas permintaan user.
