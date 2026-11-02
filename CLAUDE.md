@@ -6,6 +6,9 @@ Aplikasi Android TV pribadi untuk menonton channel nasional & internasional. Tid
 - User coding dari HP via Termius ke VPS Ubuntu (tanpa GUI).
 - Tidak ada Android Studio/emulator. Build via Gradle CLI.
 - Deploy ke TV via adb lewat Tailscale; cadangan: GitHub Release + app Downloader di TV.
+- TV: `swtv-24ae-fhd` (model SWTV_24AE_FHD, Android SDK 34), adb di **`100.108.220.15:5555`** (IP Tailscale). VPS: `100.82.45.9`.
+- Deploy: `adb connect 100.108.220.15:5555`, lalu `adb -s 100.108.220.15:5555 install -r app/build/outputs/apk/debug/app-debug.apk`, lalu `adb -s 100.108.220.15:5555 shell am start -n com.projectyaya.tvchannel/.MainActivity`. Lihat layar TV: `adb -s 100.108.220.15:5555 exec-out screencap -p > tv.png`.
+- Jika IP berubah atau adb `unauthorized`/offline: cek `tailscale status` dan aktifkan lagi Network debugging di TV.
 
 ## Stack
 - Kotlin + Jetpack Compose for TV (androidx.tv)
