@@ -39,6 +39,9 @@ class PlayerController(context: Context) {
     var loadedId: String? by mutableStateOf(null)
         private set
 
+    private var fullscreen = false
+    private var autoReconnects = 0
+
     init {
         player.volume = 0f // preview starts muted
         player.playWhenReady = true
@@ -53,13 +56,22 @@ class PlayerController(context: Context) {
                 val httpStatus = generateSequence<Throwable>(e) { it.cause }
                     .filterIsInstance<HttpDataSource.InvalidResponseCodeException>()
                     .firstOrNull()?.responseCode
+                if (fullscreen && autoReconnects < 1) {
+                    // Fullscreen dropped: silently reconnect once before telling the user.
+                    autoReconnects++
+                    retry(resetCounter = false)
+                    return
+                }
                 status = PlaybackStatus.Failed(e.errorCode, httpStatus)
             }
 
             override fun onPlaybackStateChanged(state: Int) {
                 when (state) {
                     Player.STATE_BUFFERING -> status = PlaybackStatus.Loading
-                    Player.STATE_READY -> status = PlaybackStatus.Playing
+                    Player.STATE_READY -> {
+                        autoReconnects = 0 // a working stream earns a fresh reconnect attempt
+                        status = PlaybackStatus.Playing
+                    }
                 }
             }
         })
@@ -86,10 +98,21 @@ class PlayerController(context: Context) {
         player.setMediaItem(MediaItem.fromUri(channel.streamUrl))
         player.prepare()
         loadedId = channel.id
+        autoReconnects = 0
         status = PlaybackStatus.Loading
     }
 
+    /** Re-prepares the loaded stream at the live edge (user-triggered "Coba lagi" or the automatic reconnect). */
+    fun retry(resetCounter: Boolean = true) {
+        if (resetCounter) autoReconnects = 0
+        status = PlaybackStatus.Loading
+        player.seekToDefaultPosition()
+        player.prepare()
+    }
+
     fun setFullscreen(on: Boolean) {
+        fullscreen = on
+        autoReconnects = 0
         player.volume = if (on) 1f else 0f
     }
 

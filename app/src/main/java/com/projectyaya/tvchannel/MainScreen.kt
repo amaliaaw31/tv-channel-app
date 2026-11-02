@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
 import androidx.tv.material3.Border
+import androidx.tv.material3.Button
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -85,6 +86,11 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
     }
 
     fun onOk(channel: Channel) {
+        // A failed channel is not worth a fullscreen: reload it in the preview instead.
+        if (controller.loadedId == channel.id && controller.status is PlaybackStatus.Failed) {
+            controller.start(channel)
+            return
+        }
         controller.ensure(channel)
         controller.setFullscreen(true)
         fullscreen = true
@@ -133,9 +139,14 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
                         )
                     }
                     items(group.channels, key = { it.id }) { channel ->
+                        // The highlight turns yellow/red when this channel is the loaded one and has failed.
+                        val failed = controller.status.takeIf { controller.loadedId == channel.id } as? PlaybackStatus.Failed
                         ChannelRow(
                             channel,
-                            tint = MaterialTheme.colorScheme.primary,
+                            // Disabled while fullscreen so D-pad keys cannot move focus under the video.
+                            enabled = !fullscreen,
+                            tint = failed?.let { describeError(it.errorCode, it.httpStatus).severity.color() }
+                                ?: MaterialTheme.colorScheme.primary,
                             requester = requesters.getOrPut(channel.id) { FocusRequester() },
                             onFocus = { focusedId = channel.id },
                             onOk = { onOk(channel) },
@@ -169,7 +180,12 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
                     }
                 },
             )
-            StatusOverlay(controller.status)
+            StatusOverlay(
+                status = controller.status,
+                fullscreen = fullscreen,
+                onRetry = controller::retry,
+                onBack = ::exitFullscreen,
+            )
         }
     }
 }
@@ -191,6 +207,7 @@ private fun ChannelInfo(channel: Channel) {
 @Composable
 private fun ChannelRow(
     channel: Channel,
+    enabled: Boolean,
     tint: Color,
     requester: FocusRequester,
     onFocus: () -> Unit,
@@ -199,6 +216,7 @@ private fun ChannelRow(
     val shape = RoundedCornerShape(8.dp)
     Surface(
         onClick = onOk,
+        enabled = enabled,
         modifier = Modifier.fillMaxWidth().focusRequester(requester).onFocusChanged { if (it.hasFocus) onFocus() },
         shape = ClickableSurfaceDefaults.shape(shape),
         colors = ClickableSurfaceDefaults.colors(
@@ -221,7 +239,7 @@ private fun ChannelRow(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun StatusOverlay(status: PlaybackStatus) {
+private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean, onRetry: () -> Unit, onBack: () -> Unit) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when (status) {
             PlaybackStatus.Loading -> Column(
@@ -231,15 +249,55 @@ private fun StatusOverlay(status: PlaybackStatus) {
                 Spinner(Color.White)
                 Text("Memuat…")
             }
-            is PlaybackStatus.Failed -> Text(
-                streamErrorMessage(status.errorCode, status.httpStatus),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(24.dp),
-            )
+            is PlaybackStatus.Failed -> {
+                val info = describeError(status.errorCode, status.httpStatus)
+                if (fullscreen) DroppedBroadcast(info, onRetry, onBack) else PreviewError(info)
+            }
             PlaybackStatus.Playing -> Unit
         }
     }
 }
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun PreviewError(info: ErrorInfo) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(16.dp),
+    ) {
+        Text(info.title, style = MaterialTheme.typography.titleMedium, color = info.severity.color(), textAlign = TextAlign.Center)
+        info.code?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        Text("Tekan OK untuk coba lagi", style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+/** Shown only after the automatic reconnect also failed. */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun DroppedBroadcast(info: ErrorInfo, onRetry: () -> Unit, onBack: () -> Unit) {
+    val retryFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        withFrameNanos { }
+        runCatching { retryFocus.requestFocus() }
+    }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(48.dp),
+    ) {
+        Text("Siaran terputus", style = MaterialTheme.typography.headlineMedium)
+        Text(info.title, color = info.severity.color(), textAlign = TextAlign.Center)
+        info.code?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Button(onClick = onRetry, modifier = Modifier.focusRequester(retryFocus)) { Text("Coba lagi") }
+            Button(onClick = onBack) { Text("Kembali") }
+        }
+    }
+}
+
+private fun Severity.color() = if (this == Severity.Warning) Color(0xFFFFD54F) else Color(0xFFFF6B6B)
 
 @Composable
 private fun Spinner(color: Color) {
