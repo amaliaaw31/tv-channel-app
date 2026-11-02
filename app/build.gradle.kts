@@ -43,4 +43,8 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-hls:$media3")
     implementation("androidx.media3:media3-exoplayer-dash:$media3")
     implementation("androidx.media3:media3-ui:$media3")
+
+    // Android's org.json is a stub in JVM unit tests, so tests need the real library.
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20260814")
 }
