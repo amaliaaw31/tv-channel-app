@@ -4,6 +4,9 @@ import android.content.Context
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.Locale
 
 data class Channel(
@@ -73,8 +76,67 @@ fun groupByCountry(channels: List<Channel>): List<CountryGroup> =
         .map { (code, list) -> CountryGroup(code, countryName(code), list) }
         .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
 
-/** Blocking read from local assets; call off the main thread. Swap for the raw GitHub URL later. */
+enum class Source { Remote, Cache, Bundled }
+
+class Loaded(val channels: List<Channel>, val source: Source)
+
+/**
+ * Picks the first usable source in order remote -> cache -> bundled. A source is usable when it
+ * parses to at least one channel, so a broken download never replaces a good cache.
+ * [onRemoteOk] receives the accepted remote text (to persist it as the new cache).
+ */
+fun pickChannels(
+    remote: () -> String,
+    cache: () -> String,
+    bundled: () -> String,
+    onSkip: (String) -> Unit = {},
+    onRemoteOk: (String) -> Unit = {},
+): Loaded {
+    fun attempt(read: () -> String): Pair<String, List<Channel>>? =
+        runCatching { read().let { it to parseChannels(it, onSkip) } }.getOrNull()?.takeIf { it.second.isNotEmpty() }
+
+    attempt(remote)?.let { (text, list) ->
+        onRemoteOk(text)
+        return Loaded(list, Source.Remote)
+    }
+    attempt(cache)?.let { return Loaded(it.second, Source.Cache) }
+    return Loaded(parseChannels(bundled(), onSkip), Source.Bundled) // throws only if even the bundled copy is broken
+}
+
+private const val TAG = "Channels"
+
+/** Blocking; call off the main thread. Order: GitHub raw URL (refreshes the cache) -> cache -> bundled assets. */
 fun loadChannels(context: Context): List<Channel> {
-    val json = context.assets.open("channels.json").bufferedReader().use { it.readText() }
-    return parseChannels(json) { Log.w("Channels", "skipped: $it") }
+    val cacheFile = File(context.filesDir, "channels-cache.json")
+    val loaded = pickChannels(
+        remote = ::download,
+        cache = { cacheFile.readText() },
+        bundled = { context.assets.open("channels.json").bufferedReader().use { it.readText() } },
+        onSkip = { Log.w(TAG, "skipped: $it") },
+        onRemoteOk = { text ->
+            // Write to a temp file and rename so a crash mid-write cannot leave a half-written cache.
+            runCatching {
+                val tmp = File(cacheFile.path + ".tmp")
+                tmp.writeText(text)
+                tmp.renameTo(cacheFile)
+            }.onFailure { Log.w(TAG, "cache write failed: $it") }
+        },
+    )
+    Log.i(TAG, "loaded ${loaded.channels.size} channels from ${loaded.source}")
+    return loaded.channels
+}
+
+// shortcut: no ETag/If-Modified-Since, the whole file is re-downloaded on every start; add when it gets too big.
+private fun download(): String {
+    val conn = URL(BuildConfig.CHANNELS_URL).openConnection() as HttpURLConnection
+    try {
+        conn.connectTimeout = 5_000
+        conn.readTimeout = 10_000
+        // A private repo's raw URL needs a token; see docs/channels-schema.md.
+        if (BuildConfig.CHANNELS_TOKEN.isNotEmpty()) conn.setRequestProperty("Authorization", "token ${BuildConfig.CHANNELS_TOKEN}")
+        check(conn.responseCode == 200) { "HTTP ${conn.responseCode}" }
+        return conn.inputStream.bufferedReader().use { it.readText() }
+    } finally {
+        conn.disconnect()
+    }
 }

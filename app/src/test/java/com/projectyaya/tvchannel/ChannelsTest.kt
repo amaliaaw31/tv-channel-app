@@ -7,19 +7,23 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ChannelsTest {
-    // Unit tests run with the module dir (app/) as working directory.
+    // Unit tests run with the module dir (app/) as working directory; data/ is the bundled channel list.
+    private fun bundledJson() = File("../data/channels.json").readText()
+
+    private fun one(id: String) =
+        """[{"id":"$id","name":"$id","country":"ID","category":"news","streamUrl":"https://x/$id.m3u8"}]"""
+
     @Test
     fun bundledChannelsJsonIsFullyValid() {
         val skipped = mutableListOf<String>()
-        val list = parseChannels(File("src/main/assets/channels.json").readText()) { skipped += it }
+        val list = parseChannels(bundledJson()) { skipped += it }
         assertEquals(emptyList<String>(), skipped)
-        assertTrue(list.size in 3..5)
-        assertTrue(list.any { it.headers.isNotEmpty() })
+        assertTrue(list.isNotEmpty())
     }
 
     @Test
     fun groupsAreSortedByCountryNameAndKeepEveryChannel() {
-        val list = parseChannels(File("src/main/assets/channels.json").readText())
+        val list = parseChannels(bundledJson())
         val groups = groupByCountry(list)
         val names = groups.map { it.name }
         assertEquals(names.sortedWith(String.CASE_INSENSITIVE_ORDER), names)
@@ -43,5 +47,37 @@ class ChannelsTest {
         assertEquals(mapOf("Referer" to "https://r/"), list[0].headers)
         assertNull(list[0].logo)
         assertEquals(5, skipped.size)
+    }
+
+    @Test
+    fun remoteWinsAndIsHandedToTheCache() {
+        var cached: String? = null
+        val loaded = pickChannels({ one("remote") }, { one("cache") }, { one("bundled") }, onRemoteOk = { cached = it })
+        assertEquals(Source.Remote, loaded.source)
+        assertEquals("remote", loaded.channels.single().id)
+        assertEquals(one("remote"), cached)
+    }
+
+    @Test
+    fun brokenRemoteFallsBackToCacheWithoutOverwritingIt() {
+        var cacheWrites = 0
+        val failures = listOf<() -> String>(
+            { error("HTTP 404") },                                 // network/HTTP failure
+            { "<html>not json</html>" },                           // garbage body
+            { "[]" },                                              // parses but empty
+            { """[{"id":"x"}]""" },                                // only invalid entries
+        )
+        for (remote in failures) {
+            val loaded = pickChannels(remote, { one("cache") }, { one("bundled") }, onRemoteOk = { cacheWrites++ })
+            assertEquals(Source.Cache, loaded.source)
+        }
+        assertEquals(0, cacheWrites)
+    }
+
+    @Test
+    fun fallsBackToBundledWhenRemoteAndCacheAreUnusable() {
+        val loaded = pickChannels({ error("offline") }, { throw java.io.FileNotFoundException() }, { one("bundled") })
+        assertEquals(Source.Bundled, loaded.source)
+        assertEquals("bundled", loaded.channels.single().id)
     }
 }

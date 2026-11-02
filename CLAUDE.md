@@ -13,7 +13,7 @@ Aplikasi Android TV pribadi untuk menonton channel nasional & internasional. Tid
 ## Stack
 - Kotlin + Jetpack Compose for TV (androidx.tv)
 - Media3 ExoPlayer (HLS/DASH)
-- Daftar channel: channels.json (dibaca dari URL raw GitHub)
+- Daftar channel: `data/channels.json` (URL raw GitHub, lalu cache lokal, lalu salinan yang ikut di APK; lihat docs/channels-schema.md)
 
 ## MVP
 Daftar channel per negara/kategori, player, favorit. EPG menyusul.

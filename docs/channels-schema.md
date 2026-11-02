@@ -1,7 +1,25 @@
 # Skema channels.json
 
-File: `app/src/main/assets/channels.json` (dibaca dari assets lokal; nanti dipindah ke URL raw GitHub).
-Kode acuan: `Channels.kt` (`parseChannels`, `groupByCountry`).
+File: `data/channels.json`, dihasilkan skrip `tools/build-channels` (lihat `sources.md`), bukan diedit manual.
+Kode acuan: `Channels.kt` (`parseChannels`, `pickChannels`, `loadChannels`, `groupByCountry`).
+
+## Pemuatan di app
+
+Urutan sumber saat app dibuka; sumber dipakai hanya jika terbaca minimal satu channel valid:
+
+1. **Remote**: `https://raw.githubusercontent.com/amaliaaw31/tv-channel-app/main/data/channels.json` (timeout sambung 5 dtk, baca 10 dtk). Jika berhasil, hasilnya menimpa cache.
+2. **Cache lokal**: `filesDir/channels-cache.json`. Ditulis lewat file sementara lalu rename, dan tidak pernah ditimpa oleh unduhan yang rusak atau kosong.
+3. **Bundled**: salinan `data/channels.json` yang ikut di APK (`assets/channels.json`) saat build.
+
+Splash ditahan sampai pemuatan selesai, jadi saat GitHub tidak terjangkau start bisa tertunda sampai ±5 detik.
+
+**Repo private butuh token.** Raw URL repo private mengembalikan 404 tanpa token, sehingga app memakai cache/bundled. Untuk mengaktifkan remote:
+
+1. GitHub → Settings → Developer settings → Fine-grained tokens: akses hanya repo `tv-channel-app`, izin *Contents: Read-only*.
+2. Di VPS, ketik sendiri (jangan ditempel ke chat): `echo 'channels.token=TOKEN_ANDA' >> ~/projectyaya/tv-channel-app/local.properties` (file ini ada di `.gitignore`).
+3. Build ulang dan install. Token ikut tertanam di APK (`BuildConfig.CHANNELS_TOKEN`), jadi cukup untuk app pribadi; cabut token kalau APK pernah bocor.
+
+Tanpa token, perubahan data baru sampai ke TV lewat build ulang (bundled).
 
 Isi file adalah **array JSON**, satu objek per channel.
 
@@ -55,4 +73,4 @@ Nilai string dipangkas spasi di tepi. Nilai `null` atau key yang tidak ada diang
 
 ## Isi saat ini
 
-Lima channel uji publik (nama diawali `[TEST]`). Kode negara dan kategori hanya variasi untuk menguji pengelompokan, bukan asal stream yang sebenarnya. Tes `ChannelsTest` memastikan file ini valid seluruhnya.
+Hasil skrip dari iptv-org (angka terbaru ada di `sources.md`). Contoh di atas diambil dari 5 channel uji lama (nama diawali `[TEST]`) yang sudah tidak ada di data. Tes `ChannelsTest` memastikan `data/channels.json` valid seluruhnya (tanpa entri yang dilewati) dan menguji urutan remote → cache → bundled.

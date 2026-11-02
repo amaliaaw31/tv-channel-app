@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
@@ -13,7 +15,21 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+
+        // Remote channel list. The token (optional, only for a private repo) comes from the
+        // git-ignored local.properties line `channels.token=...`, never from the repo.
+        val channelsToken = Properties().also { props ->
+            rootProject.file("local.properties").takeIf { it.exists() }?.reader()?.use(props::load)
+        }.getProperty("channels.token", "")
+        buildConfigField(
+            "String", "CHANNELS_URL",
+            "\"https://raw.githubusercontent.com/amaliaaw31/tv-channel-app/main/data/channels.json\"",
+        )
+        buildConfigField("String", "CHANNELS_TOKEN", "\"$channelsToken\"")
     }
+
+    // data/channels.json is the single source of truth; it is bundled as the offline fallback.
+    sourceSets.getByName("main").assets.srcDir(rootProject.file("data"))
 
     buildTypes {
         release {
@@ -28,6 +44,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
