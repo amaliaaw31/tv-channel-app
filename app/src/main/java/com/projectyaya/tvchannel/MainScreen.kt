@@ -88,11 +88,15 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
     var category by remember { mutableStateOf<String?>(null) }
     var query by remember { mutableStateOf("") }
     val visible = remember(channels, category, query) { filterChannels(channels, category, query) }
-    val groups = remember(visible) { groupByCountry(visible) }
-    val firstId = groups.firstOrNull()?.channels?.firstOrNull()?.id
+    val sections = remember(visible) { buildSections(visible) }
+    // A channel can sit in several sections (e.g. RCTI under Nasional and MNC), so rows are keyed by
+    // "<section key>/<channel id>"; the preview still follows the channel id alone.
+    val rowKeys = remember(sections) { sections.flatMap { s -> s.channels.map { rowKey(s, it) } }.toSet() }
+    val firstKey = sections.firstOrNull()?.let { s -> s.channels.firstOrNull()?.let { rowKey(s, it) } }
     val requesters = remember { HashMap<String, FocusRequester>() }
     val fullscreenFocus = remember { FocusRequester() }
     var focusedId by remember { mutableStateOf<String?>(null) }
+    var focusedKey by remember { mutableStateOf<String?>(null) }
     var fullscreen by remember { mutableStateOf(false) }
     var slot by remember { mutableStateOf<Rect?>(null) }
     val focused = channels.firstOrNull { it.id == focusedId }
@@ -129,7 +133,7 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
             if (fullscreen) {
                 fullscreenFocus.requestFocus()
             } else {
-                val target = focusedId?.takeIf { id -> visible.any { it.id == id } } ?: firstId
+                val target = focusedKey?.takeIf { it in rowKeys } ?: firstKey
                 target?.let { requesters[it] }?.requestFocus()
             }
         }
@@ -151,14 +155,21 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController) {
                 // Disabled while fullscreen so D-pad keys cannot move focus under the video.
                 SearchField(query, onChange = { query = it }, enabled = !fullscreen)
                 CategoryTabs(categories, selected = category, onSelect = { category = it }, enabled = !fullscreen)
-                if (groups.isEmpty()) {
+                if (sections.isEmpty()) {
                     Text(
                         "Tidak ada channel yang cocok.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(16.dp),
                     )
                 } else {
-                    ChannelList(groups, controller, enabled = !fullscreen, requesters, onFocus = { focusedId = it.id }, onOk = ::onOk)
+                    ChannelList(
+                        sections, controller, enabled = !fullscreen, requesters,
+                        onFocus = { key, channel ->
+                            focusedKey = key
+                            focusedId = channel.id
+                        },
+                        onOk = ::onOk,
+                    )
                 }
             }
         }
@@ -270,11 +281,11 @@ private fun CategoryTabs(categories: List<String>, selected: String?, onSelect: 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun ChannelList(
-    groups: List<CountryGroup>,
+    sections: List<Section>,
     controller: PlayerController,
     enabled: Boolean,
     requesters: MutableMap<String, FocusRequester>,
-    onFocus: (Channel) -> Unit,
+    onFocus: (rowKey: String, channel: Channel) -> Unit,
     onOk: (Channel) -> Unit,
 ) {
     LazyColumn(
@@ -282,16 +293,16 @@ private fun ChannelList(
         contentPadding = PaddingValues(bottom = 27.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        groups.forEach { group ->
-            item(key = "header-${group.code}") {
+        sections.forEach { section ->
+            item(key = "header-${section.key}") {
                 Text(
-                    group.name,
+                    section.title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp),
                 )
             }
-            items(group.channels, key = { it.id }) { channel ->
+            items(section.channels, key = { rowKey(section, it) }) { channel ->
                 // The highlight turns yellow/red when this channel is the loaded one and has failed.
                 val failed = controller.status.takeIf { controller.loadedId == channel.id } as? PlaybackStatus.Failed
                 ChannelRow(
@@ -299,14 +310,16 @@ private fun ChannelList(
                     enabled = enabled,
                     tint = failed?.let { describeError(it.errorCode, it.httpStatus).severity.color() }
                         ?: MaterialTheme.colorScheme.primary,
-                    requester = requesters.getOrPut(channel.id) { FocusRequester() },
-                    onFocus = { onFocus(channel) },
+                    requester = requesters.getOrPut(rowKey(section, channel)) { FocusRequester() },
+                    onFocus = { onFocus(rowKey(section, channel), channel) },
                     onOk = { onOk(channel) },
                 )
             }
         }
     }
 }
+
+private fun rowKey(section: Section, channel: Channel) = "${section.key}/${channel.id}"
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -318,8 +331,12 @@ private fun ChannelInfo(channel: Channel) {
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        channel.note?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = NOTE_COLOR) }
     }
 }
+
+// Same yellow as the "warning" error color, so a note reads as "not verified" rather than "broken".
+private val NOTE_COLOR = Color(0xFFFFD54F)
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -346,12 +363,14 @@ private fun ChannelRow(
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1f),
         border = ClickableSurfaceDefaults.border(focusedBorder = Border(BorderStroke(3.dp, tint), shape = shape)),
     ) {
-        Text(
-            channel.name,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-        )
+        Row(
+            Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(channel.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+            channel.note?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = NOTE_COLOR, maxLines = 1) }
+        }
     }
 }
 

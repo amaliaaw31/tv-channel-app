@@ -10,10 +10,14 @@ Satu layar dua kolom, tanpa navigasi antar-layar. Margin aman TV: 48 dp kiri/kan
 | Area | Lebar | Isi |
 |---|---|---|
 | Kiri | 58% | Preview 16:9, di bawahnya nama channel, lalu "Negara (KODE) · kategori" |
-| Kanan | 42% | Dari atas: kolom pencarian, baris tab kategori, daftar teks channel dikelompokkan per negara |
+| Kanan | 42% | Dari atas: kolom pencarian, baris tab kategori, daftar teks channel berbagian (grup, lalu negara) |
 
-- Daftar: header negara (nama Indonesia + kode, mis. "Indonesia (ID)"), diurutkan abjad menurut nama negara. Urutan channel dalam satu negara mengikuti urutan di `channels.json`.
-- Header negara tidak bisa difokus. Hanya baris channel yang bisa.
+- Daftar terdiri dari **bagian** (kode: `buildSections`), masing-masing dengan header:
+  1. **Bagian grup** dulu, dari field `groups` di data (mis. Nasional, MNC, Berita, Publik, TVRI Daerah, Daerah). Urutan tetap: Nasional, MNC, Berita, Publik, TVRI Daerah, Daerah; grup lain menyusul urut abjad. Channel di dalam grup diurutkan menurut nama.
+  2. **Bagian negara** setelahnya, untuk channel tanpa `groups`: header nama Indonesia + kode (mis. "Jerman (DE)"), diurutkan abjad menurut nama negara, channel mengikuti urutan di `channels.json`.
+- Channel dengan beberapa grup muncul di **setiap** grupnya (RCTI dan GTV ada di Nasional dan MNC), dan tidak diulang di bagian negaranya. Baris diberi kunci `<bagian>/<id>`; preview mengikuti id channel, jadi pindah antar dua baris channel yang sama tidak memuat ulang stream.
+- Channel yang punya `note` (Tier B: "perlu dicek di TV") menampilkannya sebagai teks kecil kuning di samping nama di daftar, dan di bawah info channel di sisi kiri.
+- Header bagian tidak bisa difokus. Hanya baris channel yang bisa.
 - Tidak ada logo di daftar. Field `logo` di skema belum dipakai.
 - Baris yang difokus: isi warna aksen transparan 25% + border 3 dp warna aksen. Warna aksen = biru tema ikon `#3CA6FB` (normal, `MaterialTheme.colorScheme.primary`), kuning atau merah (channel gagal, lihat Error).
 
@@ -21,7 +25,7 @@ Satu layar dua kolom, tanpa navigasi antar-layar. Margin aman TV: 48 dp kiri/kan
 
 Keduanya memfilter daftar kanan; pengelompokan per negara tetap. Kode: `filterChannels`, `categoriesOf`, `SearchField`, `CategoryTabs`.
 
-- **Tab kategori**: "Semua" lalu kategori yang ada di data, urutan tetap: Olahraga, Dokumenter, Sains, Berita, Wisata, Anak, Film (kategori lain menyusul urut abjad, label = id dengan huruf besar di depan). Baris tab bisa digeser kiri/kanan.
+- **Tab kategori**: "Semua" lalu kategori yang ada di data, urutan tetap: Olahraga, Dokumenter, Sains, Berita, Wisata, Anak, Film, Umum (`general`), Hiburan (`entertainment`), Musik (kategori lain menyusul urut abjad, label = id dengan huruf besar di depan). Tab hanya menampilkan kategori yang ada di data. Baris tab bisa digeser kiri/kanan.
 - **Pilihan mengikuti fokus**: menggeser fokus ke sebuah tab langsung memfilter daftar (seperti TabRow Android TV), tanpa menekan OK. Tab terpilih diberi isi warna aksen 35%; tab yang difokus 55% + border 3 dp.
 - **Pencarian**: mencocokkan **nama channel** (mengandung teks, tanpa membedakan huruf besar/kecil, spasi di tepi diabaikan). Digabung dengan tab terpilih (keduanya harus cocok).
 - Jika tidak ada yang cocok: teks "Tidak ada channel yang cocok." menggantikan daftar.
@@ -83,7 +87,7 @@ App tidak boleh crash karena error stream: semua kegagalan pemutaran masuk ke st
 
 ## Belum dicakup / batasan
 
-- Diuji di TV SWTV_24AE_FHD (Android 14, RAM ±1 GB): tampilan, preview, tab kategori, pencarian dengan keyboard virtual. Perilaku di TV lain belum diketahui.
+- Diuji di TV SWTV_24AE_FHD (Android 14, RAM ±1 GB): tampilan, preview, tab kategori, pencarian dengan keyboard virtual, bagian grup dan label catatan. Perilaku di TV lain belum diketahui.
 - Tidak ada favorit, EPG, atau pengingat posisi daftar di luar sesi.
 - Rebuffering saat fullscreen menampilkan spinner "Memuat…" di atas video.
 - Pemetaan error teruji lewat tes unit (`DescribeErrorTest`). Alur reconnect dan fokus belum punya tes otomatis.
@@ -94,9 +98,9 @@ App tidak boleh crash karena error stream: semua kegagalan pemutaran masuk ke st
 - Splash memakai `androidx.core:core-splashscreen`: latar `#060B24`, ikon `drawable-xxhdpi/splash_icon.png` (kanvas 288 dp, ikon 52% kanvas agar muat di lingkaran splash = 2/3 kanvas).
 - Splash ditahan sampai `channels.json` selesai dibaca (berhasil atau gagal), jadi layar "Memuat channel…" tidak pernah tampil.
 
-## Kinerja start (diukur di TV, build debug, 1.945 channel)
+## Kinerja start (diukur di TV, build debug)
 
-Start dingin ±11 sampai 15 detik. Rinciannya:
+**Daftar sekarang ±57 channel (data kurasi): start ±8 sampai 9 detik, pemuatan data ±1 detik.** Pengukuran lama di bawah dengan 1.945 channel (dump massal, sudah dihentikan) disimpan sebagai catatan: start ±11 sampai 15 detik. Rincian pengukuran lama:
 
 | Tahap | Lama |
 |---|---|

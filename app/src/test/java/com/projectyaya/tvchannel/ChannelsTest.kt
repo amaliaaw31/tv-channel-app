@@ -22,13 +22,51 @@ class ChannelsTest {
     }
 
     @Test
-    fun groupsAreSortedByCountryNameAndKeepEveryChannel() {
+    fun bundledSectionsCoverEveryChannelWithUniqueKeys() {
         val list = parseChannels(bundledJson())
-        val groups = groupByCountry(list)
-        val names = groups.map { it.name }
-        assertEquals(names.sortedWith(String.CASE_INSENSITIVE_ORDER), names)
-        assertEquals(list.size, groups.sumOf { it.channels.size })
-        assertEquals(groups.size, groups.map { it.code }.toSet().size)
+        val sections = buildSections(list)
+        assertEquals(sections.size, sections.map { it.key }.toSet().size)
+        assertEquals(list.map { it.id }.toSet(), sections.flatMap { s -> s.channels.map { it.id } }.toSet())
+        val rows = sections.flatMap { s -> s.channels.map { "${s.key}/${it.id}" } }
+        assertEquals(rows.size, rows.toSet().size) // the list keys rows by section + id, so these must not repeat
+    }
+
+    @Test
+    fun groupsComeFirstInFixedOrderThenCountries() {
+        fun ch(id: String, name: String, country: String, groups: List<String> = emptyList()) =
+            Channel(id, name, country, "news", null, "https://x/$id.m3u8", emptyMap(), groups)
+        val list = listOf(
+            ch("1", "Metro TV", "ID", listOf("Berita")),
+            ch("2", "RCTI", "ID", listOf("Nasional", "MNC")),
+            ch("3", "DW", "DE"),
+            ch("4", "TVRI Bali", "ID", listOf("TVRI Daerah")),
+            ch("5", "Zeta TV", "ID", listOf("Zeta")),
+            ch("6", "CNA", "SG"),
+            ch("7", "TVRI Aceh", "ID", listOf("TVRI Daerah")),
+        )
+        val sections = buildSections(list)
+        val groupTitles = sections.takeWhile { it.key.startsWith("g:") }.map { it.title }
+        assertEquals(listOf("Nasional", "MNC", "Berita", "TVRI Daerah", "Zeta"), groupTitles)  // fixed order, unknown last
+        assertEquals(listOf("c:DE", "c:SG").sorted(), sections.drop(groupTitles.size).map { it.key }.sorted())
+        assertTrue(sections.drop(groupTitles.size).all { it.key.startsWith("c:") })               // countries after groups
+        assertEquals(listOf("TVRI Aceh", "TVRI Bali"), sections.first { it.title == "TVRI Daerah" }.channels.map { it.name }) // by name
+        // RCTI is listed under both of its groups; a channel with groups is not repeated under its country
+        assertEquals(2, sections.count { s -> s.channels.any { it.id == "2" } })
+        assertTrue(sections.none { it.key == "c:ID" })
+    }
+
+    @Test
+    fun parsesGroupsAndNote() {
+        val json = """[
+          {"id":"a","name":"A","country":"ID","category":"news","streamUrl":"https://x/a.m3u8",
+           "groups":["Nasional"," MNC ","",null,"Nasional",7],"note":" perlu dicek di TV "},
+          {"id":"b","name":"B","country":"ID","category":"news","streamUrl":"https://x/b.m3u8","groups":"Nasional"}
+        ]"""
+        val list = parseChannels(json)
+        assertEquals(listOf("Nasional", "MNC", "7"), list[0].groups)   // trimmed, blanks/null dropped, de-duplicated
+        assertEquals("perlu dicek di TV", list[0].note)
+        assertEquals(emptyList<String>(), list[1].groups)               // not an array: ignored
+        assertNull(list[1].note)
     }
 
     @Test

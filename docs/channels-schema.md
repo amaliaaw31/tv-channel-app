@@ -1,7 +1,7 @@
 # Skema channels.json
 
-File: `data/channels.json`, dihasilkan skrip `tools/build-channels` (lihat `sources.md`), bukan diedit manual.
-Kode acuan: `Channels.kt` (`parseChannels`, `pickChannels`, `loadChannels`, `groupByCountry`).
+File: `data/channels.json`, dihasilkan `tools/build-channels/finalize.py` dari kurasi Tier A + B (lihat `sources.md`), bukan diedit manual.
+Kode acuan: `Channels.kt` (`parseChannels`, `pickChannels`, `loadChannels`, `buildSections`).
 
 ## Pemuatan di app
 
@@ -9,9 +9,9 @@ Urutan sumber saat app dibuka; sumber dipakai hanya jika terbaca minimal satu ch
 
 1. **Remote**: `https://raw.githubusercontent.com/amaliaaw31/tv-channel-app/main/data/channels.json` (timeout sambung 5 dtk, baca 10 dtk). Jika berhasil, hasilnya menimpa cache.
 2. **Cache lokal**: `filesDir/channels-cache.json`. Ditulis lewat file sementara lalu rename, dan tidak pernah ditimpa oleh unduhan yang rusak atau kosong.
-3. **Bundled**: salinan `data/channels.json` yang ikut di APK (`assets/channels.json`) saat build.
+3. **Bundled**: salinan `data/channels.json` yang ikut di APK (`assets/channels.json`) saat build. File lain di `data/` (`curated.json`, `excluded.json`, `bulk-channels.json`) sengaja **tidak** ikut di APK (`ignoreAssetsPattern` di `app/build.gradle.kts`).
 
-Splash ditahan sampai pemuatan selesai, jadi saat GitHub tidak terjangkau start bisa tertunda sampai ±5 detik.
+Splash ditahan sampai pemuatan selesai. Dengan ±57 channel, pemuatan ±1 detik di TV; saat repo private tanpa token ada tambahan ±1 detik untuk percobaan remote yang dijawab 404.
 
 **Repo private butuh token.** Raw URL repo private mengembalikan 404 tanpa token, sehingga app memakai cache/bundled. Untuk mengaktifkan remote:
 
@@ -27,15 +27,20 @@ Isi file adalah **array JSON**, satu objek per channel.
 
 | Field | Tipe | Wajib | Aturan |
 |---|---|---|---|
-| `id` | string | ya | Unik. Duplikat dilewati (yang pertama dipakai). |
+| `id` | string | ya | Unik. Duplikat dilewati (yang pertama dipakai). Feed bisa berbentuk `ChannelId#Feed` (mis. `TVRI.id#Aceh`). |
 | `name` | string | ya | Nama tampil di daftar dan info preview. |
 | `country` | string | ya | Kode ISO 3166-1 alpha-2, **huruf kapital** (`ID`, `JP`, `US`). `idn` atau `id` ditolak. |
-| `category` | string | ya | Teks bebas (`news`, `movies`, ...). Ditampilkan di info preview. |
+| `category` | string | ya | Teks bebas (`news`, `sports`, ...). Dipakai tab kategori dan info preview. |
 | `streamUrl` | string | ya | Harus diawali `https://` atau `http://`. |
 | `logo` | string | tidak | URL gambar. Disimpan di model tetapi belum dipakai UI. |
 | `headers` | objek string→string | tidak | Header HTTP tambahan untuk stream, mis. `User-Agent`, `Referer`. |
+| `groups` | array string | tidak | Grup tampilan di daftar kanan (`Nasional`, `MNC`, `Berita`, `Publik`, `TVRI Daerah`, `Daerah`, ...). Channel muncul di **setiap** grupnya. Kosong/tidak ada = muncul di bagian negaranya. |
+| `note` | string | tidak | Catatan pendek di samping nama di daftar dan di info preview, mis. `perlu dicek di TV` (Tier B). |
+| `tier` | string | tidak | `A` atau `B`. Hanya untuk perkakas/audit; app mengabaikannya. |
 
-Nilai string dipangkas spasi di tepi. Nilai `null` atau key yang tidak ada dianggap kosong.
+Nilai string dipangkas spasi di tepi. Nilai `null` atau key yang tidak ada dianggap kosong. Elemen `groups` yang kosong/`null`/ganda dibuang; `groups` yang bukan array diabaikan. Key yang tidak dikenal diabaikan.
+
+`finalize.py` hanya menulis `groups` untuk negara di `group_countries` (`tiers.json`, sekarang `ID`). Channel internasional tanpa `groups` muncul di bagian negaranya; topiknya dicari lewat tab kategori.
 
 ## Perilaku pembacaan
 
@@ -49,28 +54,14 @@ Nilai string dipangkas spasi di tepi. Nilai `null` atau key yang tidak ada diang
 
 ```json
 [
-  {
-    "id": "test-apple-16x9",
-    "name": "[TEST] Apple BipBop 16:9",
-    "country": "ID",
-    "category": "test",
-    "streamUrl": "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"
-  },
-  {
-    "id": "test-unified-tears",
-    "name": "[TEST] Tears of Steel (with headers)",
-    "country": "ID",
-    "category": "movies",
-    "logo": "https://example.com/logo.png",
-    "streamUrl": "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
-    "headers": {
-      "User-Agent": "TVChannelApp/0.1",
-      "Referer": "https://example.com/"
-    }
-  }
+  {"id": "TVRI.id#Aceh", "name": "TVRI Aceh", "country": "ID", "category": "general", "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Aceh/hls/Aceh.m3u8", "groups": ["TVRI Daerah"], "tier": "A"},
+  {"id": "RCTI.id", "name": "RCTI", "country": "ID", "category": "general", "streamUrl": "http://202.150.172.59/RCTIHD/index.m3u8", "groups": ["MNC", "Nasional"], "tier": "B", "note": "perlu dicek di TV"},
+  {"id": "DW.de", "name": "DW", "country": "DE", "category": "news", "streamUrl": "https://example.invalid/dw.m3u8", "tier": "A"}
 ]
 ```
 
+Satu channel per baris di berkasnya. Contoh terakhir tanpa `groups`, jadi tampil di bagian "Jerman (DE)".
+
 ## Isi saat ini
 
-Hasil skrip dari iptv-org (angka terbaru ada di `sources.md`). Contoh di atas diambil dari 5 channel uji lama (nama diawali `[TEST]`) yang sudah tidak ada di data. Tes `ChannelsTest` memastikan `data/channels.json` valid seluruhnya (tanpa entri yang dilewati) dan menguji urutan remote → cache → bundled.
+57 channel: Tier A 46 dan Tier B 11 (daftar dan alasan pemilihan di `sources.md`). Tes `ChannelsTest` memastikan `data/channels.json` valid seluruhnya (tanpa entri yang dilewati), setiap channel punya bagian dengan kunci baris yang unik, dan menguji urutan remote → cache → bundled.

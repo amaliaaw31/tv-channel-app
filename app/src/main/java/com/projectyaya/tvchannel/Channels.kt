@@ -20,6 +20,10 @@ data class Channel(
     val streamUrl: String,
     /** Extra HTTP request headers some streams require (User-Agent, Referer). */
     val headers: Map<String, String>,
+    /** Curated list sections this channel appears in ("Nasional", "TVRI Daerah"...). Empty = listed under its country. */
+    val groups: List<String> = emptyList(),
+    /** Short remark shown next to the channel, e.g. "perlu dicek di TV". */
+    val note: String? = null,
 )
 
 private val ISO2 = Regex("[A-Z]{2}")
@@ -60,10 +64,14 @@ private fun toChannel(o: JSONObject): Channel? {
     val headers = o.optJSONObject("headers")?.let { h ->
         h.keys().asSequence().associateWith { h.str(it) }.filterValues { it.isNotEmpty() }
     }.orEmpty()
-    return Channel(id, name, country, category, o.str("logo").ifEmpty { null }, url, headers)
+    val groups = o.optJSONArray("groups")?.let { arr ->
+        (0 until arr.length()).filterNot { arr.isNull(it) }.map { arr.optString(it).trim() }.filter { it.isNotEmpty() }.distinct()
+    }.orEmpty()
+    return Channel(id, name, country, category, o.str("logo").ifEmpty { null }, url, headers, groups, o.str("note").ifEmpty { null })
 }
 
-data class CountryGroup(val code: String, val name: String, val channels: List<Channel>)
+/** One header in the channel list: a curated group ([key] "g:Nasional") or a country ([key] "c:ID"). */
+data class Section(val key: String, val title: String, val channels: List<Channel>)
 
 /** Country name in Indonesian plus its code, e.g. "Indonesia (ID)"; just the code if the JVM has no name for it. */
 fun countryName(code: String): String {
@@ -71,11 +79,27 @@ fun countryName(code: String): String {
     return if (name.isBlank() || name == code) code else "$name ($code)"
 }
 
-/** Groups by country, sorted alphabetically by country name; channels keep their file order inside a group. */
-fun groupByCountry(channels: List<Channel>): List<CountryGroup> =
-    channels.groupBy { it.country }
-        .map { (code, list) -> CountryGroup(code, countryName(code), list) }
-        .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+// Display order of the curated groups; groups not listed here follow alphabetically.
+private val GROUP_ORDER = listOf("Nasional", "MNC", "Berita", "Publik", "TVRI Daerah", "Daerah")
+
+/**
+ * List sections: curated groups first (in [GROUP_ORDER], channels by name), then one section per country
+ * for channels without groups (by country name, channels in file order). A channel with several groups
+ * appears in each of them, so the same channel id can occur in more than one section.
+ */
+fun buildSections(channels: List<Channel>): List<Section> {
+    val byGroup = LinkedHashMap<String, MutableList<Channel>>()
+    val byCountry = LinkedHashMap<String, MutableList<Channel>>()
+    for (c in channels) {
+        if (c.groups.isEmpty()) byCountry.getOrPut(c.country) { ArrayList() } += c
+        else c.groups.forEach { byGroup.getOrPut(it) { ArrayList() } += c }
+    }
+    val groups = byGroup.map { (g, list) -> Section("g:$g", g, list.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })) }
+        .sortedWith(compareBy({ GROUP_ORDER.indexOf(it.title).takeIf { i -> i >= 0 } ?: Int.MAX_VALUE }, { it.title.lowercase() }))
+    val countries = byCountry.map { (code, list) -> Section("c:$code", countryName(code), list) }
+        .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })
+    return groups + countries
+}
 
 /** Channels in [category] (null = all) whose name contains [query] (trimmed, case-insensitive). */
 fun filterChannels(channels: List<Channel>, category: String?, query: String): List<Channel> {
@@ -94,6 +118,9 @@ private val CATEGORY_LABELS = linkedMapOf(
     "travel" to "Wisata",
     "kids" to "Anak",
     "movies" to "Film",
+    "general" to "Umum",
+    "entertainment" to "Hiburan",
+    "music" to "Musik",
 )
 
 fun categoryLabel(id: String): String = CATEGORY_LABELS[id] ?: id.replaceFirstChar { it.uppercase() }
