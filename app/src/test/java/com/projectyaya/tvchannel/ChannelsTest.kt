@@ -18,6 +18,16 @@ class ChannelsTest {
     }
 
     @Test
+    fun groupsAreSortedByCountryNameAndKeepEveryChannel() {
+        val list = parseChannels(File("src/main/assets/channels.json").readText())
+        val groups = groupByCountry(list)
+        val names = groups.map { it.name }
+        assertEquals(names.sortedWith(String.CASE_INSENSITIVE_ORDER), names)
+        assertEquals(list.size, groups.sumOf { it.channels.size })
+        assertEquals(groups.size, groups.map { it.code }.toSet().size)
+    }
+
+    @Test
     fun skipsInvalidAndDuplicateEntries() {
         val skipped = mutableListOf<String>()
         val json = """[

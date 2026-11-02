@@ -44,10 +44,6 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:$media3")
     implementation("androidx.media3:media3-ui:$media3")
 
-    // Channel logos from URLs.
-    implementation("io.coil-kt.coil3:coil-compose:3.6.3")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3")
-
     // Android's org.json is a stub in JVM unit tests, so tests need the real library.
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20260814")

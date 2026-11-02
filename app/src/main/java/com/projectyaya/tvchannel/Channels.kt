@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Locale
 
 data class Channel(
     val id: String,
@@ -57,6 +58,20 @@ private fun toChannel(o: JSONObject): Channel? {
     }.orEmpty()
     return Channel(id, name, country, category, o.str("logo").ifEmpty { null }, url, headers)
 }
+
+data class CountryGroup(val code: String, val name: String, val channels: List<Channel>)
+
+/** Country name in Indonesian plus its code, e.g. "Indonesia (ID)"; just the code if the JVM has no name for it. */
+fun countryName(code: String): String {
+    val name = Locale.Builder().setRegion(code).build().getDisplayCountry(Locale.forLanguageTag("id"))
+    return if (name.isBlank() || name == code) code else "$name ($code)"
+}
+
+/** Groups by country, sorted alphabetically by country name; channels keep their file order inside a group. */
+fun groupByCountry(channels: List<Channel>): List<CountryGroup> =
+    channels.groupBy { it.country }
+        .map { (code, list) -> CountryGroup(code, countryName(code), list) }
+        .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
 
 /** Blocking read from local assets; call off the main thread. Swap for the raw GitHub URL later. */
 fun loadChannels(context: Context): List<Channel> {
