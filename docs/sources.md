@@ -42,7 +42,7 @@ Keputusan tier ditentukan pemilik proyek per channel (daftar id di `tiers.json`)
 Dijalankan dengan `AuditActivity` di TV SWTV_24AE_FHD (Indonesia), 57 channel, batas 25 detik per channel:
 
 - **Tier A: 46 dari 46 hidup** (termasuk 30 TVRI Daerah).
-- **Tier B: 7 hidup** (Cartoonito, CNA, CNN International, Euronews English, NBC News NOW, NHK World-Japan, TVRI Sport). **Olympic Channel**: "Dibatasi wilayah" (403 dari TV juga). **RCTI, GTV, Indosiar**: timeout 25 detik; sumbernya IP mentah `202.150.172.59` (http) tidak terjangkau dari TV, jadi bukan soal pembatasan wilayah. **Ketiganya kemudian dipindah ke Tier C** (keputusan pemilik proyek), dengan alasan di `exclude_reasons`. Akibatnya grup MNC kosong dan tidak tampil; Nasional tersisa Garuda TV dan Nusantara TV. RCTI dan GTV masih punya stream kedua di iptv-org (`mncmedia.malingtv.workers.dev`, proxy tidak resmi), tidak dipakai.
+- **Tier B: 7 hidup** (Cartoonito, CNA, CNN International, Euronews English, NBC News NOW, NHK World-Japan, TVRI Sport). **Olympic Channel**: "Dibatasi wilayah" (403 dari TV juga). **RCTI, GTV, Indosiar**: timeout 25 detik; sumbernya IP mentah `202.150.172.59` (http) tidak terjangkau dari TV, jadi bukan soal pembatasan wilayah. **Ketiganya kemudian dipindah ke Tier C** (keputusan pemilik proyek), dengan alasan di `exclude_reasons`. Akibatnya grup MNC kosong dan tidak tampil; Nasional tersisa Garuda TV dan Nusantara TV. "RCTI HD", "GTV HD", dan "Indosiar HD" di iptv-org adalah **judul stream** dari channel yang sama (`RCTI.id`, `GTV.id`, `Indosiar.id`), bukan channel lain, dan tidak ada stream tanpa channel untuk mereka. Seluruh sumbernya sudah dicoba di TV (2026-11-02) dan **gagal**: IP `202.150.172.59` timeout untuk ketiganya; `mncmedia.malingtv.workers.dev` (proxy pihak ketiga tidak resmi) untuk RCTI "Dibatasi wilayah" (451) dan untuk GTV 404. Tidak ada sumber lain di iptv-org, jadi ketiganya tetap Tier C sampai ada sumber baru.
 
 ### Domain sumber yang dianggap resmi
 
@@ -82,7 +82,7 @@ Hanya butuh Python 3 (stdlib). Setelah `finalize.py`, build ulang app (data ikut
 ## Alat lain (arsip)
 
 - `build_channels.py`: dump massal iptv-org per kategori ke `data/bulk-channels.json` (git-ignored, **tidak dipakai app**). Dipakai juga sebagai pustaka oleh `curate.py`. Dulu (commit `c6b888c`) hasilnya 1.945 channel, dihentikan karena stream tidak jelas asalnya dan start app di TV sangat lambat.
-- `AuditActivity` (hanya build debug): memutar tiap channel di `channels.json` di TV (bisu) dan mencatat hasilnya di `files/audit.jsonl`: `adb shell am start -n com.projectyaya.tvchannel/.AuditActivity`. Berguna untuk memeriksa Tier B langsung di TV (±1 menit per 10 channel). `prune_audit.py` memangkas daftar berdasarkan hasilnya (untuk `bulk-channels.json`).
+- `AuditActivity` (hanya build debug): memutar tiap channel di `channels.json` di TV (bisu) dan mencatat hasilnya di `files/audit.jsonl`: `adb shell am start -n com.projectyaya.tvchannel/.AuditActivity`. Berguna untuk memeriksa Tier B langsung di TV (±1 menit per 10 channel). **Kandidat baru bisa dicoba dulu** tanpa masuk data: taruh daftar uji (skema yang sama dengan `channels.json`) di `files/audit-input.json` (`adb push` ke `/data/local/tmp/`, lalu `adb shell run-as com.projectyaya.tvchannel cp /data/local/tmp/audit-input.json files/`), hapus `files/audit.jsonl`, jalankan `AuditActivity`; hapus `audit-input.json` setelahnya agar audit berikutnya kembali memakai data bundled. `prune_audit.py` memangkas daftar berdasarkan hasilnya (untuk `bulk-channels.json`).
 
 ## Batasan
 

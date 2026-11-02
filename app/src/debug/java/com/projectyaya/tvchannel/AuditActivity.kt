@@ -41,6 +41,7 @@ private const val TIMEOUT_MS = 25_000L
  * Debug-only. Plays every bundled channel once (muted, same player and error mapping as the app)
  * and appends one JSON line per channel to filesDir/audit.jsonl. Resumable: channels already in the
  * file are skipped, so a crash or restart continues where it stopped. filesDir/audit.done marks the end.
+ * If filesDir/audit-input.json exists it is audited instead of the bundled channels.
  * Usage and pruning: docs/sources.md.
  */
 class AuditActivity : ComponentActivity() {
@@ -56,7 +57,11 @@ class AuditActivity : ComponentActivity() {
         setContent {
             var progress by remember { mutableStateOf("Memuat daftar channel…") }
             LaunchedEffect(Unit) {
-                val channels = withContext(Dispatchers.IO) { loadChannels(applicationContext) }
+                val channels = withContext(Dispatchers.IO) {
+                    // A custom list (same schema as channels.json) lets a candidate be tried on the TV before it enters the data.
+                    File(filesDir, "audit-input.json").takeIf { it.exists() }?.let { parseChannels(it.readText()) }
+                        ?: loadChannels(applicationContext)
+                }
                 val finished = withContext(Dispatchers.IO) {
                     if (results.exists()) results.readLines().filter { it.isNotBlank() }.map { JSONObject(it).getString("id") }.toSet()
                     else emptySet()
