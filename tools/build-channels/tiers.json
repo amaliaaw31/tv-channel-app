@@ -8,8 +8,13 @@
   "A_groups": ["TVRI Daerah"],
   "B": [
     "NBCNewsNOW.us", "CNNInternational.us", "CNA.sg", "NHKWorldJapan.jp", "EuronewsEnglish.fr", "Cartoonito.it",
-    "OlympicChannel.es", "RCTI.id", "GTV.id", "Indosiar.id", "TVRISport.id"
+    "OlympicChannel.es", "TVRISport.id"
   ],
+  "exclude_reasons": {
+    "RCTI.id": "IP mentah (202.150.172.59, http); timeout 25 dtk di TV 2026-11-02",
+    "GTV.id": "IP mentah (202.150.172.59, http); timeout 25 dtk di TV 2026-11-02",
+    "Indosiar.id": "IP mentah (202.150.172.59, http); timeout 25 dtk di TV 2026-11-02"
+  },
   "B_note": "perlu dicek di TV",
   "group_countries": ["ID"],
   "aggregator_domains": ["freem3u.xyz", "jmp2.uk", "aynascope.net", "cinerama.uz", "pishow.tv"],

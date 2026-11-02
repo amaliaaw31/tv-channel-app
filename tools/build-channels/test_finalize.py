@@ -49,6 +49,8 @@ class Finalize(unittest.TestCase):
         self.assertEqual(why["dead"], "mati (HTTP 404)")
         self.assertEqual(why["none"], "tanpa stream")
         self.assertEqual(why["other"], "tidak dipilih (tier C)")
+        manual = f.exclusion_reason(e("x", status="geo-block", detail="HTTP 403"), {**TIERS, "exclude_reasons": {"x": "timeout di TV"}})
+        self.assertEqual(manual, "timeout di TV")                              # manual reason beats the measured one
         self.assertEqual(why["MNC News"], "tidak ditemukan: hanya ada MNC News (channel ditutup)")
 
     def test_unknown_tier_id_is_an_error(self):

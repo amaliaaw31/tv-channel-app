@@ -11,7 +11,7 @@ Urutan sumber saat app dibuka; sumber dipakai hanya jika terbaca minimal satu ch
 2. **Cache lokal**: `filesDir/channels-cache.json`. Ditulis lewat file sementara lalu rename, dan tidak pernah ditimpa oleh unduhan yang rusak atau kosong.
 3. **Bundled**: salinan `data/channels.json` yang ikut di APK (`assets/channels.json`) saat build. File lain di `data/` (`curated.json`, `excluded.json`, `bulk-channels.json`) sengaja **tidak** ikut di APK (`ignoreAssetsPattern` di `app/build.gradle.kts`).
 
-Splash ditahan sampai pemuatan selesai. Dengan ±57 channel, pemuatan ±1 detik di TV; saat repo private tanpa token ada tambahan ±1 detik untuk percobaan remote yang dijawab 404.
+Splash ditahan sampai pemuatan selesai. Dengan ±54 channel, pemuatan ±1 detik di TV; saat repo private tanpa token ada tambahan ±1 detik untuk percobaan remote yang dijawab 404.
 
 **Repo private butuh token.** Raw URL repo private mengembalikan 404 tanpa token, sehingga app memakai cache/bundled. Untuk mengaktifkan remote:
 
@@ -55,7 +55,7 @@ Nilai string dipangkas spasi di tepi. Nilai `null` atau key yang tidak ada diang
 ```json
 [
   {"id": "TVRI.id#Aceh", "name": "TVRI Aceh", "country": "ID", "category": "general", "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/Aceh/hls/Aceh.m3u8", "groups": ["TVRI Daerah"], "tier": "A"},
-  {"id": "RCTI.id", "name": "RCTI", "country": "ID", "category": "general", "streamUrl": "http://202.150.172.59/RCTIHD/index.m3u8", "groups": ["MNC", "Nasional"], "tier": "B", "note": "perlu dicek di TV"},
+  {"id": "TVRISport.id", "name": "TVRI Sport", "country": "ID", "category": "sports", "streamUrl": "https://ott-balancer.tvri.go.id/live/eds/SportHD/hls/SportHD.m3u8", "groups": ["Publik"], "tier": "B", "note": "perlu dicek di TV"},
   {"id": "DW.de", "name": "DW", "country": "DE", "category": "news", "streamUrl": "https://example.invalid/dw.m3u8", "tier": "A"}
 ]
 ```
@@ -64,4 +64,4 @@ Satu channel per baris di berkasnya. Contoh terakhir tanpa `groups`, jadi tampil
 
 ## Isi saat ini
 
-57 channel: Tier A 46 dan Tier B 11 (daftar dan alasan pemilihan di `sources.md`). Tes `ChannelsTest` memastikan `data/channels.json` valid seluruhnya (tanpa entri yang dilewati), setiap channel punya bagian dengan kunci baris yang unik, dan menguji urutan remote → cache → bundled.
+54 channel: Tier A 46 dan Tier B 8 (daftar dan alasan pemilihan di `sources.md`). Tes `ChannelsTest` memastikan `data/channels.json` valid seluruhnya (tanpa entri yang dilewati), setiap channel punya bagian dengan kunci baris yang unik, dan menguji urutan remote → cache → bundled.

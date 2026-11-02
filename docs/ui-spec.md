@@ -15,7 +15,7 @@ Satu layar dua kolom, tanpa navigasi antar-layar. Margin aman TV: 48 dp kiri/kan
 - Daftar terdiri dari **bagian** (kode: `buildSections`), masing-masing dengan header:
   1. **Bagian grup** dulu, dari field `groups` di data (mis. Nasional, MNC, Berita, Publik, TVRI Daerah, Daerah). Urutan tetap: Nasional, MNC, Berita, Publik, TVRI Daerah, Daerah; grup lain menyusul urut abjad. Channel di dalam grup diurutkan menurut nama.
   2. **Bagian negara** setelahnya, untuk channel tanpa `groups`: header nama Indonesia + kode (mis. "Jerman (DE)"), diurutkan abjad menurut nama negara, channel mengikuti urutan di `channels.json`.
-- Channel dengan beberapa grup muncul di **setiap** grupnya (RCTI dan GTV ada di Nasional dan MNC), dan tidak diulang di bagian negaranya. Baris diberi kunci `<bagian>/<id>`; preview mengikuti id channel, jadi pindah antar dua baris channel yang sama tidak memuat ulang stream.
+- Channel dengan beberapa grup muncul di **setiap** grupnya (mis. channel dengan `groups: ["MNC", "Nasional"]` ada di Nasional dan MNC; saat ini belum ada channel seperti itu di data), dan tidak diulang di bagian negaranya. Baris diberi kunci `<bagian>/<id>`; preview mengikuti id channel, jadi pindah antar dua baris channel yang sama tidak memuat ulang stream.
 - Channel yang punya `note` (Tier B: "perlu dicek di TV") menampilkannya sebagai teks kecil kuning di samping nama di daftar, dan di bawah info channel di sisi kiri.
 - Header bagian tidak bisa difokus. Hanya baris channel yang bisa.
 - Tidak ada logo di daftar. Field `logo` di skema belum dipakai.
@@ -100,7 +100,7 @@ App tidak boleh crash karena error stream: semua kegagalan pemutaran masuk ke st
 
 ## Kinerja start (diukur di TV, build debug)
 
-**Daftar sekarang ±57 channel (data kurasi): start ±8 sampai 9 detik, pemuatan data ±1 detik.** Pengukuran lama di bawah dengan 1.945 channel (dump massal, sudah dihentikan) disimpan sebagai catatan: start ±11 sampai 15 detik. Rincian pengukuran lama:
+**Daftar sekarang ±54 channel (data kurasi): start ±8 sampai 9 detik, pemuatan data ±1 detik.** Pengukuran lama di bawah dengan 1.945 channel (dump massal, sudah dihentikan) disimpan sebagai catatan: start ±11 sampai 15 detik. Rincian pengukuran lama:
 
 | Tahap | Lama |
 |---|---|

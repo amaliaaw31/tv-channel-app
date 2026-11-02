@@ -27,7 +27,10 @@ def tier_of(entry, tiers):
 
 
 def exclusion_reason(entry, tiers):
-    """Why a Tier C channel stays out of the app."""
+    """Why a Tier C channel stays out of the app (a manual reason in tiers.json wins over the measured one)."""
+    manual = tiers.get("exclude_reasons", {}).get(entry["id"])
+    if manual:
+        return manual
     status = entry["status"]
     if status == "tidak ada stream":
         return "tanpa stream"

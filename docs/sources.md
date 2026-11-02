@@ -35,14 +35,14 @@ Hasil tes dari VPS bisa berbeda dengan dari TV (wilayah dan decoder), jadi statu
 | **B** | Aktif dengan label **"perlu dicek di TV"** (`note` di data, tampil di info preview). Gagal/terblokir dari VPS, atau domain sumber kurang jelas. | ya |
 | **C** | Sisanya. Disimpan di `data/excluded.json` dengan alasan: `IP mentah`, `agregator`, `tanpa stream`, `mati (...)`, `geo-block (...)`, `tidak dipilih (tier C)`, `tidak ditemukan`. | **tidak** |
 
-Keputusan tier ditentukan pemilik proyek per channel (daftar id di `tiers.json`). Aturan otomatis: entri berkelompok `TVRI Daerah` selalu Tier A. Hasil terakhir (2026-11-02): **57 channel di app (A=46, B=11)**, 64 di `excluded.json`.
+Keputusan tier ditentukan pemilik proyek per channel (daftar id di `tiers.json`). Aturan otomatis: entri berkelompok `TVRI Daerah` selalu Tier A. Hasil terakhir (2026-11-02): **54 channel di app (A=46, B=8)**, 67 di `excluded.json`. Alasan manual (mis. hasil cek di TV) bisa ditulis di `exclude_reasons` pada `tiers.json`; ia menggantikan alasan otomatis.
 
 ### Hasil cek di TV (2026-11-02)
 
 Dijalankan dengan `AuditActivity` di TV SWTV_24AE_FHD (Indonesia), 57 channel, batas 25 detik per channel:
 
 - **Tier A: 46 dari 46 hidup** (termasuk 30 TVRI Daerah).
-- **Tier B: 7 hidup** (Cartoonito, CNA, CNN International, Euronews English, NBC News NOW, NHK World-Japan, TVRI Sport). **Olympic Channel**: "Dibatasi wilayah" (403 dari TV juga). **RCTI, GTV, Indosiar**: timeout 25 detik; sumbernya IP mentah `202.150.172.59` (http) tidak terjangkau dari TV, jadi bukan soal pembatasan wilayah. Tier tidak diubah otomatis; keputusan di pemilik proyek.
+- **Tier B: 7 hidup** (Cartoonito, CNA, CNN International, Euronews English, NBC News NOW, NHK World-Japan, TVRI Sport). **Olympic Channel**: "Dibatasi wilayah" (403 dari TV juga). **RCTI, GTV, Indosiar**: timeout 25 detik; sumbernya IP mentah `202.150.172.59` (http) tidak terjangkau dari TV, jadi bukan soal pembatasan wilayah. **Ketiganya kemudian dipindah ke Tier C** (keputusan pemilik proyek), dengan alasan di `exclude_reasons`. Akibatnya grup MNC kosong dan tidak tampil; Nasional tersisa Garuda TV dan Nusantara TV. RCTI dan GTV masih punya stream kedua di iptv-org (`mncmedia.malingtv.workers.dev`, proxy tidak resmi), tidak dipakai.
 
 ### Domain sumber yang dianggap resmi
 
@@ -55,7 +55,7 @@ Penilaian dari **nama domain**; belum diverifikasi ke pemilik channel kecuali di
 | Mitra distribusi resmi (FAST/OTT) (dugaan) | `amagi.tv` → DW, France 24 · `wurl.com` → Bloomberg TV · `tubi.video` → ABC News Live · `mediatailor...amazonaws.com` → Red Bull TV |
 | CDN tanpa nama pemilik (Tier B) | `cloudfront.net` → NBC News NOW, CNN International, CNA · `akamaized.net` → Cartoonito (IT), Olympic Channel |
 | **Diterima pemilik proyek, belum diverifikasi (Tier A)** | `hgmtv.com` → Garuda TV · `nusantaratv.siar.us` → Nusantara TV · `tvstreamcast.com` → Indonesiana.TV |
-| **Kurang jelas, perlu dicek (Tier B)** | `202.150.172.59` (IP mentah) → RCTI, GTV, Indosiar · `cdn.pishow.tv` → NHK World-Japan · `a-cdn.klowdtv.com` → Euronews English |
+| **Kurang jelas, perlu dicek (Tier B)** | `cdn.pishow.tv` → NHK World-Japan · `a-cdn.klowdtv.com` → Euronews English |
 
 Domain yang **tidak** dianggap resmi (alasan masuk Tier C): alamat IP mentah, dan agregator/siaran ulang seperti `freem3u.xyz`, `jmp2.uk`, `aynascope.net`, `cinerama.uz` (daftar di `aggregator_domains`, `tiers.json`). Satu IP yang sama (`23.237.104.106`) menyiarkan banyak channel berbeda, itu tanda siaran ulang pihak ketiga.
 
@@ -88,4 +88,5 @@ Hanya butuh Python 3 (stdlib). Setelah `finalize.py`, build ulang app (data ikut
 
 - Lolos tes berarti playlist terbaca saat itu, bukan bahwa siarannya legal atau akan tetap hidup. Stream sering mati; jalankan ulang kurasi berkala.
 - Penilaian "resmi" di atas adalah tebakan dari nama domain, bukan konfirmasi dari pemilik channel.
-- Tes dari VPS di Singapura; channel Indonesia yang dibatasi wilayah (mis. RCTI, GTV, Indosiar) kemungkinan hidup di TV tapi belum terbukti.
+- Tes dari VPS di Singapura berbeda dengan dari TV (wilayah dan decoder): selalu cek Tier B langsung di TV dengan `AuditActivity`. Contohnya RCTI/GTV/Indosiar: 403 dari VPS tampak seperti pembatasan wilayah, tetapi di TV ternyata timeout karena IP mentahnya tidak terjangkau.
+- Stasiun TV nasional besar (RCTI, GTV, Indosiar, SCTV, ANTV, tvOne, Kompas TV) saat ini tidak punya sumber yang lolos kriteria Tier A/B di iptv-org.
