@@ -40,6 +40,9 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - **Channel baru wajib cek domain sumber** (kolom Domain di `python3 tools/build-channels/curate.py --report`): IP mentah atau agregator berarti Tier C; domain milik stasiun, grup medianya, atau mitra distribusi resmi boleh Tier A; ragu berarti Tier B (label "perlu dicek di TV"). Catat domain barunya di `docs/sources.md`.
 - Jangan edit `data/channels.json` / `data/excluded.json` manual. Ubah `tools/build-channels/curated_wanted.json` atau `tiers.json`, lalu jalankan `curate.py` dan `finalize.py` (urutannya di `docs/sources.md`).
 
+## Versi HP
+- APK yang sama jalan di HP: `isTelevision()` memilih `MainScreen` (D-pad, TV) atau `PhoneScreen` (sentuh). Jangan menambah kode khusus HP di `MainScreen`, dan jangan membawa antena ke HP. Aturan lengkap di `docs/ui-spec.md` ("Versi HP").
+
 ## Fullscreen
 - Zapping fullscreen (atas/bawah, Channel Up/Down) berputar di bagian daftar tempat channel dibuka; hanya satu pemutar aktif (ExoPlayer **atau** tuner), dan `TvView` hanya ada di hierarki saat dipakai. Channel terakhir ditonton disimpan di DataStore untuk bagian "Lanjutkan" (hanya id/nama/bagian; tidak ada lokasi). Detail di `docs/ui-spec.md`.
 
@@ -50,7 +53,8 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - `languages` di `channels.json` diisi `curate.py` dari iptv-org `feeds.json` (jangan edit manual; `curate.py --languages` lalu `finalize.py`).
 
 ## Git & GitHub
-- Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik.
+- Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik. (Pada 2026-11-03 API GitHub melaporkan `visibility: public` dan `raw.githubusercontent.com` terbuka tanpa token: periksa Settings repo.)
+- Rilis: `tools/release.sh` (keystore di `~/.tvchannel-release`, bukan di repo; jangan di-commit). Kesehatan channel: `tools/health-check/check.py`. Detail di `docs/sources.md`.
 - Branch utama `main` (lokal dan remote sama namanya); push dengan `git push`.
 - Remote `origin` memakai alias SSH `github-tvchannel` (key khusus repo ini `~/.ssh/id_ed25519_tvchannel`). Jangan pakai key lain di `~/.ssh`, itu milik proyek lain.
 - Email commit wajib `113813839+amaliaaw31@users.noreply.github.com` (sudah di `git config --local`). Email pribadi ditolak GitHub (GH007) dan tidak boleh masuk history.

@@ -211,6 +211,14 @@ private const val TAG = "Channels"
 
 /** Blocking; call off the main thread. Order: GitHub raw URL (refreshes the cache) -> cache -> bundled assets. */
 fun loadChannels(context: Context): List<Channel> {
+    // Debug builds only: a hand-made list (same schema) for testing on the TV, e.g. a dead or geo-blocked stream.
+    // adb push it to /data/local/tmp, then: adb shell run-as <pkg> cp /data/local/tmp/x.json files/channels-override.json
+    if (BuildConfig.DEBUG) {
+        File(context.filesDir, "channels-override.json").takeIf { it.exists() }?.let { f ->
+            Log.w(TAG, "using channels-override.json (debug)")
+            return parseChannels(f.readText()) { Log.w(TAG, "skipped: $it") }
+        }
+    }
     val cacheFile = File(context.filesDir, "channels-cache.json")
     val start = SystemClock.elapsedRealtime()
     val loaded = pickChannels(
