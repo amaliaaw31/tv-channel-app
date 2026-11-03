@@ -68,13 +68,26 @@ class SubtitleLogicTest {
 
     @Test
     fun perLineFilterLeavesIndonesianAndUnknownAlone() {
-        assertEquals(LineAction.Original, lineAction("id", "en"))                // a line in Indonesian inside an English track
-        assertEquals(LineAction.Original, lineAction(null, "en"))                // "und" / low confidence: show the text as it is
-        assertEquals(LineAction.Translate("en"), lineAction("en", "en"))
-        assertEquals(LineAction.Translate("fr"), lineAction("en", "fr"))         // the track tag is the source when it has one
-        assertEquals(LineAction.Translate("es"), lineAction("es", null))         // no tag: the detected language
-        assertNull(detectedLanguage("und"))
-        assertEquals("id", detectedLanguage("id"))
+        val long = "Where are you going this evening"
+        fun d(lang: String?, c: Float = 0.95f) = Detection(lang, c)
+        assertEquals(LineAction.Original, lineAction(long, d("id"), "en"))               // a line in Indonesian inside an English track
+        assertEquals(LineAction.Original, lineAction(long, d(null, 0.2f), "en"))         // "und" / low confidence: show the text as it is
+        assertEquals(LineAction.Translate("en"), lineAction(long, d("en"), "en"))
+        assertEquals(LineAction.Translate("fr"), lineAction(long, d("en"), "fr"))        // the track tag is the source when it has one
+        assertEquals(LineAction.Translate("es"), lineAction(long, d("es"), null))        // no tag: the detected language
+    }
+
+    @Test
+    fun veryShortLinesAreTranslatedOnlyWhenTheLanguageIsSure() {
+        assertEquals(0, wordCount("   "))
+        assertEquals(2, wordCount(" Thank  you\n"))
+        assertEquals(3, wordCount("Thank you very"))
+        assertEquals(LineAction.Original, lineAction("Thank you", Detection("en", 0.79f), "en"))          // 2 words, below 0.8
+        assertEquals(LineAction.Translate("en"), lineAction("Thank you", Detection("en", 0.8f), "en"))    // exactly 0.8 is enough
+        assertEquals(LineAction.Original, lineAction("Hello", Detection("en", 0.6f), null))
+        assertEquals(LineAction.Translate("en"), lineAction("Thank you so", Detection("en", 0.61f), "en")) // 3 words: the normal rule
+        assertEquals(LineAction.Original, lineAction("Terima kasih", Detection("id", 0.99f), "en"))       // Indonesian is never translated
+        assertEquals(LineAction.Original, lineAction("Thank you", Detection(null, 0.9f), "en"))           // unknown language: original
     }
 
     @Test

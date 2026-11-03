@@ -39,6 +39,12 @@ class Finalize(unittest.TestCase):
         self.assertEqual(by["a1"]["languages"], ["eng", "ind"])
         self.assertNotIn("languages", by["b1"])
 
+    def test_caption_comes_from_the_audit_and_is_absent_when_not_audited(self):
+        curated = {"found": [e("a1"), e("b1"), e("sport")], "notFound": []}
+        by = {x["id"]: x for x in f.finalize(curated, TIERS, {"a1": "cc", "b1": "none"})[0]}
+        self.assertEqual((by["a1"]["caption"], by["b1"]["caption"]), ("cc", "none"))
+        self.assertNotIn("caption", by["sport"])             # not audited: unknown, not "none"
+
     def test_groups_only_for_configured_countries(self):
         by = {x["id"]: x for x in self.app}
         self.assertEqual(by["a1"]["groups"], ["Berita"])

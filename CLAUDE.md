@@ -46,6 +46,7 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 ## Subtitle terjemahan
 - Hanya channel **stream internet** di fullscreen, tidak pernah antena/tile/preview. Aturan keputusan (`languages` `ind` → mati; track Indonesia → apa adanya; track lain → terjemahkan; tanpa track → "Subtitle tidak tersedia"), filter per baris, dan menu (tombol kanan) ada di `docs/ui-spec.md`; logikanya murni di `SubtitleLogic.kt` dan harus tetap dites.
 - ML Kit (translate + language-id) **on-device**: yang diunduh hanya model; teks subtitle **tidak dikirim** ke mana pun dan tidak dicatat di log. Translator dan cache baris dilepas saat pindah channel/keluar fullscreen. Jaga memori (TV 1 GB RAM) dan tetap batasi ABI (`abiFilters`).
+- `caption` (none/subtitle/cc) di `channels.json` datang dari `tools/audit-captions/audit.py --segments --samples 8 --write` lalu `finalize.py` (jangan diedit manual); ikon "CC" hanya untuk `subtitle`/`cc`. Stream `cc` diputar tanpa chunkless preparation supaya CEA-608 yang tidak dideklarasikan terbaca (alasan dan hasil uji di `docs/sources.md`). Baris < 3 kata diterjemahkan hanya bila deteksi bahasa ≥ 0,8.
 - `languages` di `channels.json` diisi `curate.py` dari iptv-org `feeds.json` (jangan edit manual; `curate.py --languages` lalu `finalize.py`).
 
 ## Git & GitHub

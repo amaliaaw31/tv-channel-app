@@ -68,6 +68,22 @@ Domain yang **tidak** dianggap resmi (alasan masuk Tier C): alamat IP mentah, da
 3. Tambahkan id-nya ke `A` atau `B` di `tiers.json` (mereka yang belum dipilih otomatis Tier C), jalankan `finalize.py`.
 4. Catat domain barunya di tabel di atas bila dianggap resmi.
 
+## Audit caption (`tools/audit-captions/audit.py`)
+
+Mengukur dari VPS (tanpa TV) channel mana di `channels.json` yang membawa caption:
+
+```
+python3 tools/audit-captions/audit.py                       # manifest: master + media playlist pertama
+python3 tools/audit-captions/audit.py --segments --samples 8 --write   # + isi video (CEA-608/708), tulis data/captions.json
+python3 tools/build-channels/finalize.py                    # captions.json -> kolom "caption" di channels.json
+```
+
+- **subtitle**: master punya `#EXT-X-MEDIA TYPE=SUBTITLES` (WebVTT). **cc**: `CLOSED-CAPTIONS` dideklarasikan, atau (`--segments`) segmen video membawa data caption ATSC A/53 ("GA94" di SEI H.264/H.265) yang **berisi teks**. **none**: keduanya tidak ada. Channel yang tidak terbaca dari VPS (geo-block, mati) tidak ditulis; nilai lamanya tetap, atau tidak ada (tidak diaudit).
+- Caption siaran langsung datang dan pergi (jeda iklan, program tanpa caption): satu cuplikan bisa salah. Pakai `--samples 8` (segmen terbaru), dan `--write` mempertahankan `cc` yang lama bila encoder caption masih ada di video tetapi cuplikan ini tidak berisi teks.
+- Tidak terjangkau audit ini: teletext/DVB subtitle di MPEG-TS dan subtitle bergambar (Media3 tidak membacanya juga).
+- **Hasil 2026-11-03** (53 channel terbaca, 1 geo-block): subtitle 3 (CBS News 24/7, NBC News NOW, Red Bull TV; NBC dan Red Bull juga mendeklarasikan CC1), cc 2 (**ABC News Live** dan **Bloomberg TV**: manifest tidak mendeklarasikan apa pun tetapi videonya membawa CEA-608/708 berisi teks), none 48. Olympic Channel (HTTP 403 dari VPS) tidak diaudit. Cartoonito punya blok caption kosong (hanya padding) jadi none. Seluruh channel Indonesia (TVRI, Metro TV, CNN/CNBC Indonesia, Garuda, Nusantara, Indonesiana) none.
+- **Media3 dan CEA-608 yang tidak dideklarasikan** (diuji di TV, ABC News Live dan Bloomberg TV, ExoPlayer 1.11.1): dengan pengaturan bawaan **tidak ada track teks** (hanya video, audio, ID3) walau segmennya membawa caption, karena HLS memakai *chunkless preparation* yang mengambil daftar track dari playlist. `DefaultHlsExtractorFactory(0, true)` saja **belum cukup**. Yang berhasil: `HlsMediaSource.Factory(...).setAllowChunklessPreparation(false).setExtractorFactory(DefaultHlsExtractorFactory(0, true))`, lalu track `application/cea-608` muncul dan baris captionnya terbaca dan diterjemahkan (mis. ABC: "Itu pertanyaan yang sangat nyata yang Anda minta."). Harganya persiapan stream menunggu satu segmen dulu, jadi app memakai pengaturan ini **hanya untuk channel `caption: "cc"`** (`PlayerController.start`); yang lain tetap bawaan. Hanya kanal CC1 yang dibaca.
+
 ## Siaran antena (tuner TV)
 
 RCTI, GTV, MNCTV, Indosiar, SCTV, ANTV, tvOne, dan lainnya tidak punya sumber stream resmi yang berfungsi (lihat Tier C di atas), tetapi disiarkan **gratis lewat udara** dan TV ini punya tuner. Itu sumber legal yang tidak bergantung pada stream pihak ketiga. App memutar channel antena fullscreen lewat `TvView` (preview kecil opsional, bawaan mati) dan punya tile "TV Antena" yang membuka aplikasi Live TV bawaan.

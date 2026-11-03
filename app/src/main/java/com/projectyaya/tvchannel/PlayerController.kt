@@ -10,6 +10,8 @@ import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.DefaultHlsExtractorFactory
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 
 sealed interface PlaybackStatus {
@@ -106,7 +108,19 @@ class PlayerController(context: Context) {
         http.setDefaultRequestProperties(channel.headers)
         // The factory's own userAgent would otherwise win over a User-Agent in the headers map.
         http.setUserAgent(channel.headers.entries.firstOrNull { it.key.equals("User-Agent", ignoreCase = true) }?.value)
-        player.setMediaItem(MediaItem.Builder().setUri(channel.streamUrl).setMediaId(channel.id).build())
+        val item = MediaItem.Builder().setUri(channel.streamUrl).setMediaId(channel.id).build()
+        if (channel.caption == "cc") {
+            // Some HLS streams carry CEA-608 in the video without declaring it in the playlist; Media3 only reads it
+            // when told to expect it (tools/audit-captions finds those channels). Other streams keep the default.
+            player.setMediaSource(
+                HlsMediaSource.Factory(http)
+                    .setAllowChunklessPreparation(false) // chunkless preparation takes tracks from the playlist, which has no captions
+                    .setExtractorFactory(DefaultHlsExtractorFactory(0, true))
+                    .createMediaSource(item),
+            )
+        } else {
+            player.setMediaItem(item)
+        }
         player.prepare()
         loadedId = channel.id
         autoReconnects = 0

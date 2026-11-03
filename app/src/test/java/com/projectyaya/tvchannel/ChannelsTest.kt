@@ -22,6 +22,19 @@ class ChannelsTest {
     }
 
     @Test
+    fun captionIsReadOnlyForKnownKinds() {
+        fun cap(v: String) = parseChannels("""[{"id":"a","name":"a","country":"ID","category":"news","streamUrl":"https://x/a","caption":"$v"}]""")[0]
+        assertEquals("cc", cap("CC").caption)
+        assertEquals("subtitle", cap("subtitle").caption)
+        assertEquals("none", cap("none").caption)
+        assertNull(cap("weird").caption)                                            // unknown value: treated as not audited
+        assertNull(parseChannels(one("b"))[0].caption)
+        assertEquals(false, cap("none").hasCaption)
+        assertEquals(true, cap("cc").hasCaption)
+        assertTrue(parseChannels(bundledJson()).any { it.hasCaption })              // the audit result is in the bundled list
+    }
+
+    @Test
     fun languagesAreReadLowercasedAndOptional() {
         val json = """[{"id":"a","name":"a","country":"ID","category":"news","streamUrl":"https://x/a","languages":["ENG"," ind ","","eng"]},
                        {"id":"b","name":"b","country":"ID","category":"news","streamUrl":"https://x/b"}]"""

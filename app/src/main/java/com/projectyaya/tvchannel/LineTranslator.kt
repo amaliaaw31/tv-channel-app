@@ -38,9 +38,11 @@ class LineTranslator(private val onDownload: (Boolean) -> Unit) {
     private val failedAt = HashMap<String, Long>()
     private val cache = HashMap<String, String>()
 
-    /** Two-letter language of [text], or null for "und" (unknown or below the confidence threshold) and for errors. */
-    suspend fun identify(text: String): String? =
-        runCatching { identifier.identifyLanguage(text).await() }.getOrNull().let(::detectedLanguage)
+    /** The most likely language of [text] with its confidence; language null for "und" (below the threshold) and for errors. */
+    suspend fun identify(text: String): Detection {
+        val best = runCatching { identifier.identifyPossibleLanguages(text).await() }.getOrNull()?.firstOrNull()
+        return Detection(normalizeLang(best?.languageTag), best?.confidence ?: 0f)
+    }
 
     /** [text] in Indonesian, or null when it cannot be translated (unsupported language, model missing, offline). */
     suspend fun translate(text: String, from: String): String? {

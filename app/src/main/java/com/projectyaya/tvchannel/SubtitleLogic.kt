@@ -86,19 +86,32 @@ sealed interface LineAction {
     data class Translate(val from: String?) : LineAction
 }
 
+/** What language identification made of some text: a two-letter [language] (null = "und") and its [confidence] 0..1. */
+data class Detection(val language: String?, val confidence: Float)
+
+/** A line with fewer words than this is only translated when its language is detected confidently. */
+const val MIN_WORDS = 3
+
+/** The confidence a very short line needs ("Ya", "OK", a name) before it is translated. */
+const val SHORT_LINE_CONFIDENCE = 0.8f
+
+fun wordCount(line: String): Int = line.trim().split(Regex("\\s+")).count { it.isNotEmpty() }
+
 /**
  * Per-line filter for mixed channels. [detected] is the language of the last few lines (null for "und" or a
  * low-confidence guess). An Indonesian line is left alone, and so is one whose language is not known: it is
- * better to show the original text than to translate it from a wrong language. The source language comes from
- * the track tag when it has one, else from the detection.
+ * better to show the original text than to translate it from a wrong language. A line of fewer than [MIN_WORDS]
+ * words is also left alone unless the detection is at least [SHORT_LINE_CONFIDENCE] sure, since a word or two
+ * says little about the language. The source language comes from the track tag when it has one, else from the detection.
  */
-fun lineAction(detected: String?, trackLanguage: String?): LineAction = when {
-    detected == null || isIndonesian(detected) -> LineAction.Original
-    else -> LineAction.Translate(trackLanguage ?: detected)
+fun lineAction(line: String, detected: Detection?, trackLanguage: String?): LineAction {
+    val language = detected?.language
+    return when {
+        language == null || isIndonesian(language) -> LineAction.Original
+        wordCount(line) < MIN_WORDS && detected.confidence < SHORT_LINE_CONFIDENCE -> LineAction.Original
+        else -> LineAction.Translate(trackLanguage ?: language)
+    }
 }
-
-/** "und" and other non-answers from language identification become null. */
-fun detectedLanguage(code: String?): String? = normalizeLang(code)
 
 /** Remembers the last [max] distinct consecutive lines (roll-up captions repeat the same line). */
 fun pushLine(history: List<String>, line: String, max: Int = WINDOW_LINES): List<String> =

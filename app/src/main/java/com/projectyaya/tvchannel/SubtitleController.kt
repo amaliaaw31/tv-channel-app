@@ -162,7 +162,7 @@ class SubtitleController(private val context: Context, private val player: Playe
         val window = identificationWindow(history)
         job?.cancel()
         job = scope.launch {
-            val action = lineAction(translator.identify(window), show.track.language)
+            val action = lineAction(raw, translator.identify(window), show.track.language)
             text = when (action) {
                 LineAction.Original -> raw
                 is LineAction.Translate -> action.from?.let { translator.translate(raw, it) } ?: raw

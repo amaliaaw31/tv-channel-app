@@ -18,6 +18,7 @@ HERE = Path(__file__).resolve().parent
 CURATED = b.ROOT / "data" / "curated.json"
 CHANNELS = b.ROOT / "data" / "channels.json"
 EXCLUDED = b.ROOT / "data" / "excluded.json"
+CAPTIONS = b.ROOT / "data" / "captions.json"  # written by tools/audit-captions/audit.py --write
 
 
 def tier_of(entry, tiers):
@@ -45,7 +46,12 @@ def exclusion_reason(entry, tiers):
     return "tidak dipilih (tier C)"
 
 
-def app_entry(entry, tier, tiers):
+def load_captions():
+    """{channel id: "none" | "subtitle" | "cc"} from the caption audit; {} when it has not been run."""
+    return {d["id"]: d["caption"] for d in json.loads(CAPTIONS.read_text())} if CAPTIONS.exists() else {}
+
+
+def app_entry(entry, tier, tiers, captions=None):
     """Entry in the app's channels.json schema (+ groups/tier/note)."""
     out = {k: entry[k] for k in ("id", "name", "country", "category", "streamUrl")}
     out.update({k: v for k, v in tiers.get("overrides", {}).get(entry["id"], {}).items() if k in out})
@@ -55,13 +61,15 @@ def app_entry(entry, tier, tiers):
         out["groups"] = sorted(entry["groups"])
     if entry.get("languages"):  # ISO 639-3 from iptv-org feeds; the app skips translating Indonesian ("ind") channels
         out["languages"] = entry["languages"]
+    if captions and entry["id"] in captions:  # absent = not audited (unknown), so the app shows no CC badge
+        out["caption"] = captions[entry["id"]]
     out["tier"] = tier
     if tier == "B":
         out["note"] = tiers["B_note"]
     return out
 
 
-def finalize(curated, tiers):
+def finalize(curated, tiers, captions=None):
     """(app entries, excluded entries). Raises if tiers.json names an id that curated.json does not have."""
     found = {e["id"]: e for e in curated["found"]}
     unknown = [i for i in tiers["A"] + tiers["B"] if i not in found]
@@ -74,7 +82,7 @@ def finalize(curated, tiers):
             excluded.append({"id": e["id"], "name": e["name"], "country": e["country"], "reason": exclusion_reason(e, tiers),
                              "domain": e["domain"], "groups": e["groups"]})
         else:
-            app.append(app_entry(e, tier, tiers))
+            app.append(app_entry(e, tier, tiers, captions))
     for m in curated["notFound"]:
         why = "; ".join(f"{o['name']} ({o['why']})" for o in m["onlyRejected"])
         excluded.append({"id": None, "name": m["requested"], "country": m.get("country"),
@@ -87,7 +95,7 @@ def finalize(curated, tiers):
 def main():
     curated = json.loads(CURATED.read_text())
     tiers = json.loads((HERE / "tiers.json").read_text())
-    app, excluded = finalize(curated, tiers)
+    app, excluded = finalize(curated, tiers, load_captions())
     b.write_entries(CHANNELS, app)
     EXCLUDED.write_text("[\n" + ",\n".join("  " + json.dumps(e, ensure_ascii=False) for e in excluded) + "\n]\n")
     count = lambda t: sum(1 for e in app if e["tier"] == t)

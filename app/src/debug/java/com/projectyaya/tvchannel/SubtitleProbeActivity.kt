@@ -27,7 +27,7 @@ class SubtitleProbeActivity : ComponentActivity() {
             ?: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"
         val languages = intent.getStringExtra("lang")?.split(",").orEmpty()
         val mode = SubtitleMode.entries.firstOrNull { it.name == intent.getStringExtra("mode") } ?: SubtitleMode.Auto
-        val channel = Channel("probe", "Probe", "US", "general", null, url, emptyMap(), languages = languages)
+        val channel = Channel("probe", "Probe", "US", "general", null, url, emptyMap(), languages = languages, caption = intent.getStringExtra("caption"))
         val player = PlayerController(this)
         val subtitles = SubtitleController(this, player.player, lifecycleScope)
         player.start(channel)
@@ -37,7 +37,10 @@ class SubtitleProbeActivity : ComponentActivity() {
         lifecycleScope.launch {
             while (true) {
                 kotlinx.coroutines.delay(2000)
-                Log.i("SubtitleProbe", "mode=$mode plan='${subtitles.menuStatus}' text='${subtitles.text?.replace("\n", " | ")}' status=${subtitles.status}")
+                val tracks = player.player.currentTracks.groups.joinToString(",") {
+                    "t${it.type}:${it.getTrackFormat(0).sampleMimeType}:${it.getTrackFormat(0).language}${if (it.isSelected) "*" else ""}"
+                }
+                Log.i("SubtitleProbe", "state=${player.player.playbackState} err=${player.player.playerError?.errorCodeName} tracks=[$tracks] mode=$mode plan='${subtitles.menuStatus}' text='${subtitles.text?.replace("\n", " | ")}' status=${subtitles.status}")
             }
         }
         // --es sample "line one|line two|...": per-line check of detection + translation (as SubtitleController does it)
@@ -48,9 +51,9 @@ class SubtitleProbeActivity : ComponentActivity() {
                 for (line in sample.split("|")) {
                     history = pushLine(history, line)
                     val detected = t.identify(identificationWindow(history))
-                    val action = lineAction(detected, null)
+                    val action = lineAction(line, detected, null)
                     val out = if (action is LineAction.Translate) action.from?.let { t.translate(line, it) } ?: line else line
-                    Log.i("SubtitleProbe", "line='$line' detected=$detected action=$action -> '$out'")
+                    Log.i("SubtitleProbe", "line='$line' detected=${detected.language}/${"%.2f".format(detected.confidence)} action=$action -> '$out'")
                 }
                 t.release()
             }

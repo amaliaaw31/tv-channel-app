@@ -551,11 +551,14 @@ private fun ChannelInfo(channel: Channel) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else if (channel.launch.isEmpty()) {
-            Text(
-                "${countryName(channel.country)} · ${channel.category}",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    "${countryName(channel.country)} · ${channel.category}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (channel.hasCaption) CaptionBadge()
+            }
             channel.note?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = NOTE_COLOR) }
         } else {
             // A tile: say what OK does and how to come back.
@@ -566,6 +569,18 @@ private fun ChannelInfo(channel: Channel) {
             )
         }
     }
+}
+
+/** Small "CC" tag for channels whose stream really carries captions (WebVTT or CEA-608/708, from the caption audit). */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun CaptionBadge() {
+    Text(
+        "CC",
+        style = MaterialTheme.typography.labelMedium,
+        color = Color.White,
+        modifier = Modifier.border(1.5.dp, Color.White, RoundedCornerShape(4.dp)).padding(horizontal = 5.dp, vertical = 1.dp),
+    )
 }
 
 // Same yellow as the "warning" error color, so a note reads as "not verified" rather than "broken".
