@@ -63,7 +63,7 @@ Grup ini selalu yang pertama setelah "Untuk Anda" dan berisi dua jenis item. Kon
 - Diselidiki lewat adb saat Live TV tampak kecil di pojok kiri atas: task `com.cltv.hybrid` selalu `fullscreen` dengan bounds (0,0)-(1280,720), baik dibuka dari tile, dari `adb shell am start`, maupun setelah preview `TvView`. Intent sistem (tombol TV) memakai `ACTION_VIEW` + package + flag `0x20`; milik app `ACTION_MAIN` + `LEANBACK_LAUNCHER` + `NEW_TASK`; hasil jendelanya sama, jadi intent tidak diubah.
 - **Kembali** di Live TV mengembalikan ke app ini, fokus tetap di tile (diuji di TV). Saat app ke belakang, pemutaran dijeda dan tuner dilepas.
 - **Live TV tidak ada** di TV: muncul pesan "Aplikasi Live TV tidak ditemukan di TV ini." (diuji dengan menonaktifkan aplikasinya sementara).
-- Tile selalu di urutan pertama dalam grup, channel antena menyusul menurut urutan `channels` di `antenna.json`.
+- Tile selalu di urutan pertama dalam grup, channel antena menyusul urut abjad menurut nama bawaan TV (ANTV HD, GTV HD, INDOSIAR HD, ...), sama dengan grup lain.
 
 ## Preview dan player
 
