@@ -102,6 +102,17 @@ class SubtitleLogicTest {
     }
 
     @Test
+    fun allCapsCaptionsAreSentenceCasedForTheMlSteps() {
+        assertEquals("Just hours away. Two states now facing weather emergencies",
+            sentenceCaseIfShouting("JUST HOURS AWAY. TWO STATES NOW FACING WEATHER EMERGENCIES"))
+        assertEquals("Hello? Yes! It is", sentenceCaseIfShouting("HELLO? YES! IT IS"))
+        assertEquals("Where are you going", sentenceCaseIfShouting("Where are you going"))      // normal text untouched
+        assertEquals("NASA launches a rocket today", sentenceCaseIfShouting("NASA launches a rocket today"))  // a few capitals are fine
+        assertEquals("123 !!", sentenceCaseIfShouting("123 !!"))                                // no letters
+        assertEquals("I", sentenceCaseIfShouting("I"))                                          // one letter says nothing
+    }
+
+    @Test
     fun menuLineDescribesThePlan() {
         assertEquals("Subtitle tidak tersedia", describePlan(SubtitleMode.Auto, SubtitlePlan.Unavailable, listOf("eng")))
         assertEquals("Channel berbahasa Indonesia: tanpa terjemahan", describePlan(SubtitleMode.Auto, SubtitlePlan.Inactive, listOf("ind")))

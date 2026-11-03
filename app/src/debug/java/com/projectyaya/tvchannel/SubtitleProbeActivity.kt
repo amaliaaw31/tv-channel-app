@@ -48,7 +48,8 @@ class SubtitleProbeActivity : ComponentActivity() {
             lifecycleScope.launch {
                 val t = LineTranslator { Log.i("SubtitleProbe", "download=$it") }
                 var history = emptyList<String>()
-                for (line in sample.split("|")) {
+                for (raw in sample.split("|")) {
+                    val line = sentenceCaseIfShouting(raw)
                     history = pushLine(history, line)
                     val detected = t.identify(identificationWindow(history))
                     val action = lineAction(line, detected, null)

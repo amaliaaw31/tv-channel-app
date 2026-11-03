@@ -113,6 +113,20 @@ fun lineAction(line: String, detected: Detection?, trackLanguage: String?): Line
     }
 }
 
+private val SENTENCE_START = Regex("(^|[.!?]\\s+)(\\p{L})")
+
+/**
+ * CEA-608 captions are almost always ALL CAPS, and language identification and translation are much worse on that
+ * (the identifier is not sure enough, so the line stayed untranslated). A line that is at least 90% capitals is put in
+ * sentence case ("JUST HOURS AWAY. TWO STATES" -> "Just hours away. Two states") for the ML steps; other text is untouched.
+ * The original line is still what is shown when nothing is translated.
+ */
+fun sentenceCaseIfShouting(line: String): String {
+    val letters = line.filter { it.isLetter() }
+    if (letters.length < 2 || letters.count { it.isUpperCase() } < letters.length * 0.9) return line
+    return SENTENCE_START.replace(line.lowercase()) { it.groupValues[1] + it.groupValues[2].uppercase() }
+}
+
 /** Remembers the last [max] distinct consecutive lines (roll-up captions repeat the same line). */
 fun pushLine(history: List<String>, line: String, max: Int = WINDOW_LINES): List<String> =
     if (history.lastOrNull() == line) history else (history + line).takeLast(max)

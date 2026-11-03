@@ -14,11 +14,15 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.text.CueGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 private val Context.settingsStore by preferencesDataStore("settings")
 private val MODE_KEY = stringPreferencesKey("subtitle_mode")
+
+/** A caption line counts as settled when no newer cue has come for this long. */
+private const val CUE_SETTLE_MS = 200L
 
 /**
  * Subtitles for internet streams in fullscreen: picks a text track and shows its lines, translated to Indonesian
@@ -154,18 +158,21 @@ class SubtitleController(private val context: Context, private val player: Playe
         }
         if (raw == lastRaw) return
         lastRaw = raw
-        history = pushLine(history, raw)
         if (!show.translate) {
             text = raw
             return
         }
-        val window = identificationWindow(history)
+        val line = sentenceCaseIfShouting(raw) // all-caps captions confuse language identification and translation
         job?.cancel()
         job = scope.launch {
-            val action = lineAction(raw, translator.identify(window), show.track.language)
-            text = when (action) {
+            // Live captions are often painted character by character, a cue every few tens of ms: wait until the line
+            // has settled, or every cue would cancel the translation before it finishes.
+            delay(CUE_SETTLE_MS)
+            history = pushLine(history, line)
+            val detection = translator.identify(identificationWindow(history))
+            text = when (val action = lineAction(line, detection, show.track.language)) {
                 LineAction.Original -> raw
-                is LineAction.Translate -> action.from?.let { translator.translate(raw, it) } ?: raw
+                is LineAction.Translate -> action.from?.let { translator.translate(line, it) } ?: raw
             }
         }
     }
