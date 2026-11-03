@@ -30,7 +30,9 @@ Keduanya memfilter daftar kanan; pengelompokan per negara tetap. Kode: `filterCh
 - **Pencarian**: mencocokkan **nama channel** (mengandung teks, tanpa membedakan huruf besar/kecil, spasi di tepi diabaikan). Digabung dengan tab terpilih (keduanya harus cocok).
 - Jika tidak ada yang cocok: teks "Tidak ada channel yang cocok." menggantikan daftar.
 - Preview tidak berhenti ketika channel yang sedang diputar tersaring keluar dari daftar; info di kiri tetap channel itu sampai fokus pindah ke channel lain.
-- Keyboard virtual terbuka sendiri saat kolom pencarian difokus. OK membukanya lagi jika sudah ditutup. Selama keyboard terbuka, D-pad bergerak di keyboard: tekan **Kembali** untuk menutupnya, baru turun ke tab/daftar.
+- **Kolom pencarian hanya fokus biasa** (baris yang bisa difokus D-pad, tanpa keyboard) sampai **OK** ditekan: baru saat itu kolom teks dibuat, mengambil fokus, dan membuka keyboard virtual. Atas/bawah/kanan dari kolom yang hanya terfokus bergerak normal (kanan tidak punya tujuan, jadi diam). Sebabnya: kolom teks yang sekadar terfokus membuka keyboard sendiri dan keyboard menelan D-pad sehingga fokus terjebak.
+- **Mengakhiri pengetikan:** tombol cari di keyboard atau **Kembali** yang sampai ke app menutup keyboard dan memindahkan fokus ke daftar (baris terakhir yang difokus bila masih tersaring, kalau tidak baris pertama). Keyboard TV ini (Gboard TV) **mengonsumsi Kembali pertama untuk menutup dirinya** tanpa memberi tahu app (diukur: jendelanya tidak melaporkan insets maupun tinggi terlihat, dan muncul dengan jeda beberapa detik), jadi setelah itu kolom masih terfokus tanpa keyboard. Dalam keadaan itu atas/bawah/kiri/kanan memindahkan fokus keluar (kolom teks menelan tombol itu, jadi dipindahkan manual dengan `FocusManager`), pindahnya fokus mengakhiri pengetikan, dan **OK** membuka keyboard lagi. Selama keyboard tampil, D-pad bergerak di keyboard.
+- Diuji di TV: OK, ketik "ABC", Kembali, bawah, bawah menuju "ABC News Live".
 
 ## Untuk Anda (lokasi)
 

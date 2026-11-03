@@ -22,6 +22,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -48,11 +49,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -65,6 +68,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalDensity
 import android.view.View
 import android.widget.Toast
@@ -274,6 +278,11 @@ fun MainScreen(
         }
     }
 
+    /** Hands D-pad focus to the list: the last focused row if the filter still shows it, else the first. */
+    fun focusList() {
+        runCatching { (focusedKey?.takeIf { it in rowKeys } ?: firstKey)?.let { requesters[it] }?.requestFocus() }
+    }
+
     BackHandler(enabled = fullscreen) { if (menuOpen) menuOpen = false else exitFullscreen() }
 
     Box(Modifier.fillMaxSize()) {
@@ -288,7 +297,7 @@ fun MainScreen(
             }
             Column(Modifier.weight(0.42f).fillMaxHeight().padding(start = 24.dp, end = 48.dp, top = 27.dp)) {
                 // Disabled while fullscreen so D-pad keys cannot move focus under the video.
-                SearchField(query, onChange = { query = it }, enabled = !fullscreen)
+                SearchField(query, onChange = { query = it }, enabled = !fullscreen, onDone = ::focusList)
                 CategoryTabs(categories, selected = category, onSelect = { category = it }, enabled = !fullscreen)
                 if (sections.isEmpty()) {
                     Text(
@@ -413,40 +422,114 @@ private fun listIndexOf(sections: List<Section>, key: String): Int {
     return -1
 }
 
+/**
+ * The search box is a plain D-pad focusable row until OK is pressed: only then does the text field exist, take focus
+ * and open the on-screen keyboard. A text field that is merely focused opens the keyboard by itself and the keyboard
+ * swallows the D-pad, which trapped focus in the box.
+ *
+ * Ending the edit: the keyboard's Search key and a Back that reaches the app call [onDone] (focus goes to the list).
+ * The TV keyboard also eats the first Back itself, closing without telling the app (measured: its window reports no
+ * insets and no visible height), so the box then still has focus with no keyboard; any D-pad key reaches it only in that
+ * case, and moving focus away simply ends the edit.
+ */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun SearchField(query: String, onChange: (String) -> Unit, enabled: Boolean) {
+private fun SearchField(query: String, onChange: (String) -> Unit, enabled: Boolean, onDone: () -> Unit) {
     val keyboard = LocalSoftwareKeyboardController.current
     val accent = MaterialTheme.colorScheme.primary
-    var focused by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(8.dp)
+    var editing by remember { mutableStateOf(false) }
+    var hadFocus by remember { mutableStateOf(false) }
+    val fieldFocus = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    // The effects below outlive many recompositions (typing refilters the list): they must hand focus to the
+    // list as it is now, not as it was when editing began.
+    val latestOnDone by rememberUpdatedState(onDone)
+
+    fun finish() {
+        keyboard?.hide()
+        editing = false
+        hadFocus = false
+        latestOnDone()
+    }
+
+    if (!editing) {
+        Surface(
+            onClick = { editing = true },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            shape = ClickableSurfaceDefaults.shape(shape),
+            colors = ClickableSurfaceDefaults.colors(
+                containerColor = Color.White.copy(alpha = 0.08f),
+                contentColor = Color.White,
+                focusedContainerColor = accent.copy(alpha = 0.25f),
+                focusedContentColor = Color.White,
+            ),
+            scale = ClickableSurfaceDefaults.scale(focusedScale = 1f),
+            border = ClickableSurfaceDefaults.border(
+                border = Border(BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)), shape = shape),
+                focusedBorder = Border(BorderStroke(3.dp, accent), shape = shape),
+            ),
+        ) {
+            Text(
+                query.ifEmpty { "Cari channel…" },
+                color = if (query.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            )
+        }
+        return
+    }
+
+    BackHandler { finish() }
+    LaunchedEffect(Unit) {
+        withFrameNanos { }
+        runCatching { fieldFocus.requestFocus() }
+        delay(150) // the text input session starts a moment after focus; show() before that is ignored
+        keyboard?.show()
+    }
     BasicTextField(
         value = query,
         onValueChange = onChange,
-        enabled = enabled,
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
         cursorBrush = SolidColor(Color.White),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
+        keyboardActions = KeyboardActions(onSearch = { finish() }),
         modifier = Modifier
             .fillMaxWidth()
-            .onFocusChanged { focused = it.isFocused }
-            // A D-pad focus alone does not always open the on-screen keyboard; OK does.
-            .onKeyEvent { e ->
-                val ok = e.key == Key.DirectionCenter || e.key == Key.Enter || e.key == Key.NumPadEnter
-                if (ok && e.type == KeyEventType.KeyUp) keyboard?.show()
-                ok
+            .focusRequester(fieldFocus)
+            // These keys reach the field only while no keyboard is up (the keyboard takes them first). The field
+            // would swallow them, so move focus by hand; OK brings the keyboard back.
+            .onPreviewKeyEvent { e ->
+                if (e.type != KeyEventType.KeyDown) return@onPreviewKeyEvent false
+                val direction = when (e.key) {
+                    Key.DirectionDown -> FocusDirection.Down
+                    Key.DirectionUp -> FocusDirection.Up
+                    Key.DirectionLeft -> FocusDirection.Left
+                    Key.DirectionRight -> FocusDirection.Right
+                    Key.DirectionCenter, Key.Enter, Key.NumPadEnter -> {
+                        keyboard?.show()
+                        return@onPreviewKeyEvent true
+                    }
+                    else -> return@onPreviewKeyEvent false
+                }
+                focusManager.moveFocus(direction)
+                true
             }
-            .background(if (focused) accent.copy(alpha = 0.25f) else Color.White.copy(alpha = 0.08f), shape)
-            .border(if (focused) 3.dp else 1.dp, if (focused) accent else Color.White.copy(alpha = 0.2f), shape)
+            .onFocusChanged {
+                if (it.isFocused) hadFocus = true
+                else if (hadFocus) { // focus moved on (D-pad out of the box): the edit is over
+                    keyboard?.hide()
+                    editing = false
+                    hadFocus = false
+                }
+            }
+            .background(accent.copy(alpha = 0.25f), shape)
+            .border(3.dp, accent, shape)
             .padding(horizontal = 16.dp, vertical = 10.dp),
-        decorationBox = { inner ->
-            Box {
-                if (query.isEmpty()) Text("Cari channel…", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                inner()
-            }
-        },
     )
 }
 
