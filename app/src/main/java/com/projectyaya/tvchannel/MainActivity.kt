@@ -1,8 +1,16 @@
 package com.projectyaya.tvchannel
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,6 +62,26 @@ private fun App(result: Result<List<Channel>>) {
     val context = LocalContext.current
     val controller = remember { PlayerController(context) }
 
+    // Region for the "Untuk Anda" section. Coarse (Wi-Fi) location, used on the device only; see docs/ui-spec.md.
+    var forYou by remember { mutableStateOf<ForYou?>(null) }
+    val scope = rememberCoroutineScope()
+    val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) scope.launch { forYou = findProvince(context)?.let(::forYouOf) }
+    }
+    LaunchedEffect(Unit) {
+        val permission = Manifest.permission.ACCESS_COARSE_LOCATION
+        val prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE)
+        when {
+            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED ->
+                forYou = findProvince(context)?.let(::forYouOf)
+            // Ask once; a refusal is respected on later starts (no nagging on a TV).
+            !prefs.getBoolean("location_prompted", false) -> {
+                prefs.edit().putBoolean("location_prompted", true).apply()
+                askPermission.launch(permission)
+            }
+        }
+    }
+
     // Release on leave; pause when the app goes to background (Home) so audio does not keep playing.
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(controller, lifecycleOwner) {
@@ -77,7 +105,7 @@ private fun App(result: Result<List<Channel>>) {
             when {
                 channels == null -> Centered("Gagal membaca channels.json: ${result.exceptionOrNull()?.message}")
                 channels.isEmpty() -> Centered("Tidak ada channel yang valid di channels.json.")
-                else -> MainScreen(channels, controller)
+                else -> MainScreen(channels, controller, forYou)
             }
         }
     }

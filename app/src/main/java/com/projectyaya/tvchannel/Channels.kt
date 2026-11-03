@@ -85,9 +85,10 @@ private val GROUP_ORDER = listOf("Nasional", "MNC", "Berita", "Publik", "TVRI Da
 /**
  * List sections: curated groups first (in [GROUP_ORDER], channels by name), then one section per country
  * for channels without groups (by country name, channels in file order). A channel with several groups
- * appears in each of them, so the same channel id can occur in more than one section.
+ * appears in each of them, so the same channel id can occur in more than one section. [forYou], when it
+ * matches a visible channel, adds a first section.
  */
-fun buildSections(channels: List<Channel>): List<Section> {
+fun buildSections(channels: List<Channel>, forYou: ForYou? = null): List<Section> {
     val byGroup = LinkedHashMap<String, MutableList<Channel>>()
     val byCountry = LinkedHashMap<String, MutableList<Channel>>()
     for (c in channels) {
@@ -98,8 +99,14 @@ fun buildSections(channels: List<Channel>): List<Section> {
         .sortedWith(compareBy({ GROUP_ORDER.indexOf(it.title).takeIf { i -> i >= 0 } ?: Int.MAX_VALUE }, { it.title.lowercase() }))
     val countries = byCountry.map { (code, list) -> Section("c:$code", countryName(code), list) }
         .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })
-    return groups + countries
+    // The "Untuk Anda" section comes first and repeats channels that also sit in their normal section.
+    val local = forYou?.let { f -> channels.filter { it.id in f.channelIds } }.orEmpty()
+    val forYouSection = if (forYou != null && local.isNotEmpty()) listOf(Section("local", forYou.title, local)) else emptyList()
+    return forYouSection + groups + countries
 }
+
+/** A personalised section shown above the others (by location): its [title] and the ids it should list. */
+data class ForYou(val title: String, val channelIds: Set<String>)
 
 /** Channels in [category] (null = all) whose name contains [query] (trimmed, case-insensitive). */
 fun filterChannels(channels: List<Channel>, category: String?, query: String): List<Channel> {

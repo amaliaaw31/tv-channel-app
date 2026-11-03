@@ -32,6 +32,18 @@ Keduanya memfilter daftar kanan; pengelompokan per negara tetap. Kode: `filterCh
 - Preview tidak berhenti ketika channel yang sedang diputar tersaring keluar dari daftar; info di kiri tetap channel itu sampai fokus pindah ke channel lain.
 - Keyboard virtual terbuka sendiri saat kolom pencarian difokus. OK membukanya lagi jika sudah ditutup. Selama keyboard terbuka, D-pad bergerak di keyboard: tekan **Kembali** untuk menutupnya, baru turun ke tab/daftar.
 
+## Untuk Anda (lokasi)
+
+Bagian pertama di daftar kanan, dengan header "Untuk Anda · <provinsi>", berisi **TVRI regional provinsi tempat TV berada**. Kode: `Regions.kt` (tabel provinsi, pencarian terdekat), `LocationFinder.kt` (ambil lokasi), `buildSections(..., forYou)`.
+
+- **Bukan GPS sungguhan.** TV tidak punya chip GPS (`android.hardware.location.gps` tidak ada). App memakai lokasi **jaringan/Wi-Fi** (`NETWORK_PROVIDER`) dengan izin **`ACCESS_COARSE_LOCATION`** saja. Cukup untuk tingkat provinsi.
+- **Izin ditanyakan sekali**, saat start pertama (dialog sistem, dijawab dengan remote). Jika ditolak, app tetap normal tanpa bagian ini dan **tidak bertanya lagi** pada start berikutnya (penanda `location_prompted` di preferensi). Mengaktifkan lagi: Pengaturan TV → Apps → TV Channel → Permissions → Location, atau hapus data app (juga me-reset penanda).
+- **Privasi:** posisi hanya dipakai di TV untuk memilih provinsi. Tidak disimpan, tidak dicatat di log (hanya nama provinsi atau alasan gagal, tag `Region`), dan tidak dikirim ke mana pun.
+- **Cara menentukan provinsi:** titik pusat 38 provinsi tertanam di app (`PROVINCES`), diambil yang **terdekat**. Akurat di tengah provinsi, tetapi bisa salah ke provinsi tetangga di dekat perbatasan; anggap ini saran. Jika posisi lebih dari 800 km dari semua titik (TV tidak di Indonesia), bagian ini tidak tampil.
+- **TVRI yang ditampilkan:** feed `TVRI.id#<Feed>` milik provinsi itu. Provinsi tanpa feed sendiri memakai feed tetangga terdekat (Banten → Jakarta, Kepulauan Riau → Riau, Maluku Utara → Maluku, Kalimantan Utara → Kalimantan Timur, Papua Barat Daya → Papua Barat, empat provinsi Papua baru → Papua). Nama feed di `Regions.kt` harus ada di `data/channels.json`; `RegionsTest` gagal jika ada yang salah ketik atau feed dihapus dari data.
+- **Perilaku daftar:** channel yang sama tetap ada juga di grup normalnya (TVRI Daerah). Bagian ini ikut tersaring oleh tab kategori dan pencarian, dan tidak tampil bila tidak ada isinya. Lokasi biasanya didapat dalam sekejap (lokasi terakhir dari sistem), tetapi bila datang setelah daftar tampil, daftar digulir ke atas agar bagian ini terlihat (kecuali pengguna sudah menggulir ke bawah).
+- Belum ada tombol untuk memilih provinsi manual atau mematikan fitur dari dalam app.
+
 ## Preview dan player
 
 - **Satu ExoPlayer** (`PlayerController`) dan **satu `PlayerView`** untuk preview dan fullscreen. View hanya diubah ukurannya (slot preview ↔ layar penuh), sehingga OK ke fullscreen tidak memuat ulang stream.

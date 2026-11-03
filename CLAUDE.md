@@ -25,6 +25,11 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - Hanya gunakan stream resmi/legal.
 - Jawab dalam Bahasa Indonesia, kode & komentar dalam bahasa Inggris.
 
+## Lokasi (fitur "Untuk Anda")
+- Hanya izin lokasi **kasar** (`ACCESS_COARSE_LOCATION`, jaringan/Wi-Fi; TV tidak punya GPS). Jangan menambah izin lokasi presisi atau latar belakang.
+- Posisi hanya dipakai di perangkat untuk memilih provinsi: **jangan disimpan, dicatat di log, atau dikirim** (log hanya nama provinsi/alasan gagal).
+- Nama feed TVRI di `Regions.kt` harus selaras dengan `data/channels.json` (dijaga `RegionsTest`). Detail di `docs/ui-spec.md`.
+
 ## Channel (kurasi)
 - **Hanya Tier A dan B yang masuk app** (`data/channels.json`). Tier C (IP mentah, agregator, tanpa stream, mati, tidak dipilih) hanya ada di `data/excluded.json` dan tidak boleh masuk app.
 - **Channel baru wajib cek domain sumber** (kolom Domain di `python3 tools/build-channels/curate.py --report`): IP mentah atau agregator berarti Tier C; domain milik stasiun, grup medianya, atau mitra distribusi resmi boleh Tier A; ragu berarti Tier B (label "perlu dicek di TV"). Catat domain barunya di `docs/sources.md`.
@@ -38,7 +43,7 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - Push hanya atas permintaan user.
 
 ## Dokumen
-- `docs/ui-spec.md`: layout, daftar berbagian (grup/negara), tab kategori, pencarian, preview, navigasi remote, penanganan error, kinerja start.
+- `docs/ui-spec.md`: layout, daftar berbagian (grup/negara), "Untuk Anda" (lokasi), tab kategori, pencarian, preview, navigasi remote, penanganan error, kinerja start.
 - `docs/channels-schema.md`: skema `channels.json` (termasuk `groups`, `note`, `tier`), pemuatan remote/cache/bundled, contoh.
 - `docs/sources.md`: alur kurasi (iptv-org), definisi Tier A/B/C, domain yang dianggap resmi, cara menambah channel, cara menjalankan `tools/build-channels`, batasan legal.
 - Aturan: setiap keputusan desain baru (UI, navigasi, error, skema) wajib diperbarui di docs/ pada commit yang sama dengan perubahan kodenya.
