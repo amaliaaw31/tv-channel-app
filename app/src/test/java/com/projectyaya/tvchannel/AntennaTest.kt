@@ -99,9 +99,9 @@ class AntennaTest {
     @Test
     fun antennaPreviewIsOffUnlessConfigured() {
         // the flag is read with optBoolean(..., false): missing or wrong type means off
-        assertEquals(false, org.json.JSONObject("""{"liveTv": []}""").optBoolean("preview", false))
-        assertEquals(true, org.json.JSONObject("""{"preview": true}""").optBoolean("preview", false))
-        assertEquals(false, File("../data/antenna.json").readText().let { org.json.JSONObject(it).optBoolean("preview", false) })
+        assertEquals(false, org.json.JSONObject("""{"liveTv": []}""").optBoolean("antennaPreview", false))
+        assertEquals(true, org.json.JSONObject("""{"antennaPreview": true}""").optBoolean("antennaPreview", false))
+        assertEquals(false, File("../data/antenna.json").readText().let { org.json.JSONObject(it).optBoolean("antennaPreview", false) })
     }
 
     @Test

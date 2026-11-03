@@ -117,7 +117,7 @@ fun antennaChannels(scan: List<ScanChannel>, wanted: List<WantedChannel>): List<
  * is drawn by the TV's own video plane, which does not follow a small TvView's position, so by default it is only
  * shown fullscreen (docs/sources.md, "Siaran antena").
  */
-fun loadAntennaPreview(context: Context): Boolean = runCatching { JSONObject(readAsset(context)).optBoolean("preview", false) }.getOrDefault(false)
+fun loadAntennaPreview(context: Context): Boolean = runCatching { JSONObject(readAsset(context)).optBoolean("antennaPreview", false) }.getOrDefault(false)
 
 // ---- Live TV tile ----------------------------------------------------------------------------
 

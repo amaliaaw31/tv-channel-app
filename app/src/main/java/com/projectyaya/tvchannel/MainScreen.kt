@@ -122,6 +122,8 @@ fun MainScreen(
     var focusedKey by remember { mutableStateOf<String?>(null) }
     var fullscreen by remember { mutableStateOf(false) }
     var didFullscreen by remember { mutableStateOf(false) }
+    // Preview experiment (antennaPreview): the TvView is attached to the slot only after the debounce has passed.
+    var previewAttached by remember { mutableStateOf(false) }
     var pendingLast by remember { mutableStateOf<LastWatched?>(null) }
     var bannerTick by remember { mutableIntStateOf(0) }
     var bannerVisible by remember { mutableStateOf(false) }
@@ -133,12 +135,12 @@ fun MainScreen(
     val shownStatus = if (focusedAntenna != null) antenna.status else controller.status
     // The TvView is attached only while it is used (fullscreen, or the small slot if the preview is enabled):
     // left attached at any size it blanks the rest of the window on this TV.
-    val antennaViewVisible = focusedAntenna != null && (antennaPreview || fullscreen)
+    val antennaViewVisible = focusedAntenna != null && (fullscreen || previewAttached)
 
     fun exitFullscreen() {
         controller.setFullscreen(false)
         antenna.setVolume(0f)
-        if (!antennaPreview) antenna.stop() // no preview: release the tuner as soon as fullscreen ends
+        if (antennaPreview) previewAttached = focusedAntenna != null else antenna.stop() // no preview: release the tuner at once
         pendingLast?.let { lastWatched = it }
         fullscreen = false
     }
@@ -189,6 +191,7 @@ fun MainScreen(
     // In fullscreen it is zapping (short debounce, sound on); otherwise it is the muted preview.
     // Only the target kind keeps its player: the stream player and the tuner never run together.
     LaunchedEffect(focused?.id) {
+        previewAttached = false // detached the moment focus moves; re-attached below once it has settled
         val channel = focused ?: return@LaunchedEffect
         val debounce = if (fullscreen) ZAP_DEBOUNCE_MS else PREVIEW_DEBOUNCE_MS
         when {
@@ -205,6 +208,7 @@ fun MainScreen(
                 antenna.setVolume(if (fullscreen) 1f else 0f)
                 antenna.select(channel.antenna) // the tuner is slow to switch, so the same debounce applies
                 delay(debounce)
+                if (!fullscreen) previewAttached = true // exactly the preview slot: the layer box has its size
                 antenna.ensure(channel.antenna)
             }
             else -> {
@@ -336,7 +340,7 @@ fun MainScreen(
             if (antennaViewVisible) {
                 AndroidView(modifier = Modifier.fillMaxSize(), factory = { antenna.view })
             }
-            if (focusedAntenna != null && !antennaViewVisible) {
+            if (focusedAntenna != null && !antennaViewVisible && !antennaPreview) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Tekan OK untuk menonton siaran antena", textAlign = TextAlign.Center, modifier = Modifier.padding(24.dp))
                 }
