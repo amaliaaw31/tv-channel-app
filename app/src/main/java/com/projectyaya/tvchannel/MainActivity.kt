@@ -36,6 +36,7 @@ import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import androidx.tv.material3.darkColorScheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,21 +45,26 @@ private val AccentBlue = Color(0xFF3CA6FB)
 
 class MainActivity : ComponentActivity() {
     private var loaded by mutableStateOf<Result<List<Channel>>?>(null)
+    // Read before [loaded] is set, so "Lanjutkan" is in the first frame (a late insert would land off-screen).
+    private var lastWatched by mutableStateOf<LastWatched?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Must run before super.onCreate. Splash stays until channels.json is parsed (success or failure).
         installSplashScreen().setKeepOnScreenCondition { loaded == null }
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            loaded = withContext(Dispatchers.IO) { runCatching { loadChannels(applicationContext) } }
+            val last = async { readLastWatched(applicationContext) }
+            val channels = withContext(Dispatchers.IO) { runCatching { loadChannels(applicationContext) } }
+            lastWatched = last.await()
+            loaded = channels
         }
-        setContent { loaded?.let { App(it) } }
+        setContent { loaded?.let { App(it, lastWatched) } }
     }
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun App(result: Result<List<Channel>>) {
+private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
     val context = LocalContext.current
     val controller = remember { PlayerController(context) }
     val antennaController = remember { AntennaController(context) }
@@ -134,7 +140,7 @@ private fun App(result: Result<List<Channel>>) {
                     val antennaPreview = remember { loadAntennaPreview(context) }
                     val antennaItems = remember(scan, wanted) { antennaChannels(scan, wanted) }
                     val all = remember(channels, tile, antennaItems) { channels + listOfNotNull(tile) + antennaItems }
-                    MainScreen(all, controller, antennaController, forYou, antennaPreview)
+                    MainScreen(all, controller, antennaController, forYou, antennaPreview, lastWatched)
                 }
             }
         }

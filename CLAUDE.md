@@ -40,6 +40,9 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - **Channel baru wajib cek domain sumber** (kolom Domain di `python3 tools/build-channels/curate.py --report`): IP mentah atau agregator berarti Tier C; domain milik stasiun, grup medianya, atau mitra distribusi resmi boleh Tier A; ragu berarti Tier B (label "perlu dicek di TV"). Catat domain barunya di `docs/sources.md`.
 - Jangan edit `data/channels.json` / `data/excluded.json` manual. Ubah `tools/build-channels/curated_wanted.json` atau `tiers.json`, lalu jalankan `curate.py` dan `finalize.py` (urutannya di `docs/sources.md`).
 
+## Fullscreen
+- Zapping fullscreen (atas/bawah, Channel Up/Down) berputar di bagian daftar tempat channel dibuka; hanya satu pemutar aktif (ExoPlayer **atau** tuner), dan `TvView` hanya ada di hierarki saat dipakai. Channel terakhir ditonton disimpan di DataStore untuk bagian "Lanjutkan" (hanya id/nama/bagian; tidak ada lokasi). Detail di `docs/ui-spec.md`.
+
 ## Git & GitHub
 - Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik.
 - Branch utama `main` (lokal dan remote sama namanya); push dengan `git push`.

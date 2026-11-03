@@ -12,6 +12,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -45,6 +46,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,7 +56,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -69,7 +73,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
 import androidx.tv.material3.Border
-import androidx.tv.material3.Button
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
@@ -78,11 +81,14 @@ import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
 
 private const val PREVIEW_DEBOUNCE_MS = 700L
+private const val ZAP_DEBOUNCE_MS = 300L
+private const val BANNER_MS = 3000L
 
 /**
  * Two-column home: preview + info on the left, text channel list on the right.
  * One PlayerView sits above both layouts and is only resized (preview slot <-> fullscreen),
  * so the same surface and the same ExoPlayer keep playing across the switch.
+ * Fullscreen zaps through the section the channel was opened from (up = next, down = previous).
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
@@ -92,39 +98,52 @@ fun MainScreen(
     antenna: AntennaController,
     forYou: ForYou? = null,
     antennaPreview: Boolean = false,
+    initialLast: LastWatched? = null,
 ) {
     val context = LocalContext.current
     val categories = remember(channels) { categoriesOf(channels) }
     var category by remember { mutableStateOf<String?>(null) }
     var query by remember { mutableStateOf("") }
     val visible = remember(channels, category, query) { filterChannels(channels, category, query) }
-    val sections = remember(visible, forYou) { buildSections(visible, forYou) }
+    var lastWatched by remember { mutableStateOf(initialLast) }
+    // "Lanjutkan" is hidden while a filter or search is active.
+    val resume = remember(lastWatched, channels, category, query) {
+        if (category == null && query.isBlank()) resolveResume(lastWatched, channels) else null
+    }
+    val sections = remember(visible, forYou, resume) { buildSections(visible, forYou, resume) }
     // A channel can sit in several sections (e.g. RCTI under Nasional and MNC), so rows are keyed by
     // "<section key>/<channel id>"; the preview still follows the channel id alone.
     val rowKeys = remember(sections) { sections.flatMap { s -> s.channels.map { rowKey(s, it) } }.toSet() }
     val firstKey = sections.firstOrNull()?.let { s -> s.channels.firstOrNull()?.let { rowKey(s, it) } }
     val requesters = remember { HashMap<String, FocusRequester>() }
     val fullscreenFocus = remember { FocusRequester() }
+    val listState = rememberLazyListState()
     var focusedId by remember { mutableStateOf<String?>(null) }
     var focusedKey by remember { mutableStateOf<String?>(null) }
     var fullscreen by remember { mutableStateOf(false) }
+    var didFullscreen by remember { mutableStateOf(false) }
+    var pendingLast by remember { mutableStateOf<LastWatched?>(null) }
+    var bannerTick by remember { mutableIntStateOf(0) }
+    var bannerVisible by remember { mutableStateOf(false) }
     var slot by remember { mutableStateOf<Rect?>(null) }
     val focused = channels.firstOrNull { it.id == focusedId }
 
     // The preview slot shows either the ExoPlayer stream or the antenna TvView, depending on what is focused.
     val focusedAntenna = focused?.antenna
     val shownStatus = if (focusedAntenna != null) antenna.status else controller.status
-    // The TvView is only given real size when it is used: fullscreen, or the small slot if the preview is enabled.
+    // The TvView is attached only while it is used (fullscreen, or the small slot if the preview is enabled):
+    // left attached at any size it blanks the rest of the window on this TV.
     val antennaViewVisible = focusedAntenna != null && (antennaPreview || fullscreen)
 
     fun exitFullscreen() {
         controller.setFullscreen(false)
         antenna.setVolume(0f)
         if (!antennaPreview) antenna.stop() // no preview: release the tuner as soon as fullscreen ends
+        pendingLast?.let { lastWatched = it }
         fullscreen = false
     }
 
-    fun onOk(channel: Channel) {
+    fun onOk(section: Section, channel: Channel) {
         // A tile opens another app (Live TV) instead of playing a stream.
         if (channel.launch.isNotEmpty()) {
             if (!launchLiveTv(context, channel.launch)) {
@@ -132,10 +151,17 @@ fun MainScreen(
             }
             return
         }
+        // Zapping runs through the section the channel is opened from; the "Lanjutkan" row uses the one it was left in.
+        focusedKey = if (section.key == RESUME_KEY) {
+            val own = "${lastWatched?.section}/${channel.id}"
+            own.takeIf { it in rowKeys } ?: rowKeys.firstOrNull { !it.startsWith("$RESUME_KEY/") && it.endsWith("/${channel.id}") }
+        } else rowKey(section, channel)
+        focusedId = channel.id
         // An antenna channel goes fullscreen with sound, through the same TvView.
         if (channel.antenna != null) {
             antenna.ensure(channel.antenna)
             antenna.setVolume(1f)
+            bannerTick++
             fullscreen = true
             return
         }
@@ -146,12 +172,25 @@ fun MainScreen(
         }
         controller.ensure(channel)
         controller.setFullscreen(true)
+        bannerTick++
         fullscreen = true
     }
 
-    // Debounced preview: a newer focus change cancels this effect, and select() drops the old load at once.
+    /** Fullscreen zapping: [step] channels away in the current section, wrapping around. */
+    fun zap(step: Int) {
+        val section = sections.firstOrNull { s -> s.channels.any { rowKey(s, it) == focusedKey } } ?: return
+        val next = zapTarget(section.channels, focusedId ?: return, step) ?: return
+        focusedKey = rowKey(section, next)
+        focusedId = next.id
+        bannerTick++
+    }
+
+    // Debounced playback: a newer focus change cancels this effect, and select() drops the old load at once.
+    // In fullscreen it is zapping (short debounce, sound on); otherwise it is the muted preview.
+    // Only the target kind keeps its player: the stream player and the tuner never run together.
     LaunchedEffect(focused?.id) {
         val channel = focused ?: return@LaunchedEffect
+        val debounce = if (fullscreen) ZAP_DEBOUNCE_MS else PREVIEW_DEBOUNCE_MS
         when {
             channel.launch.isNotEmpty() -> { // a tile has no stream: empty preview instead of a spinner
                 controller.stop()
@@ -159,26 +198,53 @@ fun MainScreen(
             }
             channel.antenna != null -> {
                 controller.stop()
-                if (!antennaPreview) { // fullscreen only: nothing is tuned until OK
+                if (!antennaPreview && !fullscreen) { // fullscreen only: nothing is tuned until OK
                     antenna.stop()
                     return@LaunchedEffect
                 }
+                antenna.setVolume(if (fullscreen) 1f else 0f)
                 antenna.select(channel.antenna) // the tuner is slow to switch, so the same debounce applies
-                delay(PREVIEW_DEBOUNCE_MS)
+                delay(debounce)
                 antenna.ensure(channel.antenna)
             }
             else -> {
                 antenna.stop()
                 controller.select(channel)
-                delay(PREVIEW_DEBOUNCE_MS)
+                controller.setFullscreen(fullscreen)
+                delay(debounce)
                 controller.ensure(channel)
             }
         }
     }
 
-    // Fullscreen takes D-pad focus; on exit focus returns to the last focused channel if the filter
-    // still shows it, else the first visible one (also the startup case).
+    // Remember what is being watched once zapping settles; "Lanjutkan" shows it after leaving fullscreen.
+    LaunchedEffect(focusedId, fullscreen) {
+        val channel = focused?.takeIf { fullscreen && it.launch.isEmpty() } ?: return@LaunchedEffect
+        delay(ZAP_DEBOUNCE_MS)
+        val last = LastWatched(channel.id, channel.name, focusedKey.orEmpty().removeSuffix("/${channel.id}"))
+        pendingLast = last
+        saveLastWatched(context, last)
+    }
+
+    // The banner (number, name, group, kind) shows on every zap and on OK, then fades after a few seconds.
+    LaunchedEffect(bannerTick) {
+        if (bannerTick > 0) {
+            bannerVisible = true
+            delay(BANNER_MS)
+            bannerVisible = false
+        }
+    }
+
+    // Fullscreen takes D-pad focus; on exit focus returns to the last watched channel if the filter still shows
+    // it, else the first visible one (also the startup case). That row may have scrolled out of the lazy list.
     LaunchedEffect(fullscreen) {
+        if (fullscreen) didFullscreen = true
+        else if (didFullscreen) {
+            val index = (focusedKey?.takeIf { it in rowKeys } ?: firstKey)?.let { listIndexOf(sections, it) } ?: -1
+            if (index >= 0 && listState.layoutInfo.visibleItemsInfo.none { it.index == index }) {
+                listState.scrollToItem((index - 1).coerceAtLeast(0)) // keep the section header above it in view
+            }
+        }
         repeat(2) { withFrameNanos { } } // let lazy items compose before asking for focus
         runCatching {
             if (fullscreen) {
@@ -214,7 +280,7 @@ fun MainScreen(
                     )
                 } else {
                     ChannelList(
-                        sections, controller, enabled = !fullscreen, requesters,
+                        sections, controller, listState, enabled = !fullscreen, requesters,
                         onFocus = { key, channel ->
                             focusedKey = key
                             focusedId = channel.id
@@ -236,7 +302,24 @@ fun MainScreen(
         }
         Box(
             layerModifier.background(Color.Black)
-                .then(if (fullscreen) Modifier.focusRequester(fullscreenFocus).focusable() else Modifier),
+                .then(
+                    if (fullscreen) {
+                        Modifier.onKeyEvent { e ->
+                            if (e.type != KeyEventType.KeyDown) return@onKeyEvent false
+                            when (e.key) {
+                                Key.DirectionUp, Key.ChannelUp -> zap(+1)
+                                Key.DirectionDown, Key.ChannelDown -> zap(-1)
+                                Key.DirectionCenter, Key.Enter, Key.NumPadEnter -> {
+                                    // OK: show the banner again; on a failed stream it also reloads it.
+                                    if (focused?.antenna == null && controller.status is PlaybackStatus.Failed) controller.retry()
+                                    bannerTick++
+                                }
+                                else -> return@onKeyEvent false
+                            }
+                            true
+                        }.focusRequester(fullscreenFocus).focusable()
+                    } else Modifier,
+                ),
         ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -249,8 +332,7 @@ fun MainScreen(
                     }
                 },
             )
-            // Antenna video: same slot, above the player surface. Only in the hierarchy while it is shown: a TvView
-            // that stays attached (even at size 0) leaves the rest of the window blank on this TV.
+            // Antenna video: same slot, above the player surface; in the hierarchy only while it is shown.
             if (antennaViewVisible) {
                 AndroidView(modifier = Modifier.fillMaxSize(), factory = { antenna.view })
             }
@@ -259,14 +341,32 @@ fun MainScreen(
                     Text("Tekan OK untuk menonton siaran antena", textAlign = TextAlign.Center, modifier = Modifier.padding(24.dp))
                 }
             }
-            StatusOverlay(
-                status = shownStatus,
-                fullscreen = fullscreen,
-                onRetry = controller::retry,
-                onBack = ::exitFullscreen,
-            )
+            StatusOverlay(status = shownStatus, fullscreen = fullscreen)
+            if (fullscreen && bannerVisible && focused != null) {
+                val section = sections.firstOrNull { s -> s.channels.any { rowKey(s, it) == focusedKey } }
+                Box(Modifier.align(Alignment.TopStart).padding(start = 48.dp, top = 27.dp)) {
+                    ChannelBanner(
+                        number = section?.let { zapPosition(it.channels, focused.id) } ?: 0,
+                        channel = focused,
+                        group = section?.title.orEmpty(),
+                    )
+                }
+            }
         }
     }
+}
+
+/** Index of the row [key] in the flat LazyColumn (one header item per section, then its channels). */
+private fun listIndexOf(sections: List<Section>, key: String): Int {
+    var i = 0
+    for (s in sections) {
+        i++ // header
+        for (c in s.channels) {
+            if (rowKey(s, c) == key) return i
+            i++
+        }
+    }
+    return -1
 }
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -344,17 +444,18 @@ private fun CategoryTabs(categories: List<String>, selected: String?, onSelect: 
 private fun ChannelList(
     sections: List<Section>,
     controller: PlayerController,
+    listState: LazyListState,
     enabled: Boolean,
     requesters: MutableMap<String, FocusRequester>,
     onFocus: (rowKey: String, channel: Channel) -> Unit,
-    onOk: (Channel) -> Unit,
+    onOk: (Section, Channel) -> Unit,
 ) {
     // LazyColumn keeps the item that was on top in place, so a "Untuk Anda" section that is inserted above it
     // after the list is already showing (location arrives late) would land off-screen. Bring it into view,
     // unless the user has already scrolled down past it.
-    val listState = rememberLazyListState()
-    val hasLocal = sections.firstOrNull()?.key == "local"
-    val localRows = if (hasLocal) sections[0].channels.size + 1 else 0
+    val localAt = sections.indexOfFirst { it.key == "local" }
+    val hasLocal = localAt >= 0
+    val localRows = if (hasLocal) sections.take(localAt + 1).sumOf { it.channels.size + 1 } else 0
     LaunchedEffect(hasLocal) {
         if (hasLocal && listState.firstVisibleItemIndex <= localRows) listState.scrollToItem(0)
     }
@@ -383,7 +484,7 @@ private fun ChannelList(
                         ?: MaterialTheme.colorScheme.primary,
                     requester = requesters.getOrPut(rowKey(section, channel)) { FocusRequester() },
                     onFocus = { onFocus(rowKey(section, channel), channel) },
-                    onOk = { onOk(channel) },
+                    onOk = { onOk(section, channel) },
                 )
             }
         }
@@ -464,7 +565,7 @@ private fun ChannelRow(
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean, onRetry: () -> Unit, onBack: () -> Unit) {
+private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when (status) {
             PlaybackStatus.Loading -> Column(
@@ -476,7 +577,8 @@ private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean, onRetry: 
             }
             is PlaybackStatus.Failed -> {
                 val info = describeError(status.errorCode, status.httpStatus)
-                if (fullscreen) DroppedBroadcast(info, onRetry, onBack) else PreviewError(info)
+                // Text only, no buttons: in fullscreen up/down keep zapping and Back keeps leaving.
+                PreviewError(info, if (fullscreen) "OK: coba lagi · atas/bawah: ganti channel · Kembali: daftar" else "Tekan OK untuk coba lagi")
             }
             is PlaybackStatus.Notice -> Text(
                 status.title,
@@ -492,7 +594,7 @@ private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean, onRetry: 
 
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun PreviewError(info: ErrorInfo) {
+private fun PreviewError(info: ErrorInfo, hint: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -500,31 +602,44 @@ private fun PreviewError(info: ErrorInfo) {
     ) {
         Text(info.title, style = MaterialTheme.typography.titleMedium, color = info.severity.color(), textAlign = TextAlign.Center)
         info.code?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-        Text("Tekan OK untuk coba lagi", style = MaterialTheme.typography.bodySmall)
+        Text(hint, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
     }
 }
 
-/** Shown only after the automatic reconnect also failed. */
+/** Fullscreen corner banner: position in the section, name, country/group, and an icon for antenna or internet. */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-private fun DroppedBroadcast(info: ErrorInfo, onRetry: () -> Unit, onBack: () -> Unit) {
-    val retryFocus = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-        withFrameNanos { }
-        runCatching { retryFocus.requestFocus() }
-    }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.padding(48.dp),
+private fun ChannelBanner(number: Int, channel: Channel, group: String) {
+    val detail = if (channel.antenna != null) "Antena · $group · Live TV ${channel.note.orEmpty()}".trim() else "${countryName(channel.country)} · $group"
+    Row(
+        Modifier.background(Color.Black.copy(alpha = 0.75f), RoundedCornerShape(12.dp)).padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Siaran terputus", style = MaterialTheme.typography.headlineMedium)
-        Text(info.title, color = info.severity.color(), textAlign = TextAlign.Center)
-        info.code?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
-        Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = onRetry, modifier = Modifier.focusRequester(retryFocus)) { Text("Coba lagi") }
-            Button(onClick = onBack) { Text("Kembali") }
+        Text(number.toString(), style = MaterialTheme.typography.displaySmall, color = MaterialTheme.colorScheme.primary)
+        Column {
+            Text(channel.name, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(detail, style = MaterialTheme.typography.bodyMedium, color = Color(0xFFCCCCCC), maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        KindIcon(antenna = channel.antenna != null)
+    }
+}
+
+/** Antenna (rabbit ears) or internet (globe) glyph, drawn so no icon library is needed. */
+@Composable
+private fun KindIcon(antenna: Boolean) {
+    val color = Color.White
+    Canvas(Modifier.size(28.dp)) {
+        val stroke = 2.5.dp.toPx()
+        if (antenna) {
+            val base = Offset(size.width / 2, size.height * 0.9f)
+            drawLine(color, base, Offset(size.width * 0.2f, size.height * 0.1f), stroke, StrokeCap.Round)
+            drawLine(color, base, Offset(size.width * 0.8f, size.height * 0.1f), stroke, StrokeCap.Round)
+            drawLine(color, Offset(size.width * 0.3f, size.height * 0.9f), Offset(size.width * 0.7f, size.height * 0.9f), stroke, StrokeCap.Round)
+        } else {
+            drawCircle(color, radius = size.minDimension / 2 - stroke, style = Stroke(stroke))
+            drawOval(color, Offset(size.width * 0.3f, stroke), Size(size.width * 0.4f, size.height - 2 * stroke), style = Stroke(stroke))
+            drawLine(color, Offset(stroke, size.height / 2), Offset(size.width - stroke, size.height / 2), stroke)
         }
     }
 }

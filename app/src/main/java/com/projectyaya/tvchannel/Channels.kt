@@ -96,9 +96,9 @@ private val GROUP_ORDER = listOf(ANTENNA_GROUP, "Nasional", "MNC", "Berita", "Pu
  * List sections: curated groups first (in [GROUP_ORDER], channels by name), then one section per country
  * for channels without groups (by country name, channels in file order). A channel with several groups
  * appears in each of them, so the same channel id can occur in more than one section. [forYou], when it
- * matches a visible channel, adds a first section.
+ * matches a visible channel, adds a section; [resume] adds a "Lanjutkan" section above that.
  */
-fun buildSections(channels: List<Channel>, forYou: ForYou? = null): List<Section> {
+fun buildSections(channels: List<Channel>, forYou: ForYou? = null, resume: Channel? = null): List<Section> {
     val byGroup = LinkedHashMap<String, MutableList<Channel>>()
     val byCountry = LinkedHashMap<String, MutableList<Channel>>()
     for (c in channels) {
@@ -114,8 +114,26 @@ fun buildSections(channels: List<Channel>, forYou: ForYou? = null): List<Section
     // The "Untuk Anda" section comes first and repeats channels that also sit in their normal section.
     val local = forYou?.let { f -> channels.filter { it.id in f.channelIds } }.orEmpty()
     val forYouSection = if (forYou != null && local.isNotEmpty()) listOf(Section("local", forYou.title, local)) else emptyList()
-    return forYouSection + groups + countries
+    // "Lanjutkan" (the last watched channel) sits above everything, even "Untuk Anda".
+    val resumeSection = if (resume != null) listOf(Section(RESUME_KEY, "Lanjutkan", listOf(resume))) else emptyList()
+    return resumeSection + forYouSection + groups + countries
 }
+
+/** Key of the "Lanjutkan" section; its single row opens the channel in the section it was last watched from. */
+const val RESUME_KEY = "resume"
+
+/** Channels that can be played or zapped to: the tiles that open another app are not. */
+private fun playable(list: List<Channel>) = list.filter { it.launch.isEmpty() }
+
+/** The channel [step] places away from [currentId] among the playable channels of [list], wrapping around; null if there is nowhere to go. */
+fun zapTarget(list: List<Channel>, currentId: String, step: Int): Channel? {
+    val p = playable(list)
+    val i = p.indexOfFirst { it.id == currentId }
+    return if (i < 0 || p.size < 2) null else p[Math.floorMod(i + step, p.size)]
+}
+
+/** 1-based position of [id] among the playable channels of [list] (the number shown in the zap banner); 0 if absent. */
+fun zapPosition(list: List<Channel>, id: String): Int = playable(list).indexOfFirst { it.id == id } + 1
 
 /** A personalised section shown above the others (by location): its [title] and the ids it should list. */
 data class ForYou(val title: String, val channelIds: Set<String>)

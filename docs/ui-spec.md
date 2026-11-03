@@ -80,14 +80,30 @@ Grup ini selalu yang pertama setelah "Untuk Anda" dan berisi dua jenis item. Kon
 
 | Tombol | Di daftar | Di fullscreen |
 |---|---|---|
-| Atas / Bawah | Pindah baris (melewati header negara), daftar ikut menggulir | Tidak ada efek |
-| OK | Channel normal: fullscreen. Channel error: muat ulang di preview, tidak fullscreen | Pada layar "Siaran terputus": menekan tombol yang difokus |
-| Kiri / Kanan | Tidak ada efek | Berpindah antara Coba lagi dan Kembali (hanya saat siaran terputus) |
-| Kembali | Keluar dari app | Kembali ke dua kolom, fokus kembali ke channel terakhir |
+| Atas / Bawah | Pindah baris (melewati header negara), daftar ikut menggulir | **Zapping**: atas = channel berikutnya, bawah = sebelumnya (lihat di bawah) |
+| Channel Up / Down | Tidak ada efek | Sama dengan atas / bawah |
+| OK | Channel normal: fullscreen. Channel error: muat ulang di preview, tidak fullscreen | Menampilkan banner lagi; pada stream yang gagal juga memuat ulang |
+| Kiri / Kanan | Tidak ada efek | Tidak ada efek |
+| Kembali | Keluar dari app | Kembali ke dua kolom, fokus kembali ke channel terakhir yang ditonton |
 
 - Atas dari channel teratas menuju baris tab (chip yang paling dekat secara horizontal), atas lagi menuju kolom pencarian. Bawah kembali ke daftar.
 - Saat fullscreen, pencarian, tab, dan baris daftar dinonaktifkan agar D-pad tidak memindahkan fokus di bawah video.
 - Fokus awal: channel pertama pada urutan tampil. Setelah fullscreen, fokus kembali ke channel terakhir jika masih lolos filter, jika tidak ke channel pertama yang tampil.
+
+## Zapping di fullscreen
+
+- **Atas / Channel Up** = channel berikutnya, **Bawah / Channel Down** = sebelumnya, di dalam **bagian daftar tempat channel dibuka** (urutan sama dengan daftar; tile Live TV dilewati). Di ujung daftar kembali ke sisi seberang (wrap-around). Bagian dengan satu channel tidak berpindah. Channel yang dibuka dari baris "Lanjutkan" memakai bagian asalnya terakhir ditonton.
+- **Banner** di pojok kiri atas, tampil ~3 detik setiap pindah channel dan setiap OK: nomor urut di bagian itu, nama channel, "Negara (KODE) · bagian" (antena: "Antena · bagian · Live TV no. N") dan ikon jenis (antena kaki dua atau globe internet, digambar dengan Canvas).
+- **Satu pemutar aktif**: pindah ke channel antena melepas ExoPlayer (`controller.stop()`), pindah ke stream melepas tuner (`antenna.stop()`) dan melepas `TvView` dari hierarki; sesi tuner dan koneksi stream tidak menumpuk (diuji: `dumpsys tv_input` 1 sesi selama antena, 0 sesudah Kembali).
+- **Debounce 300 ms** pada tekan cepat berulang: hanya channel terakhir yang di-tune / dimuat; yang sebelumnya dilepas seketika dan layar menampilkan "Memuat…".
+- **Error** (mati, geo-block, tuner): pesan yang sama dengan preview (warna kuning/merah) plus petunjuk "OK: coba lagi · atas/bawah: ganti channel · Kembali: daftar". Tanpa tombol, jadi atas/bawah tetap memindahkan channel dan Kembali tetap keluar. Reconnect otomatis 1× di fullscreen tetap berlaku untuk stream.
+- Fokus saat Kembali ke dua kolom: channel terakhir yang ditonton; baris digulirkan ke layar jika sudah keluar dari daftar yang dirender.
+
+### Lanjutkan
+
+- Channel yang terakhir ditonton di fullscreen disimpan di **DataStore** (`LastWatched.kt`: id, nama, kunci bagian), setelah zapping tenang (300 ms). Yang disimpan hanya channel, bukan lokasi atau riwayat.
+- Bagian **"Lanjutkan"** (satu baris) tampil **paling atas**, di atas "Untuk Anda"; OK membukanya fullscreen. Disembunyikan saat tab kategori atau pencarian aktif. Dibaca bersama channels.json sebelum frame pertama (supaya tidak menggeser daftar yang sedang tampil) dan diperbarui saat keluar fullscreen.
+- Channel dicari dengan id, lalu dengan nama (id antena berubah setelah scan ulang); tile Live TV tidak pernah disimpan. Channel yang sudah tidak ada di daftar membuat "Lanjutkan" tidak tampil.
 
 ## Status preview dan penanganan error
 
@@ -113,15 +129,14 @@ Status ditampilkan di area preview. Daftar tetap bisa dinavigasi selama error.
 
 1. Error muncul saat fullscreen: **reconnect otomatis 1×** (tampil "Memuat…").
 2. Jika berhasil memutar lagi, jatah reconnect direset (putus berikutnya dapat 1× lagi).
-3. Jika gagal: layar "Siaran terputus", alasan (warna kuning/merah), dan dua tombol **Coba lagi** (fokus awal) dan **Kembali**.
-4. Coba lagi memuat ulang dari tepi live dan mereset jatah reconnect. Kembali ke dua kolom; preview menampilkan pesan error channel itu.
+3. Jika gagal: pesan error (kuning/merah) di tengah layar tanpa tombol (lihat "Zapping di fullscreen"). **OK** memuat ulang dari tepi live dan mereset jatah reconnect, atas/bawah pindah channel, **Kembali** ke dua kolom (preview menampilkan pesan error channel itu).
 
 App tidak boleh crash karena error stream: semua kegagalan pemutaran masuk ke status di atas.
 
 ## Belum dicakup / batasan
 
 - Diuji di TV SWTV_24AE_FHD (Android 14, RAM ±1 GB): tampilan, preview, tab kategori, pencarian dengan keyboard virtual, bagian grup dan label catatan. Perilaku di TV lain belum diketahui.
-- Tidak ada favorit, EPG, atau pengingat posisi daftar di luar sesi.
+- Tidak ada favorit atau EPG. Yang diingat di luar sesi hanya channel terakhir ditonton ("Lanjutkan"), bukan posisi daftar.
 - Rebuffering saat fullscreen menampilkan spinner "Memuat…" di atas video.
 - Pemetaan error teruji lewat tes unit (`DescribeErrorTest`). Alur reconnect dan fokus belum punya tes otomatis.
 

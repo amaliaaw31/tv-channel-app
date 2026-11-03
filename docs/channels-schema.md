@@ -67,6 +67,10 @@ File terpisah: `data/antenna.json`, ikut di APK sebagai `assets/antenna.json`. B
 
 Isi `liveTv` **dideteksi di TV, bukan ditebak** (caranya di `sources.md`). Untuk TV lain tambahkan entri di sini. Tile dan channel antena masuk ke grup `TV Nasional (Antena)` (konstanta `ANTENNA_GROUP`), selalu grup pertama setelah "Untuk Anda". Di kode keduanya berupa `Channel` dengan `streamUrl` kosong: tile punya `launch` (kandidat Live TV), channel antena punya `antenna` (`AntennaRef`: id kanal TvProvider dan id input tuner) dan `note` "no. N". Keduanya ikut tersaring oleh pencarian dan tab kategori "Umum".
 
+## Data lokal: channel terakhir ditonton
+
+Bukan bagian dari file mana pun di `data/`. App menyimpannya di DataStore (`watch`, file `datastore/watch.preferences_pb`) dengan tiga kunci string: `last_id`, `last_name`, `last_section` (kunci bagian daftar, mis. `g:Berita`). `last_id` dicocokkan dengan `id` channel (untuk channel antena `antena:<id TvProvider>`, yang berubah setelah scan ulang, jadi `last_name` dipakai sebagai cadangan). Tidak ada lokasi di dalamnya. Dipakai bagian "Lanjutkan" (`docs/ui-spec.md`).
+
 ## Perilaku pembacaan
 
 - JSON yang rusak (bukan array, sintaks salah) membuat pembacaan gagal. UI menampilkan "Gagal membaca channels.json".
