@@ -84,7 +84,8 @@ Grup ini selalu yang pertama setelah "Untuk Anda" dan berisi dua jenis item. Kon
 | Atas / Bawah | Pindah baris (melewati header negara), daftar ikut menggulir | **Zapping**: atas = channel berikutnya, bawah = sebelumnya (lihat di bawah) |
 | Channel Up / Down | Tidak ada efek | Sama dengan atas / bawah |
 | OK | Channel normal: fullscreen. Channel error: muat ulang di preview, tidak fullscreen | Menampilkan banner lagi; pada stream yang gagal juga memuat ulang |
-| Kiri / Kanan | Tidak ada efek | Tidak ada efek |
+| Kiri | Tidak ada efek | Menutup menu subtitle bila terbuka |
+| Kanan | Tidak ada efek | Membuka menu subtitle (stream internet saja; atas/bawah/OK/kiri dipakai menu selama terbuka) |
 | Kembali | Keluar dari app | Kembali ke dua kolom, fokus kembali ke channel terakhir yang ditonton |
 
 - Atas dari channel teratas menuju baris tab (chip yang paling dekat secara horizontal), atas lagi menuju kolom pencarian. Bawah kembali ke daftar.
@@ -105,6 +106,27 @@ Grup ini selalu yang pertama setelah "Untuk Anda" dan berisi dua jenis item. Kon
 - Channel yang terakhir ditonton di fullscreen disimpan di **DataStore** (`LastWatched.kt`: id, nama, kunci bagian), setelah zapping tenang (300 ms). Yang disimpan hanya channel, bukan lokasi atau riwayat.
 - Bagian **"Lanjutkan"** (satu baris) tampil **paling atas**, di atas "Untuk Anda"; OK membukanya fullscreen. Disembunyikan saat tab kategori atau pencarian aktif. Dibaca bersama channels.json sebelum frame pertama (supaya tidak menggeser daftar yang sedang tampil) dan diperbarui saat keluar fullscreen.
 - Channel dicari dengan id, lalu dengan nama (id antena berubah setelah scan ulang); tile Live TV tidak pernah disimpan. Channel yang sudah tidak ada di daftar membuat "Lanjutkan" tidak tampil.
+
+## Subtitle (terjemahan otomatis ke Indonesia)
+
+Hanya untuk **channel stream internet di fullscreen**. Tidak jalan di channel antena (tuner), tile, preview, atau daftar: `SubtitleController` hanya aktif antara masuk dan keluar fullscreen di stream, dan menghentikan semuanya begitu pindah ke antena (kode: `SubtitleLogic.kt` keputusan murni, `SubtitleController.kt`, `LineTranslator.kt` ML Kit, `SubtitleUi.kt`).
+
+**Keputusan saat fullscreen dibuka** (mode Otomatis; `planSubtitles`, dites di `SubtitleLogicTest`):
+
+| | Kondisi | Hasil |
+|---|---|---|
+| a | `languages` channel mengandung `ind` | Tidak aktif: tanpa overlay, tanpa unduh model (berlaku walau ada track) |
+| b | Ada text track berbahasa Indonesia (`id`/`in`/`ind`) | Track itu ditampilkan apa adanya |
+| c | Ada text track bahasa lain (CEA-608/708, WebVTT) | Diterjemahkan ke Indonesia dengan ML Kit Translation on-device. Bahasa sumber dari tag track; kosong/`und`/tidak dikenal: dideteksi dengan ML Kit Language ID |
+| d | Tidak ada text track | Menu menampilkan "Subtitle tidak tersedia" |
+
+- **Per baris** (channel campuran): bahasa dideteksi (ML Kit Language ID, ambang keyakinan 0,6) pada **3 baris terakhir**; baris terbaru yang panjang (≥ 30 huruf) dideteksi sendiri supaya satu kalimat asing tidak ikut tertarik ke bahasa baris sebelumnya. Hasil Indonesia **tidak diterjemahkan**; `und` atau keyakinan rendah dianggap tidak terdeteksi: **teks asli ditampilkan**, tidak diterjemahkan. Bahasa sumber terjemahan = tag track bila ada, kalau tidak hasil deteksi. Kegagalan terjemahan (offline, model gagal) menampilkan teks asli; unduh model diulang paling cepat tiap 30 detik.
+- **Model bahasa** diunduh saat pertama dibutuhkan (satu per bahasa sumber, ±30 MB, dan model Indonesia): overlay menampilkan "Mengunduh paket bahasa…" (kuning). Yang diunduh hanya file model; teks subtitle tidak pernah dikirim ke mana pun. **Cache terjemahan per baris** dan translator dilepas (`close`) saat pindah channel, keluar fullscreen, dan saat app ke belakang.
+- **Overlay**: teks putih 28 sp di pelat hitam 65% bertepi bulat, di tengah bawah dengan jarak 64 dp kiri/kanan dan 48 dp bawah (aman dari overscan). Tidak fokus dan tidak memakai tombol, jadi banner channel (pojok kiri atas) dan zapping atas/bawah tidak terganggu. Subtitle bawaan `PlayerView` disembunyikan; semua subtitle digambar oleh overlay ini.
+- **Menu subtitle**: **kanan** di fullscreen (hanya di stream internet) membuka panel di sisi kanan: **Otomatis** (bawaan, aturan di atas) / **Mati** / **Asli** (track Indonesia bila ada, kalau tidak track pertama, tanpa terjemahan) / **Selalu terjemahkan** (track pertama non-Indonesia, mengabaikan `languages`). Di dalam menu: atas/bawah memilih, OK menerapkan, kiri atau Kembali menutup (Kembali pertama hanya menutup menu); Channel Up/Down tetap pindah channel dan menutup menu. Baris bawah menu menjelaskan keadaan ("Subtitle tidak tersedia", "Channel berbahasa Indonesia: tanpa terjemahan", "Diterjemahkan ke Indonesia dari Inggris", ...). Pilihan disimpan di DataStore (`settings`, kunci `subtitle_mode`) dan berlaku untuk semua channel.
+- **Memori** (TV 953 MB RAM, ±190 MB tersedia): app yang memutar stream HLS fullscreen dengan penerjemah aktif PSS ±125–133 MB (`dumpsys meminfo`), tanpa selisih yang terukur dibanding channel tanpa terjemahan; model ML Kit dipakai lewat file pemetaan dan dilepas bersama translator. ABI `x86` dibuang dari APK (`abiFilters` armeabi-v7a dan arm64-v8a), APK debug ±47 MB.
+- **Cara menguji** (tidak ada channel di daftar yang pasti punya subtitle): `SubtitleProbeActivity` (debug saja) memutar stream uji Apple (WebVTT banyak bahasa) lewat `SubtitleController`: `adb shell am start -n com.projectyaya.tvchannel/.SubtitleProbeActivity --es lang eng [--es mode Original] [--ez menu true] [--es sample '"kalimat 1|kalimat 2"']`; `--es sample` menjalankan deteksi dan terjemahan per baris dan mencatatnya di logcat tag `SubtitleProbe`.
+- **Batasan**: HLS hanya menampilkan CEA-608/708 bila manifest mendeklarasikan `CLOSED-CAPTIONS`; yang tidak dideklarasikan tidak terlihat sebagai text track. Subtitle bergambar (bitmap) tidak didukung. Terjemahan mesin kata per kalimat bisa janggal (mis. "Ya" pendek yang terdeteksi Prancis menjadi "Adalah").
 
 ## Status preview dan penanganan error
 

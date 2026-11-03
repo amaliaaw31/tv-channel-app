@@ -53,6 +53,8 @@ def app_entry(entry, tier, tiers):
         out["headers"] = entry["headers"]
     if entry["country"] in tiers.get("group_countries", []) and entry["groups"]:
         out["groups"] = sorted(entry["groups"])
+    if entry.get("languages"):  # ISO 639-3 from iptv-org feeds; the app skips translating Indonesian ("ind") channels
+        out["languages"] = entry["languages"]
     out["tier"] = tier
     if tier == "B":
         out["note"] = tiers["B_note"]

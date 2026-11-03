@@ -33,6 +33,12 @@ class Finalize(unittest.TestCase):
         self.assertEqual(by["b1"]["note"], "perlu dicek di TV")
         self.assertNotIn("note", by["a1"])
 
+    def test_languages_pass_through_only_when_known(self):
+        curated = {"found": [dict(e("a1"), languages=["eng", "ind"]), e("b1"), e("sport")], "notFound": []}
+        by = {x["id"]: x for x in f.finalize(curated, TIERS)[0]}
+        self.assertEqual(by["a1"]["languages"], ["eng", "ind"])
+        self.assertNotIn("languages", by["b1"])
+
     def test_groups_only_for_configured_countries(self):
         by = {x["id"]: x for x in self.app}
         self.assertEqual(by["a1"]["groups"], ["Berita"])

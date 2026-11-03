@@ -66,6 +66,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import android.view.View
 import android.widget.Toast
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -96,6 +97,7 @@ fun MainScreen(
     channels: List<Channel>,
     controller: PlayerController,
     antenna: AntennaController,
+    subtitles: SubtitleController,
     forYou: ForYou? = null,
     antennaPreview: Boolean = false,
     initialLast: LastWatched? = null,
@@ -127,6 +129,8 @@ fun MainScreen(
     var pendingLast by remember { mutableStateOf<LastWatched?>(null) }
     var bannerTick by remember { mutableIntStateOf(0) }
     var bannerVisible by remember { mutableStateOf(false) }
+    var menuOpen by remember { mutableStateOf(false) }
+    var menuCursor by remember { mutableIntStateOf(0) }
     var slot by remember { mutableStateOf<Rect?>(null) }
     val focused = channels.firstOrNull { it.id == focusedId }
 
@@ -137,7 +141,11 @@ fun MainScreen(
     // left attached at any size it blanks the rest of the window on this TV.
     val antennaViewVisible = focusedAntenna != null && (fullscreen || previewAttached)
 
+    // Subtitles are for internet streams only: never for the tuner, never for a tile.
+    val streamFocused = focused != null && focused.antenna == null && focused.launch.isEmpty()
+
     fun exitFullscreen() {
+        menuOpen = false
         controller.setFullscreen(false)
         antenna.setVolume(0f)
         if (antennaPreview) previewAttached = focusedAntenna != null else antenna.stop() // no preview: release the tuner at once
@@ -182,6 +190,7 @@ fun MainScreen(
     fun zap(step: Int) {
         val section = sections.firstOrNull { s -> s.channels.any { rowKey(s, it) == focusedKey } } ?: return
         val next = zapTarget(section.channels, focusedId ?: return, step) ?: return
+        menuOpen = false
         focusedKey = rowKey(section, next)
         focusedId = next.id
         bannerTick++
@@ -230,6 +239,11 @@ fun MainScreen(
         saveLastWatched(context, last)
     }
 
+    // Subtitles run only in fullscreen on an internet stream; anything else frees the translators and the cache.
+    LaunchedEffect(fullscreen, focused?.id) {
+        if (fullscreen && streamFocused && focused != null) subtitles.activate(focused) else subtitles.deactivate()
+    }
+
     // The banner (number, name, group, kind) shows on every zap and on OK, then fades after a few seconds.
     LaunchedEffect(bannerTick) {
         if (bannerTick > 0) {
@@ -260,7 +274,7 @@ fun MainScreen(
         }
     }
 
-    BackHandler(enabled = fullscreen) { exitFullscreen() }
+    BackHandler(enabled = fullscreen) { if (menuOpen) menuOpen = false else exitFullscreen() }
 
     Box(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxSize()) {
@@ -310,7 +324,28 @@ fun MainScreen(
                     if (fullscreen) {
                         Modifier.onKeyEvent { e ->
                             if (e.type != KeyEventType.KeyDown) return@onKeyEvent false
+                            if (menuOpen) { // the subtitle menu owns up/down/OK/left; Back falls through to the BackHandler
+                                val count = SubtitleMode.entries.size
+                                when (e.key) {
+                                    Key.DirectionUp -> menuCursor = (menuCursor + count - 1) % count
+                                    Key.DirectionDown -> menuCursor = (menuCursor + 1) % count
+                                    Key.DirectionCenter, Key.Enter, Key.NumPadEnter -> {
+                                        subtitles.setMode(SubtitleMode.entries[menuCursor])
+                                        menuOpen = false
+                                    }
+                                    Key.DirectionLeft -> menuOpen = false
+                                    Key.ChannelUp -> zap(+1)
+                                    Key.ChannelDown -> zap(-1)
+                                    else -> return@onKeyEvent false
+                                }
+                                return@onKeyEvent true
+                            }
                             when (e.key) {
+                                Key.DirectionRight -> {
+                                    if (!streamFocused) return@onKeyEvent false
+                                    menuCursor = subtitles.mode.ordinal
+                                    menuOpen = true
+                                }
                                 Key.DirectionUp, Key.ChannelUp -> zap(+1)
                                 Key.DirectionDown, Key.ChannelDown -> zap(-1)
                                 Key.DirectionCenter, Key.Enter, Key.NumPadEnter -> {
@@ -332,6 +367,7 @@ fun MainScreen(
                         useController = false
                         keepScreenOn = true
                         isFocusable = false // D-pad focus stays in the Compose list
+                        subtitleView?.visibility = View.GONE // subtitles are drawn by SubtitleOverlay
                         player = controller.player
                     }
                 },
@@ -346,6 +382,10 @@ fun MainScreen(
                 }
             }
             StatusOverlay(status = shownStatus, fullscreen = fullscreen)
+            if (fullscreen && streamFocused) {
+                SubtitleOverlay(subtitles.text, subtitles.status)
+                if (menuOpen) SubtitleMenu(subtitles.mode, menuCursor, subtitles.menuStatus)
+            }
             if (fullscreen && bannerVisible && focused != null) {
                 val section = sections.firstOrNull { s -> s.channels.any { rowKey(s, it) == focusedKey } }
                 Box(Modifier.align(Alignment.TopStart).padding(start = 48.dp, top = 27.dp)) {
@@ -454,14 +494,16 @@ private fun ChannelList(
     onFocus: (rowKey: String, channel: Channel) -> Unit,
     onOk: (Section, Channel) -> Unit,
 ) {
-    // LazyColumn keeps the item that was on top in place, so a "Untuk Anda" section that is inserted above it
-    // after the list is already showing (location arrives late) would land off-screen. Bring it into view,
-    // unless the user has already scrolled down past it.
-    val localAt = sections.indexOfFirst { it.key == "local" }
-    val hasLocal = localAt >= 0
-    val localRows = if (hasLocal) sections.take(localAt + 1).sumOf { it.channels.size + 1 } else 0
-    LaunchedEffect(hasLocal) {
-        if (hasLocal && listState.firstVisibleItemIndex <= localRows) listState.scrollToItem(0)
+    // LazyColumn keeps the item that was on top in place, so a section that is inserted above it after the list
+    // is already showing ("Untuk Anda" when the location arrives late, "Lanjutkan" when it is an antenna channel
+    // that waits for the TV scan) would land off-screen. Bring them into view, unless the user has already
+    // scrolled down past them.
+    val pinned = sections.takeWhile { it.key == RESUME_KEY || it.key == "local" }
+    val pinnedRows = pinned.sumOf { it.channels.size + 1 }
+    LaunchedEffect(pinned.map { it.key }) {
+        if (pinned.isEmpty()) return@LaunchedEffect
+        repeat(2) { withFrameNanos { } } // let the list lay out with the new rows before reading where it is
+        if (listState.firstVisibleItemIndex <= pinnedRows) listState.scrollToItem(0)
     }
     LazyColumn(
         Modifier.fillMaxSize(),

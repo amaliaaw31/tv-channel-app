@@ -25,6 +25,8 @@ Input: `tools/build-channels/curated_wanted.json` (nama yang dicari, varian, neg
 5. Tiap kandidat dites dari VPS (**Singapura**, timeout 5 dtk, maks. 4 stream): `hidup` (HTTP 200 + playlist HLS), `geo-block` (HTTP 403/451), `mati` (lainnya), `tanpa stream`. Label **Geo-blocked** dari iptv-org dicatat terpisah (`geoLabel`).
 6. Yang tidak ditemukan di iptv-org tidak dimasukkan; dicatat di `notFound`.
 
+7. Bahasa siaran: `languages` (ISO 639-3) diambil dari `feeds.json` iptv-org per entri (aturan di `docs/channels-schema.md`), diteruskan `finalize.py` ke `channels.json` bila ada. `python3 tools/build-channels/curate.py --languages` mengisi ulang hanya bahasa di `data/curated.json` tanpa mengetes ulang stream (cepat, lalu jalankan `finalize.py`).
+
 Hasil tes dari VPS bisa berbeda dengan dari TV (wilayah dan decoder), jadi status bukan keputusan akhir.
 
 ## Tier (`tiers.json` + `finalize.py`)

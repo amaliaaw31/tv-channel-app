@@ -6,5 +6,8 @@
         <activity
             android:name=".AuditActivity"
             android:exported="true" />
+        <activity
+            android:name=".SubtitleProbeActivity"
+            android:exported="true" />
     </application>
 </manifest>

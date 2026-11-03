@@ -43,6 +43,11 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 ## Fullscreen
 - Zapping fullscreen (atas/bawah, Channel Up/Down) berputar di bagian daftar tempat channel dibuka; hanya satu pemutar aktif (ExoPlayer **atau** tuner), dan `TvView` hanya ada di hierarki saat dipakai. Channel terakhir ditonton disimpan di DataStore untuk bagian "Lanjutkan" (hanya id/nama/bagian; tidak ada lokasi). Detail di `docs/ui-spec.md`.
 
+## Subtitle terjemahan
+- Hanya channel **stream internet** di fullscreen, tidak pernah antena/tile/preview. Aturan keputusan (`languages` `ind` → mati; track Indonesia → apa adanya; track lain → terjemahkan; tanpa track → "Subtitle tidak tersedia"), filter per baris, dan menu (tombol kanan) ada di `docs/ui-spec.md`; logikanya murni di `SubtitleLogic.kt` dan harus tetap dites.
+- ML Kit (translate + language-id) **on-device**: yang diunduh hanya model; teks subtitle **tidak dikirim** ke mana pun dan tidak dicatat di log. Translator dan cache baris dilepas saat pindah channel/keluar fullscreen. Jaga memori (TV 1 GB RAM) dan tetap batasi ABI (`abiFilters`).
+- `languages` di `channels.json` diisi `curate.py` dari iptv-org `feeds.json` (jangan edit manual; `curate.py --languages` lalu `finalize.py`).
+
 ## Git & GitHub
 - Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik.
 - Branch utama `main` (lokal dan remote sama namanya); push dengan `git push`.

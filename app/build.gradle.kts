@@ -15,6 +15,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+        // ML Kit ships native libraries per ABI; the TV is armeabi-v7a (arm64 kept for other boxes), no x86 needed.
+        ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
 
         // Remote channel list. The token (optional, only for a private repo) comes from the
         // git-ignored local.properties line `channels.token=...`, never from the repo.
@@ -60,6 +62,10 @@ dependencies {
     implementation("androidx.tv:tv-material:1.1.0")
     implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
+
+    // On-device subtitle translation (docs/ui-spec.md, "Subtitle"): language models are downloaded on first use.
+    implementation("com.google.mlkit:translate:17.0.3")
+    implementation("com.google.mlkit:language-id:17.0.6")
 
     val media3 = "1.11.1"
     implementation("androidx.media3:media3-exoplayer:$media3")

@@ -27,6 +27,15 @@ def is_hls(text):
     return t.startswith("#EXTM3U") and "#EXT-X-" in t
 
 
+def languages_for(entry_id, feeds):
+    """ISO 639-3 languages of a curated entry id ("channel" or "channel#feed") from iptv-org feeds.json rows.
+    The named feed wins, else the main feed, else every feed of the channel; [] when iptv-org has no data."""
+    channel, _, feed = entry_id.partition("#")
+    rows = [f for f in feeds if f.get("channel") == channel]
+    chosen = [f for f in rows if feed and f.get("id") == feed] or [f for f in rows if f.get("is_main")] or rows
+    return sorted({l.lower() for f in chosen for l in (f.get("languages") or []) if l})
+
+
 def fetch_json(name):
     with urllib.request.urlopen(API + name + ".json", timeout=120) as r:
         return json.load(r)

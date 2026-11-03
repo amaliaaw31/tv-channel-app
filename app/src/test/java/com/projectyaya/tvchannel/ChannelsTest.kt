@@ -22,6 +22,16 @@ class ChannelsTest {
     }
 
     @Test
+    fun languagesAreReadLowercasedAndOptional() {
+        val json = """[{"id":"a","name":"a","country":"ID","category":"news","streamUrl":"https://x/a","languages":["ENG"," ind ","","eng"]},
+                       {"id":"b","name":"b","country":"ID","category":"news","streamUrl":"https://x/b"}]"""
+        val list = parseChannels(json)
+        assertEquals(listOf("eng", "ind"), list[0].languages)
+        assertEquals(emptyList<String>(), list[1].languages)
+        assertTrue(parseChannels(bundledJson()).any { "ind" in it.languages })    // the bundled list carries iptv-org languages
+    }
+
+    @Test
     fun bundledSectionsCoverEveryChannelWithUniqueKeys() {
         val list = parseChannels(bundledJson())
         val sections = buildSections(list)

@@ -22,5 +22,25 @@ class Streams(unittest.TestCase):
         self.assertFalse(c.is_hls("<html>403</html>"))
 
 
+class Languages(unittest.TestCase):
+    FEEDS = [
+        {"channel": "A.id", "id": "SD", "is_main": True, "languages": ["ind"]},
+        {"channel": "A.id", "id": "EN", "is_main": False, "languages": ["eng", "IND"]},
+        {"channel": "B.us", "id": "SD", "is_main": False, "languages": ["spa"]},
+        {"channel": "B.us", "id": "HD", "is_main": False, "languages": ["eng"]},
+        {"channel": "C.jp", "id": "SD", "is_main": True},                    # no languages field
+    ]
+
+    def test_named_feed_then_main_feed_then_all_feeds(self):
+        self.assertEqual(c.languages_for("A.id#EN", self.FEEDS), ["eng", "ind"])
+        self.assertEqual(c.languages_for("A.id", self.FEEDS), ["ind"])           # main feed only
+        self.assertEqual(c.languages_for("B.us", self.FEEDS), ["eng", "spa"])    # no main feed: all of them
+        self.assertEqual(c.languages_for("A.id#GONE", self.FEEDS), ["ind"])
+
+    def test_empty_when_unknown(self):
+        self.assertEqual(c.languages_for("C.jp", self.FEEDS), [])
+        self.assertEqual(c.languages_for("X.zz", self.FEEDS), [])
+
+
 if __name__ == "__main__":
     unittest.main()

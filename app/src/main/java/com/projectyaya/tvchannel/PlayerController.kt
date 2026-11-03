@@ -106,7 +106,7 @@ class PlayerController(context: Context) {
         http.setDefaultRequestProperties(channel.headers)
         // The factory's own userAgent would otherwise win over a User-Agent in the headers map.
         http.setUserAgent(channel.headers.entries.firstOrNull { it.key.equals("User-Agent", ignoreCase = true) }?.value)
-        player.setMediaItem(MediaItem.fromUri(channel.streamUrl))
+        player.setMediaItem(MediaItem.Builder().setUri(channel.streamUrl).setMediaId(channel.id).build())
         player.prepare()
         loadedId = channel.id
         autoReconnects = 0

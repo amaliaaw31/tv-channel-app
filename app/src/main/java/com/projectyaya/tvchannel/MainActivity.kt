@@ -68,6 +68,8 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
     val context = LocalContext.current
     val controller = remember { PlayerController(context) }
     val antennaController = remember { AntennaController(context) }
+    val subtitleScope = rememberCoroutineScope()
+    val subtitleController = remember { SubtitleController(context, controller.player, subtitleScope) }
 
     // Two optional permissions, each asked once (a refusal is respected on later starts: no nagging on a TV):
     //  - coarse location -> region for the "Untuk Anda" section (docs/ui-spec.md)
@@ -104,12 +106,13 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
     // Release on leave. Going to the background (Home, or Live TV from the tile) pauses the stream player and
     // frees the tuner so audio does not keep playing and Live TV can use the tuner.
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(controller, antennaController, lifecycleOwner) {
+    DisposableEffect(controller, antennaController, subtitleController, lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_STOP -> {
                     controller.pause()
                     antennaController.suspend()
+                    subtitleController.trim()
                 }
                 Lifecycle.Event.ON_START -> {
                     controller.resume()
@@ -121,6 +124,7 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+            subtitleController.release()
             controller.release()
             antennaController.stop()
         }
@@ -140,7 +144,7 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
                     val antennaPreview = remember { loadAntennaPreview(context) }
                     val antennaItems = remember(scan, wanted) { antennaChannels(scan, wanted) }
                     val all = remember(channels, tile, antennaItems) { channels + listOfNotNull(tile) + antennaItems }
-                    MainScreen(all, controller, antennaController, forYou, antennaPreview, lastWatched)
+                    MainScreen(all, controller, antennaController, subtitleController, forYou, antennaPreview, lastWatched)
                 }
             }
         }

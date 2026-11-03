@@ -35,6 +35,7 @@ Isi file adalah **array JSON**, satu objek per channel.
 | `logo` | string | tidak | URL gambar. Disimpan di model tetapi belum dipakai UI. |
 | `headers` | objek string→string | tidak | Header HTTP tambahan untuk stream, mis. `User-Agent`, `Referer`. |
 | `groups` | array string | tidak | Grup tampilan di daftar kanan (`Nasional`, `MNC`, `Berita`, `Publik`, `TVRI Daerah`, `Daerah`, ...). Channel muncul di **setiap** grupnya. Kosong/tidak ada = muncul di bagian negaranya. |
+| `languages` | array string | tidak | Bahasa siaran, kode **ISO 639-3** huruf kecil (`ind`, `eng`, `jpn`), dari feed iptv-org (`feeds.json`, diisi `curate.py`; feed yang disebut di id `channel#feed`, kalau tidak ada feed utama, kalau tidak ada semua feed channel itu). Kosong/tidak ada = tidak diketahui. Dipakai fitur subtitle terjemahan: `ind` berarti tidak diterjemahkan (`docs/ui-spec.md`). Antena dan tile tidak memakainya. |
 | `note` | string | tidak | Catatan pendek di samping nama di daftar dan di info preview, mis. `perlu dicek di TV` (Tier B). |
 | `tier` | string | tidak | `A` atau `B`. Hanya untuk perkakas/audit; app mengabaikannya. |
 

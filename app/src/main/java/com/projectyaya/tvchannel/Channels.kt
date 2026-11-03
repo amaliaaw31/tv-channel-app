@@ -28,6 +28,8 @@ data class Channel(
     val launch: List<AppTarget> = emptyList(),
     /** Set for a channel from the TV's own antenna tuner: played in a TvView, not from [streamUrl]. */
     val antenna: AntennaRef? = null,
+    /** ISO 639-3 languages of the feed (from iptv-org); empty = unknown. "ind" turns subtitle translation off. */
+    val languages: List<String> = emptyList(),
 )
 
 /** An activity to start: package and fully qualified activity class. */
@@ -77,7 +79,10 @@ private fun toChannel(o: JSONObject): Channel? {
     val groups = o.optJSONArray("groups")?.let { arr ->
         (0 until arr.length()).filterNot { arr.isNull(it) }.map { arr.optString(it).trim() }.filter { it.isNotEmpty() }.distinct()
     }.orEmpty()
-    return Channel(id, name, country, category, o.str("logo").ifEmpty { null }, url, headers, groups, o.str("note").ifEmpty { null })
+    val languages = o.optJSONArray("languages")?.let { arr ->
+        (0 until arr.length()).filterNot { arr.isNull(it) }.map { arr.optString(it).trim().lowercase() }.filter { it.isNotEmpty() }.distinct()
+    }.orEmpty()
+    return Channel(id, name, country, category, o.str("logo").ifEmpty { null }, url, headers, groups, o.str("note").ifEmpty { null }, languages = languages)
 }
 
 /** One header in the channel list: a curated group ([key] "g:Nasional") or a country ([key] "c:ID"). */

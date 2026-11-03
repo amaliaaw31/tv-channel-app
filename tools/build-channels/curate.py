@@ -3,6 +3,7 @@
 
     python3 tools/build-channels/curate.py --search     # only show name matches, no stream tests
     python3 tools/build-channels/curate.py              # match + test, write data/curated.json
+    python3 tools/build-channels/curate.py --languages  # only (re)fill "languages" in data/curated.json, no stream tests
 
 Only channels/streams that exist in iptv-org are kept; blocklisted, NSFW and closed channels are dropped.
 Stream status is measured from THIS machine, so also look at the Geo-blocked label iptv-org puts on streams.
@@ -245,10 +246,19 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--search", action="store_true", help="only list name matches")
     ap.add_argument("--report", action="store_true", help="print tables from the existing curated.json")
+    ap.add_argument("--languages", action="store_true", help="only refill languages in the existing curated.json (no stream tests)")
     ap.add_argument("--out", type=Path, default=OUT)
     args = ap.parse_args()
     if args.report:
         return report(args.out)
+    if args.languages:
+        curated = json.loads(args.out.read_text())
+        feeds = b.fetch_json("feeds")
+        for e in curated["found"]:
+            e["languages"] = b.languages_for(e["id"], feeds)
+        args.out.write_text(json.dumps(curated, ensure_ascii=False, indent=1))
+        print(f"wrote languages for {len(curated['found'])} entries to {args.out}")
+        return
 
     wanted = json.loads((HERE / "curated_wanted.json").read_text())["items"]
     channels, streams, blocklist = (b.fetch_json(n) for n in ("channels", "streams", "blocklist"))
@@ -292,6 +302,9 @@ def main():
             m["requested"] += e["requested"]
         else:
             merged[e["id"]] = e
+    feeds = b.fetch_json("feeds")
+    for e in merged.values():
+        e["languages"] = b.languages_for(e["id"], feeds)
     out = {"found": list(merged.values()), "notFound": missing}
     args.out.write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print(f"wrote {args.out}: found={len(merged)} notFound={len(missing)}")

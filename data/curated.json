@@ -22,7 +22,10 @@
    "domain": "202.150.172.59",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "SCTV.id",
@@ -47,7 +50,10 @@
    "domain": "op-group1-swiftservehd-1.dens.tv",
    "quality": null,
    "geoLabel": true,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "Indosiar.id",
@@ -68,7 +74,10 @@
    "domain": "202.150.172.59",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "ANTV.id",
@@ -92,7 +101,10 @@
    "domain": "103.58.160.157",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "GTV.id",
@@ -116,7 +128,10 @@
    "domain": "202.150.172.59",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "MDTV.id",
@@ -141,7 +156,10 @@
    "domain": "op-flashcon-digdayahd-1.dens.tv",
    "quality": "720p",
    "geoLabel": true,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "NusantaraTV.id",
@@ -173,6 +191,9 @@
      "name": "Online TV Nusantara",
      "country": "ID"
     }
+   ],
+   "languages": [
+    "ind"
    ]
   },
   {
@@ -194,7 +215,10 @@
    "domain": "hgmtv.com",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "iNews.id",
@@ -216,7 +240,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "MagnaChannel.id",
@@ -237,7 +264,10 @@
    "domain": "edge.medcom.id",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "SindoNewsTV.id",
@@ -258,7 +288,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraBioskop.id",
@@ -279,7 +312,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraCulinaryTravel.id",
@@ -300,7 +336,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraDangdut.id",
@@ -321,7 +360,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraDrama.id",
@@ -342,7 +384,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraDramaPlus.id",
@@ -363,7 +408,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraEntertainment.id",
@@ -384,7 +432,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CitraMuslim.id",
@@ -405,7 +456,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "KidsTV.id",
@@ -426,7 +480,10 @@
    "domain": "origin5.mediacdn.ru",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "Life.id",
@@ -447,7 +504,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "MShopSignature.id",
@@ -468,7 +528,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "MShopSuperSale.id",
@@ -489,7 +552,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "Sportstars.id",
@@ -510,7 +576,11 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng",
+    "ind"
+   ]
   },
   {
    "id": "MetroTV.id",
@@ -537,6 +607,9 @@
      "name": "Metro Globe Network",
      "country": "ID"
     }
+   ],
+   "languages": [
+    "ind"
    ]
   },
   {
@@ -561,7 +634,10 @@
    "domain": "video.detik.com",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "CNBCIndonesia.id",
@@ -585,7 +661,10 @@
    "domain": "video.detik.com",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "BeritaSatu.id",
@@ -609,7 +688,10 @@
    "domain": "xtdslboppkkv-pull.bpmedialive.com",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "KompasTV.id",
@@ -634,7 +716,10 @@
    "domain": "op-group1-swiftservehd-1.dens.tv",
    "quality": null,
    "geoLabel": true,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "tvOne.id",
@@ -659,7 +744,10 @@
    "domain": "op-group1-swiftservehd-1.dens.tv",
    "quality": null,
    "geoLabel": true,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#HD",
@@ -691,6 +779,9 @@
      "name": "TVRI World",
      "country": "ID"
     }
+   ],
+   "languages": [
+    "ind"
    ]
   },
   {
@@ -712,7 +803,10 @@
    "domain": "202.150.172.59",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRIWorld.id",
@@ -733,7 +827,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng"
+   ]
   },
   {
    "id": "RRINet.id",
@@ -754,7 +851,10 @@
    "domain": "private-streaming.rri.go.id",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Aceh",
@@ -775,7 +875,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Bali",
@@ -796,7 +899,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#BangkaBelitung",
@@ -817,7 +923,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Bengkulu",
@@ -838,7 +947,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Gorontalo",
@@ -859,7 +971,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Jakarta",
@@ -880,7 +995,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "576i",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Jambi",
@@ -901,7 +1019,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#WestJava",
@@ -922,7 +1043,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#CentralJava",
@@ -943,7 +1067,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#EastJava",
@@ -964,7 +1091,11 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind",
+    "jav"
+   ]
   },
   {
    "id": "TVRI.id#WestKalimantan",
@@ -985,7 +1116,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#SouthKalimantan",
@@ -1006,7 +1140,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#CentralKalimantan",
@@ -1027,7 +1164,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#EastKalimantan",
@@ -1048,7 +1188,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Lampung",
@@ -1069,7 +1212,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Maluku",
@@ -1090,7 +1236,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#NorthSulawesi",
@@ -1111,7 +1260,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#NorthSumatra",
@@ -1132,7 +1284,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#WestNusaTenggara",
@@ -1153,7 +1308,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#EastNusaTenggara",
@@ -1174,7 +1332,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Papua",
@@ -1195,7 +1356,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Riau",
@@ -1216,7 +1380,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#WestSulawesi",
@@ -1237,7 +1404,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#SouthSulawesi",
@@ -1258,7 +1428,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#CentralSulawesi",
@@ -1279,7 +1452,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#SoutheastSulawesi",
@@ -1300,7 +1476,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#WestSumatra",
@@ -1321,7 +1500,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#SouthSumatra",
@@ -1342,7 +1524,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "480p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#WestPapua",
@@ -1363,7 +1548,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "TVRI.id#Yogyakarta",
@@ -1384,7 +1572,10 @@
    "domain": "ott-balancer.tvri.go.id",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "JTV.id",
@@ -1405,7 +1596,10 @@
    "domain": "122.248.43.242",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "JawaPosTV.id#Jakarta",
@@ -1426,7 +1620,10 @@
    "domain": "122.248.43.242",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "JakTV.id",
@@ -1451,7 +1648,10 @@
    "domain": "op-group1-swiftservesd-1.dens.tv",
    "quality": null,
    "geoLabel": true,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "BandungTV.id",
@@ -1472,7 +1672,10 @@
    "domain": "202.150.153.254",
    "quality": "360p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "JogjaTV.id",
@@ -1509,6 +1712,9 @@
      "name": "Tegar TV Jogja",
      "country": "ID"
     }
+   ],
+   "languages": [
+    "ind"
    ]
   },
   {
@@ -1533,7 +1739,10 @@
    "domain": "tvstreamcast.com",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "ind"
+   ]
   },
   {
    "id": "AlJazeera.qa#English",
@@ -1554,7 +1763,10 @@
    "domain": "live-hls-apps-aje-fa.getaj.net",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng"
+   ]
   },
   {
    "id": "DW.de",
@@ -1581,6 +1793,9 @@
      "name": "Dimtsi Weyane TV",
      "country": "ET"
     }
+   ],
+   "languages": [
+    "deu"
    ]
   },
   {
@@ -1602,7 +1817,10 @@
    "domain": "amg00106-france24-france24-samsunguk-qvpp8.amagi.tv",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "fra"
+   ]
   },
   {
    "id": "NHKWorldJapan.jp",
@@ -1634,6 +1852,10 @@
      "name": "NHK World Espanol",
      "country": "JP"
     }
+   ],
+   "languages": [
+    "eng",
+    "jpn"
    ]
   },
   {
@@ -1666,6 +1888,9 @@
      "name": "CNA International",
      "country": "SG"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1708,6 +1933,9 @@
      "name": "Euronews German",
      "country": "FR"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1729,7 +1957,10 @@
    "domain": "tv-trtworld.medya.trt.com.tr",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng"
+   ]
   },
   {
    "id": "ArirangTV.kr",
@@ -1767,6 +1998,9 @@
      "name": "Arirang World",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1788,7 +2022,10 @@
    "domain": "d2sybdl23b9psq.cloudfront.net",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng"
+   ]
   },
   {
    "id": "BBCNews.uk",
@@ -1830,6 +2067,9 @@
      "name": "BBC News Gujarati",
      "country": "IN"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1872,6 +2112,9 @@
      "name": "Sky News Arabia",
      "country": "AE"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1914,6 +2157,9 @@
      "name": "BNN Bloomberg",
      "country": "CA"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1956,6 +2202,9 @@
      "name": "CNBC UK",
      "country": "GB"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -1998,6 +2247,9 @@
      "name": "ABC News Live 1",
      "country": "US"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2019,7 +2271,10 @@
    "domain": "d1bl6tskrpq9ze.cloudfront.net",
    "quality": "1080p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng"
+   ]
   },
   {
    "id": "CBSNews247.us",
@@ -2061,6 +2316,9 @@
      "name": "CBS News Chicago",
      "country": "US"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2103,6 +2361,9 @@
      "name": "KJTV-TV 34.2",
      "country": "US"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2145,6 +2406,9 @@
      "name": "National Geographic",
      "country": "HR"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2187,6 +2451,9 @@
      "name": "National Geographic Wild",
      "country": "PL"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2229,6 +2496,9 @@
      "name": "Discovery Channel",
      "country": "IT"
     }
+   ],
+   "languages": [
+    "ces"
    ]
   },
   {
@@ -2271,6 +2541,9 @@
      "name": "Animal Planet",
      "country": "GB"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2313,6 +2586,9 @@
      "name": "History",
      "country": "HU"
     }
+   ],
+   "languages": [
+    "por"
    ]
   },
   {
@@ -2355,6 +2631,9 @@
      "name": "Nickelodeon",
      "country": "FR"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2397,6 +2676,14 @@
      "name": "Cartoon Network CEE",
      "country": "GB"
     }
+   ],
+   "languages": [
+    "hin",
+    "kan",
+    "mal",
+    "mar",
+    "tam",
+    "tel"
    ]
   },
   {
@@ -2439,6 +2726,9 @@
      "name": "Disney Channel",
      "country": "HU"
     }
+   ],
+   "languages": [
+    "ces"
    ]
   },
   {
@@ -2481,6 +2771,9 @@
      "name": "Cartoonito Latin America",
      "country": "US"
     }
+   ],
+   "languages": [
+    "ita"
    ]
   },
   {
@@ -2523,6 +2816,10 @@
      "name": "Boomerang",
      "country": "GB"
     }
+   ],
+   "languages": [
+    "eng",
+    "spa"
    ]
   },
   {
@@ -2550,6 +2847,9 @@
      "name": "Red Bull Batalla de los Gallos",
      "country": "CL"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2592,6 +2892,9 @@
      "name": "ESPN",
      "country": "AU"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2634,6 +2937,9 @@
      "name": "beIN Sports 4",
      "country": "QA"
     }
+   ],
+   "languages": [
+    "ara"
    ]
   },
   {
@@ -2676,6 +2982,9 @@
      "name": "Eurosport 4K",
      "country": "FR"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2718,6 +3027,9 @@
      "name": "Sky Sports Mix",
      "country": "GB"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2739,7 +3051,10 @@
    "domain": "ocshls-2-olympicchannel.akamaized.net",
    "quality": "1080p",
    "geoLabel": true,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "spa"
+   ]
   },
   {
    "id": "HBO.us",
@@ -2781,6 +3096,10 @@
      "name": "HBO",
      "country": "RO"
     }
+   ],
+   "languages": [
+    "eng",
+    "spa"
    ]
   },
   {
@@ -2823,6 +3142,9 @@
      "name": "AXN CEE",
      "country": "ES"
     }
+   ],
+   "languages": [
+    "por"
    ]
   },
   {
@@ -2865,6 +3187,10 @@
      "name": "Cinemax Hits",
      "country": "US"
     }
+   ],
+   "languages": [
+    "eng",
+    "spa"
    ]
   },
   {
@@ -2907,6 +3233,9 @@
      "name": "Warner TV",
      "country": "PH"
     }
+   ],
+   "languages": [
+    "ces"
    ]
   },
   {
@@ -2949,6 +3278,9 @@
      "name": "Comedy Central",
      "country": "SE"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -2991,6 +3323,9 @@
      "name": "TV8",
      "country": "IT"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -3033,6 +3368,9 @@
      "name": "Pluto TV VH1+",
      "country": "US"
     }
+   ],
+   "languages": [
+    "eng"
    ]
   },
   {
@@ -3057,7 +3395,11 @@
    "domain": "stream8.cinerama.uz",
    "quality": "720p",
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "eng",
+    "kor"
+   ]
   },
   {
    "id": "YTN.kr",
@@ -3094,6 +3436,9 @@
      "name": "YTN Science",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "kor"
    ]
   },
   {
@@ -3115,7 +3460,10 @@
    "domain": "",
    "quality": null,
    "geoLabel": false,
-   "alternatives": []
+   "alternatives": [],
+   "languages": [
+    "kor"
+   ]
   },
   {
    "id": "JTBC.kr",
@@ -3147,6 +3495,9 @@
      "name": "JTBC Golf & Sports",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "kor"
    ]
   },
   {
@@ -3189,6 +3540,9 @@
      "name": "KBS Joy",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "kor"
    ]
   },
   {
@@ -3231,6 +3585,9 @@
      "name": "HLAN-DTV",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "kor"
    ]
   },
   {
@@ -3273,6 +3630,9 @@
      "name": "SBS Golf",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "kor"
    ]
   },
   {
@@ -3315,6 +3675,9 @@
      "name": "tvN Sports",
      "country": "KR"
     }
+   ],
+   "languages": [
+    "kor"
    ]
   }
  ],
