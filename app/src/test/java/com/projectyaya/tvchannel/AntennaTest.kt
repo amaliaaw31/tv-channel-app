@@ -75,7 +75,7 @@ class AntennaTest {
             ScanChannel(454, "30", "GTV HD", "tuner/HW0"),
         )
         val items = antennaChannels(scan, listOf(WantedChannel("RCTI"), WantedChannel("SCTV"), WantedChannel("Trans7")))
-        assertEquals(listOf("RCTI", "Trans7"), items.map { it.name })                 // SCTV is not in this TV's scan
+        assertEquals(listOf("RCTI HD", "TRANS 7 HD"), items.map { it.name })          // the TV's own display_name; SCTV is not in the scan
         assertEquals(AntennaRef(452, "tuner/HW0"), items[0].antenna)
         assertEquals("no. 28", items[0].note)
         assertEquals(listOf(ANTENNA_GROUP), items[0].groups)
@@ -87,7 +87,21 @@ class AntennaTest {
         val tile = parseAntennaTile("""{"liveTv": [{"package": "a", "activity": "a.B"}]}""")!!
         val scan = listOf(ScanChannel(1, "1", "ANTV HD", "in"), ScanChannel(2, "2", "RCTI HD", "in"))
         val sections = buildSections(listOf(tile) + antennaChannels(scan, listOf(WantedChannel("RCTI"), WantedChannel("ANTV"))))
-        assertEquals(listOf("TV Antena", "ANTV", "RCTI"), sections.single().channels.map { it.name })
+        assertEquals(listOf("TV Antena", "ANTV HD", "RCTI HD"), sections.single().channels.map { it.name })
+    }
+
+    @Test
+    fun displayNameIsTrimmedAndNotTheConfiguredName() {
+        val items = antennaChannels(listOf(ScanChannel(1, "5", "CNN INDONESIA HD ", "in")), listOf(WantedChannel("CNN Indonesia")))
+        assertEquals("CNN INDONESIA HD", items.single().name)
+    }
+
+    @Test
+    fun antennaPreviewIsOffUnlessConfigured() {
+        // the flag is read with optBoolean(..., false): missing or wrong type means off
+        assertEquals(false, org.json.JSONObject("""{"liveTv": []}""").optBoolean("preview", false))
+        assertEquals(true, org.json.JSONObject("""{"preview": true}""").optBoolean("preview", false))
+        assertEquals(false, File("../data/antenna.json").readText().let { org.json.JSONObject(it).optBoolean("preview", false) })
     }
 
     @Test

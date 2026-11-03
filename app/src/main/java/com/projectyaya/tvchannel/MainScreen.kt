@@ -86,7 +86,13 @@ private const val PREVIEW_DEBOUNCE_MS = 700L
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun MainScreen(channels: List<Channel>, controller: PlayerController, antenna: AntennaController, forYou: ForYou? = null) {
+fun MainScreen(
+    channels: List<Channel>,
+    controller: PlayerController,
+    antenna: AntennaController,
+    forYou: ForYou? = null,
+    antennaPreview: Boolean = false,
+) {
     val context = LocalContext.current
     val categories = remember(channels) { categoriesOf(channels) }
     var category by remember { mutableStateOf<String?>(null) }
@@ -108,10 +114,13 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, antenna: A
     // The preview slot shows either the ExoPlayer stream or the antenna TvView, depending on what is focused.
     val focusedAntenna = focused?.antenna
     val shownStatus = if (focusedAntenna != null) antenna.status else controller.status
+    // The TvView is only given real size when it is used: fullscreen, or the small slot if the preview is enabled.
+    val antennaViewVisible = focusedAntenna != null && (antennaPreview || fullscreen)
 
     fun exitFullscreen() {
         controller.setFullscreen(false)
         antenna.setVolume(0f)
+        if (!antennaPreview) antenna.stop() // no preview: release the tuner as soon as fullscreen ends
         fullscreen = false
     }
 
@@ -148,9 +157,13 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, antenna: A
                 controller.stop()
                 antenna.stop()
             }
-            channel.antenna != null -> { // the tuner is slow to switch, so the same debounce applies
+            channel.antenna != null -> {
                 controller.stop()
-                antenna.select(channel.antenna)
+                if (!antennaPreview) { // fullscreen only: nothing is tuned until OK
+                    antenna.stop()
+                    return@LaunchedEffect
+                }
+                antenna.select(channel.antenna) // the tuner is slow to switch, so the same debounce applies
                 delay(PREVIEW_DEBOUNCE_MS)
                 antenna.ensure(channel.antenna)
             }
@@ -238,9 +251,14 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, antenna: A
             )
             // Antenna video: same slot, above the player surface; zero-sized (and reset) when not in use.
             AndroidView(
-                modifier = if (focusedAntenna != null) Modifier.fillMaxSize() else Modifier.size(0.dp),
+                modifier = if (antennaViewVisible) Modifier.fillMaxSize() else Modifier.size(0.dp),
                 factory = { antenna.view },
             )
+            if (focusedAntenna != null && !antennaViewVisible) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Tekan OK untuk menonton siaran antena", textAlign = TextAlign.Center, modifier = Modifier.padding(24.dp))
+                }
+            }
             StatusOverlay(
                 status = shownStatus,
                 fullscreen = fullscreen,

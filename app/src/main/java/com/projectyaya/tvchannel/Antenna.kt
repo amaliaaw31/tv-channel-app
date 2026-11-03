@@ -98,16 +98,26 @@ fun matchesScanName(wanted: WantedChannel, scanName: String): Boolean {
     return scan.isNotEmpty() && (listOf(wanted.name) + wanted.aliases).any { squash(it) == scan }
 }
 
-/** The wanted channels that the scan has, in the wanted order, as list items played through a TvView. */
+/**
+ * The wanted channels that the scan has, in the wanted order, as list items played through a TvView.
+ * The shown name is the TV's own display_name (e.g. "RCTI HD"), so it matches what Live TV calls the channel.
+ */
 fun antennaChannels(scan: List<ScanChannel>, wanted: List<WantedChannel>): List<Channel> =
     wanted.mapNotNull { w ->
         scan.firstOrNull { matchesScanName(w, it.name) }?.let { s ->
             Channel(
-                id = "antena:${s.id}", name = w.name, country = "ID", category = "general", logo = null, streamUrl = "",
+                id = "antena:${s.id}", name = s.name.trim(), country = "ID", category = "general", logo = null, streamUrl = "",
                 headers = emptyMap(), groups = listOf(ANTENNA_GROUP), note = "no. ${s.number}", antenna = AntennaRef(s.id, s.inputId),
             )
         }
     }
+
+/**
+ * Whether antenna channels are also tuned into the small preview slot while focused. Default false: the tuner video
+ * is drawn by the TV's own video plane, which does not follow a small TvView's position, so by default it is only
+ * shown fullscreen (docs/sources.md, "Siaran antena").
+ */
+fun loadAntennaPreview(context: Context): Boolean = runCatching { JSONObject(readAsset(context)).optBoolean("preview", false) }.getOrDefault(false)
 
 // ---- Live TV tile ----------------------------------------------------------------------------
 

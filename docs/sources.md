@@ -68,7 +68,7 @@ Domain yang **tidak** dianggap resmi (alasan masuk Tier C): alamat IP mentah, da
 
 ## Siaran antena (tuner TV)
 
-RCTI, GTV, MNCTV, Indosiar, SCTV, ANTV, tvOne, dan lainnya tidak punya sumber stream resmi yang berfungsi (lihat Tier C di atas), tetapi disiarkan **gratis lewat udara** dan TV ini punya tuner. Itu sumber legal yang tidak bergantung pada stream pihak ketiga. App memutar channel antena di preview lewat `TvView` dan punya tile "TV Antena" yang membuka aplikasi Live TV bawaan.
+RCTI, GTV, MNCTV, Indosiar, SCTV, ANTV, tvOne, dan lainnya tidak punya sumber stream resmi yang berfungsi (lihat Tier C di atas), tetapi disiarkan **gratis lewat udara** dan TV ini punya tuner. Itu sumber legal yang tidak bergantung pada stream pihak ketiga. App memutar channel antena fullscreen lewat `TvView` (preview kecil opsional, bawaan mati) dan punya tile "TV Antena" yang membuka aplikasi Live TV bawaan.
 
 **Mendeteksi aplikasi Live TV di sebuah TV** (jangan menebak; dilakukan 2026-11-03 di SWTV_24AE_FHD):
 

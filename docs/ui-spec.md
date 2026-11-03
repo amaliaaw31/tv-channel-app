@@ -48,19 +48,21 @@ Bagian pertama di daftar kanan, dengan header "Untuk Anda · <provinsi>", berisi
 
 Grup ini selalu yang pertama setelah "Untuk Anda" dan berisi dua jenis item. Konfigurasi: `data/antenna.json` (lihat `channels-schema.md`).
 
-**Channel antena** (RCTI, GTV, MNCTV, iNews, Indosiar, SCTV, ANTV, tvOne, Metro TV, Trans TV, Trans 7): siaran dari tuner TV sendiri, diputar **di preview dan fullscreen app lewat `TvView`** (kode: `AntennaController`, `Antenna.kt`). Hanya yang ada di hasil scan TV yang tampil, dengan nomor Live TV di sampingnya ("no. 28").
+**Channel antena** (RCTI, GTV, MNCTV, iNews, Indosiar, SCTV, ANTV, tvOne, Metro TV, Trans TV, Trans 7): siaran dari tuner TV sendiri, diputar **fullscreen di app lewat `TvView`** (kode: `AntennaController`, `Antenna.kt`). Hanya yang ada di hasil scan TV yang tampil, dengan nama bawaan TV (`display_name`, mis. "RCTI HD") dan nomor Live TV di sampingnya ("no. 28").
 - **Izin `READ_TV_LISTINGS`** (runtime, dialog sistem) dibutuhkan untuk membaca hasil scan. Ditanyakan **sekali** (penanda `tv_listings_prompted`); jika ditolak, hanya tile "TV Antena" yang ada. Di start pertama dengan dua izin baru (lokasi dan TV listings), dialognya muncul berurutan.
 - **ID channel dibaca saat berjalan** dari scan TV (berubah setelah scan ulang), jadi tidak disimpan di config; config hanya berisi daftar nama yang dicari (toleran: huruf besar/kecil, spasi, akhiran "HD").
-- **Preview**: fokus ke channel antena menyetel tuner setelah **debounce 700 ms**, **bisu**; fokus pindah ke channel stream atau tile melepas tuner. **OK** = fullscreen dengan suara, **Kembali** = kembali ke dua kolom (suara dibisukan lagi). Slot preview dipakai bersama pemutar stream: `TvView` ditumpuk di atasnya dan berukuran nol bila tidak dipakai.
+- **Tanpa preview (bawaan)**: fokus ke channel antena hanya menampilkan "Tekan OK untuk menonton siaran antena" di slot preview; tuner belum disetel. **OK** = `TvView` fullscreen dengan suara; **Kembali** = tuner dilepas dan kembali ke dua kolom. Alasan: video tuner (MediaTek) digambar di lapisan video TV sendiri, bukan lewat Surface `TvView`, dan dugaan kuat posisinya tidak mengikuti `TvView` kecil (tampak sebagai jendela kecil di pojok kiri atas, sisanya hitam). Dugaan ini belum terbukti secara visual karena video tuner tidak ikut `screencap`; fullscreen aman karena ukuran = layar.
+- **Preview (opsional)**: `"preview": true` di `antenna.json` menyetel tuner di slot kecil setelah **debounce 700 ms**, **bisu**; fokus pindah ke channel stream atau tile melepas tuner. `TvView` ditumpuk di atas `PlayerView` dan berukuran nol bila tidak dipakai. Bawaan **mati** (lihat atas).
 - **Tuner dilepas saat app ke belakang** (Home, atau membuka Live TV dari tile) supaya aplikasi Live TV bisa memakainya, dan disetel ulang saat app kembali (diuji: 1 sesi saat fokus di antena, 0 saat Home, 1 saat kembali).
 - **Pesan di preview** (tanpa tombol): "Sinyal antena lemah" dan "Siaran tidak tersedia" (kuning), "Tuner TV tidak bisa dipakai" dan "Tuner TV terputus" (merah), "Siaran diblokir kontrol orang tua" (kuning); "Memuat…" saat menyetel.
 - **Batasan:** video tuner tidak ikut `screencap` (lapisan terlindungi; layar tampak hitam di tangkapan layar begitu `TvView` ada di jendela), jadi tampilannya hanya bisa diperiksa dengan mata. Tidak ada tombol coba lagi; pindah channel lalu kembali untuk menyetel ulang.
 
 **Tile "TV Antena"** membuka aplikasi Live TV bawaan TV lewat Intent (`ACTION_MAIN` + `LEANBACK_LAUNCHER`, package/activity dari konfigurasi) sebagai jalan lain, mis. untuk channel di luar daftar.
 - Preview dikosongkan (tanpa spinner) dan panel info menjelaskan fungsinya.
+- Diselidiki lewat adb saat Live TV tampak kecil di pojok kiri atas: task `com.cltv.hybrid` selalu `fullscreen` dengan bounds (0,0)-(1280,720), baik dibuka dari tile, dari `adb shell am start`, maupun setelah preview `TvView`. Intent sistem (tombol TV) memakai `ACTION_VIEW` + package + flag `0x20`; milik app `ACTION_MAIN` + `LEANBACK_LAUNCHER` + `NEW_TASK`; hasil jendelanya sama, jadi intent tidak diubah.
 - **Kembali** di Live TV mengembalikan ke app ini, fokus tetap di tile (diuji di TV). Saat app ke belakang, pemutaran dijeda dan tuner dilepas.
 - **Live TV tidak ada** di TV: muncul pesan "Aplikasi Live TV tidak ditemukan di TV ini." (diuji dengan menonaktifkan aplikasinya sementara).
-- Tile selalu di urutan pertama dalam grup, channel antena menyusul menurut nama.
+- Tile selalu di urutan pertama dalam grup, channel antena menyusul menurut urutan `channels` di `antenna.json`.
 
 ## Preview dan player
 

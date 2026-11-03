@@ -131,9 +131,10 @@ private fun App(result: Result<List<Channel>>) {
                     // from the stream list; the channel ids come from the TV's scan, read at runtime.
                     val tile = remember { loadAntennaTile(context) }
                     val wanted = remember { loadWantedChannels(context) }
+                    val antennaPreview = remember { loadAntennaPreview(context) }
                     val antennaItems = remember(scan, wanted) { antennaChannels(scan, wanted) }
                     val all = remember(channels, tile, antennaItems) { channels + listOfNotNull(tile) + antennaItems }
-                    MainScreen(all, controller, antennaController, forYou)
+                    MainScreen(all, controller, antennaController, forYou, antennaPreview)
                 }
             }
         }
