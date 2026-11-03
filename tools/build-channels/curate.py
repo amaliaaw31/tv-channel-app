@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urlparse
 
-import build_channels as b
+import common as b
 
 HERE = Path(__file__).resolve().parent
 OUT = b.ROOT / "data" / "curated.json"

@@ -9,7 +9,7 @@ Urutan sumber saat app dibuka; sumber dipakai hanya jika terbaca minimal satu ch
 
 1. **Remote**: `https://raw.githubusercontent.com/amaliaaw31/tv-channel-app/main/data/channels.json` (timeout sambung 5 dtk, baca 10 dtk). Jika berhasil, hasilnya menimpa cache.
 2. **Cache lokal**: `filesDir/channels-cache.json`. Ditulis lewat file sementara lalu rename, dan tidak pernah ditimpa oleh unduhan yang rusak atau kosong.
-3. **Bundled**: salinan `data/channels.json` yang ikut di APK (`assets/channels.json`) saat build. File lain di `data/` (`curated.json`, `excluded.json`, `bulk-channels.json`) sengaja **tidak** ikut di APK (`ignoreAssetsPattern` di `app/build.gradle.kts`).
+3. **Bundled**: salinan `data/channels.json` yang ikut di APK (`assets/channels.json`) saat build. File lain di `data/` (`curated.json`, `excluded.json`) sengaja **tidak** ikut di APK (`ignoreAssetsPattern` di `app/build.gradle.kts`).
 
 Splash ditahan sampai pemuatan selesai. Dengan ±54 channel, pemuatan ±1 detik di TV; saat repo private tanpa token ada tambahan ±1 detik untuk percobaan remote yang dijawab 404.
 

@@ -32,7 +32,7 @@ android {
     // The other files in data/ are tooling output and must not end up in the APK.
     sourceSets.getByName("main").assets.srcDir(rootProject.file("data"))
     androidResources {
-        ignoreAssetsPattern = "!curated.json:!excluded.json:!bulk-channels.json"
+        ignoreAssetsPattern = "!curated.json:!excluded.json"
     }
 
     buildTypes {

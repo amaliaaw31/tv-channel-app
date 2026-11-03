@@ -79,10 +79,10 @@ python3 -m unittest discover -s tools/build-channels
 
 Hanya butuh Python 3 (stdlib). Setelah `finalize.py`, build ulang app (data ikut di APK sebagai cadangan offline).
 
-## Alat lain (arsip)
+## Alat lain
 
-- `build_channels.py`: dump massal iptv-org per kategori ke `data/bulk-channels.json` (git-ignored, **tidak dipakai app**). Dipakai juga sebagai pustaka oleh `curate.py`. Dulu (commit `c6b888c`) hasilnya 1.945 channel, dihentikan karena stream tidak jelas asalnya dan start app di TV sangat lambat.
-- `AuditActivity` (hanya build debug): memutar tiap channel di `channels.json` di TV (bisu) dan mencatat hasilnya di `files/audit.jsonl`: `adb shell am start -n com.projectyaya.tvchannel/.AuditActivity`. Berguna untuk memeriksa Tier B langsung di TV (±1 menit per 10 channel). **Kandidat baru bisa dicoba dulu** tanpa masuk data: taruh daftar uji (skema yang sama dengan `channels.json`) di `files/audit-input.json` (`adb push` ke `/data/local/tmp/`, lalu `adb shell run-as com.projectyaya.tvchannel cp /data/local/tmp/audit-input.json files/`), hapus `files/audit.jsonl`, jalankan `AuditActivity`; hapus `audit-input.json` setelahnya agar audit berikutnya kembali memakai data bundled. `prune_audit.py` memangkas daftar berdasarkan hasilnya (untuk `bulk-channels.json`).
+- `common.py`: fungsi bersama `curate.py` dan `finalize.py` (urutan stream, deteksi HLS, penulisan file). Generator massal lama (dump seluruh kategori iptv-org, 1.945 channel, beserta `prune_audit.py`) sudah dihapus karena sumbernya tidak jelas dan start app di TV sangat lambat; masih ada di riwayat git (commit `c6b888c`, `e578009`).
+- `AuditActivity` (hanya build debug): memutar tiap channel di `channels.json` di TV (bisu) dan mencatat hasilnya di `files/audit.jsonl`: `adb shell am start -n com.projectyaya.tvchannel/.AuditActivity`. Berguna untuk memeriksa Tier B langsung di TV (±1 menit per 10 channel). **Kandidat baru bisa dicoba dulu** tanpa masuk data: taruh daftar uji (skema yang sama dengan `channels.json`) di `files/audit-input.json` (`adb push` ke `/data/local/tmp/`, lalu `adb shell run-as com.projectyaya.tvchannel cp /data/local/tmp/audit-input.json files/`), hapus `files/audit.jsonl`, jalankan `AuditActivity`; hapus `audit-input.json` setelahnya agar audit berikutnya kembali memakai data bundled. Hasilnya dipakai untuk memutuskan tier secara manual di `tiers.json`.
 
 ## Batasan
 

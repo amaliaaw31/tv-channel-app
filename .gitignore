@@ -6,4 +6,3 @@ local.properties
 .idea/
 .kotlin/
 __pycache__/
-data/bulk-channels.json

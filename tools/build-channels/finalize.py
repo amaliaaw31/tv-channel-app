@@ -12,7 +12,7 @@ import re
 import sys
 from pathlib import Path
 
-import build_channels as b
+import common as b
 
 HERE = Path(__file__).resolve().parent
 CURATED = b.ROOT / "data" / "curated.json"

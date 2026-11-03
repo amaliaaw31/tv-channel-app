@@ -1,8 +1,0 @@
-{
-  "categories": ["sports", "documentary", "science", "news", "travel", "kids", "movies"],
-  "timeout_seconds": 5,
-  "workers": 64,
-  "max_streams_tried_per_channel": 3,
-  "min_channels": 100,
-  "min_keep_ratio": 0.5
-}
