@@ -30,9 +30,10 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - Posisi hanya dipakai di perangkat untuk memilih provinsi: **jangan disimpan, dicatat di log, atau dikirim** (log hanya nama provinsi/alasan gagal).
 - Nama feed TVRI di `Regions.kt` harus selaras dengan `data/channels.json` (dijaga `RegionsTest`). Detail di `docs/ui-spec.md`.
 
-## Antena (tile "TV Antena")
-- TV nasional (RCTI, SCTV, dll.) dari antena **tidak** dimasukkan sebagai stream; app hanya punya satu tile yang membuka Live TV bawaan. Package/activity Live TV ada di `data/antenna.json` dan **dideteksi di TV** dengan `pm`/`dumpsys` (cara di `docs/sources.md`), jangan ditebak atau di-hardcode di kode.
-- Tidak ada tile per channel (Intent ke channel tidak menyetel di Live TV ini) dan app tidak meminta `READ_TV_LISTINGS`. Jangan menambah izin itu tanpa keputusan baru; alasannya di `docs/sources.md`.
+## Antena (grup "TV Nasional (Antena)")
+- Channel antena (RCTI, SCTV, dll.) dari tuner TV diputar lewat **`TvView`**, bukan stream. Nama yang dicari ada di `data/antenna.json`; **id channel dibaca saat berjalan** dari TvProvider (berubah setelah scan ulang), jangan disimpan atau di-hardcode. Tile "TV Antena" membuka Live TV bawaan; package/activity-nya dideteksi di TV dengan `pm`/`dumpsys` (cara di `docs/sources.md`), jangan ditebak.
+- App meminta izin `READ_TV_LISTINGS` (runtime, sekali) hanya untuk membaca hasil scan. Tuner harus **dilepas saat app ke belakang** dan saat item lain mengambil preview (sudah diuji): jangan menahan sesi `TvView` di latar.
+- Video tuner tidak ikut `screencap` (hasilnya kosong/hitam); jangan menyimpulkan "layar rusak" dari itu. Periksa dengan `dumpsys tv_input`, log tag `Antenna`, dan `uiautomator dump`.
 
 ## Channel (kurasi)
 - **Hanya Tier A dan B yang masuk app** (`data/channels.json`). Tier C (IP mentah, agregator, tanpa stream, mati, tidak dipilih) hanya ada di `data/excluded.json` dan tidak boleh masuk app.

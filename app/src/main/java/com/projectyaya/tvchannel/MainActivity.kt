@@ -61,34 +61,54 @@ class MainActivity : ComponentActivity() {
 private fun App(result: Result<List<Channel>>) {
     val context = LocalContext.current
     val controller = remember { PlayerController(context) }
+    val antennaController = remember { AntennaController(context) }
 
-    // Region for the "Untuk Anda" section. Coarse (Wi-Fi) location, used on the device only; see docs/ui-spec.md.
+    // Two optional permissions, each asked once (a refusal is respected on later starts: no nagging on a TV):
+    //  - coarse location -> region for the "Untuk Anda" section (docs/ui-spec.md)
+    //  - TV listings     -> the antenna scan, so antenna channels can be tuned (docs/ui-spec.md)
     var forYou by remember { mutableStateOf<ForYou?>(null) }
+    var scan by remember { mutableStateOf<List<ScanChannel>>(emptyList()) }
     val scope = rememberCoroutineScope()
-    val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) scope.launch { forYou = findProvince(context)?.let(::forYouOf) }
+    val locationPermission = Manifest.permission.ACCESS_COARSE_LOCATION
+    val listingsPermission = "android.permission.READ_TV_LISTINGS"
+    fun loadLocation() = scope.launch { forYou = findProvince(context)?.let(::forYouOf) }
+    fun loadScan() = scope.launch { scan = withContext(Dispatchers.IO) { readScan(context) } }
+    val askPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+        if (granted[locationPermission] == true) loadLocation()
+        if (granted[listingsPermission] == true) loadScan()
     }
     LaunchedEffect(Unit) {
-        val permission = Manifest.permission.ACCESS_COARSE_LOCATION
         val prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE)
-        when {
-            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED ->
-                forYou = findProvince(context)?.let(::forYouOf)
-            // Ask once; a refusal is respected on later starts (no nagging on a TV).
-            !prefs.getBoolean("location_prompted", false) -> {
-                prefs.edit().putBoolean("location_prompted", true).apply()
-                askPermission.launch(permission)
+        val toAsk = mutableListOf<String>()
+        for ((permission, askedFlag, load) in listOf(
+            Triple(locationPermission, "location_prompted", ::loadLocation),
+            Triple(listingsPermission, "tv_listings_prompted", ::loadScan),
+        )) {
+            when {
+                ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> load()
+                !prefs.getBoolean(askedFlag, false) -> {
+                    prefs.edit().putBoolean(askedFlag, true).apply()
+                    toAsk += permission
+                }
             }
         }
+        if (toAsk.isNotEmpty()) askPermissions.launch(toAsk.toTypedArray())
     }
 
-    // Release on leave; pause when the app goes to background (Home) so audio does not keep playing.
+    // Release on leave. Going to the background (Home, or Live TV from the tile) pauses the stream player and
+    // frees the tuner so audio does not keep playing and Live TV can use the tuner.
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(controller, lifecycleOwner) {
+    DisposableEffect(controller, antennaController, lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_STOP -> controller.pause()
-                Lifecycle.Event.ON_START -> controller.resume()
+                Lifecycle.Event.ON_STOP -> {
+                    controller.pause()
+                    antennaController.suspend()
+                }
+                Lifecycle.Event.ON_START -> {
+                    controller.resume()
+                    antennaController.resume()
+                }
                 else -> Unit
             }
         }
@@ -96,6 +116,7 @@ private fun App(result: Result<List<Channel>>) {
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
             controller.release()
+            antennaController.stop()
         }
     }
 
@@ -106,10 +127,13 @@ private fun App(result: Result<List<Channel>>) {
                 channels == null -> Centered("Gagal membaca channels.json: ${result.exceptionOrNull()?.message}")
                 channels.isEmpty() -> Centered("Tidak ada channel yang valid di channels.json.")
                 else -> {
-                    // The antenna tile comes from assets/antenna.json, separate from the stream list.
+                    // The antenna tile and the names of the antenna channels come from assets/antenna.json, separate
+                    // from the stream list; the channel ids come from the TV's scan, read at runtime.
                     val tile = remember { loadAntennaTile(context) }
-                    val all = remember(channels, tile) { channels + listOfNotNull(tile) }
-                    MainScreen(all, controller, forYou)
+                    val wanted = remember { loadWantedChannels(context) }
+                    val antennaItems = remember(scan, wanted) { antennaChannels(scan, wanted) }
+                    val all = remember(channels, tile, antennaItems) { channels + listOfNotNull(tile) + antennaItems }
+                    MainScreen(all, controller, antennaController, forYou)
                 }
             }
         }

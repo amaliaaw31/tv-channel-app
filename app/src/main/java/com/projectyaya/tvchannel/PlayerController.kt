@@ -15,6 +15,8 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 sealed interface PlaybackStatus {
     /** Nothing is loaded on purpose (the focused item is a tile that opens another app). */
     data object Idle : PlaybackStatus
+    /** A plain message instead of video, e.g. a weak antenna signal. */
+    data class Notice(val title: String, val severity: Severity) : PlaybackStatus
     data object Loading : PlaybackStatus
     data object Playing : PlaybackStatus
     data class Failed(val errorCode: Int, val httpStatus: Int?) : PlaybackStatus

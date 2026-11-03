@@ -68,7 +68,7 @@ Domain yang **tidak** dianggap resmi (alasan masuk Tier C): alamat IP mentah, da
 
 ## Siaran antena (tuner TV)
 
-RCTI, GTV, MNCTV, Indosiar, SCTV, ANTV, tvOne, dan lainnya tidak punya sumber stream resmi yang berfungsi (lihat Tier C di atas), tetapi disiarkan **gratis lewat udara** dan TV ini punya tuner. Itu sumber legal yang tidak bergantung pada stream pihak ketiga. App hanya membuka aplikasi Live TV bawaan lewat tile "TV Antena".
+RCTI, GTV, MNCTV, Indosiar, SCTV, ANTV, tvOne, dan lainnya tidak punya sumber stream resmi yang berfungsi (lihat Tier C di atas), tetapi disiarkan **gratis lewat udara** dan TV ini punya tuner. Itu sumber legal yang tidak bergantung pada stream pihak ketiga. App memutar channel antena di preview lewat `TvView` dan punya tile "TV Antena" yang membuka aplikasi Live TV bawaan.
 
 **Mendeteksi aplikasi Live TV di sebuah TV** (jangan menebak; dilakukan 2026-11-03 di SWTV_24AE_FHD):
 
@@ -82,12 +82,13 @@ adb -s $T shell dumpsys activity activities | grep topResumedActivity           
 
 Hasil di TV ini: tombol TV membuka **`com.cltv.hybrid/com.iwedia.cltv.MainActivity`** (LiveTV by iWedia, v3.6 dari Play Store, di atas `CommonLiveTvO21` bawaan). Paket MediaTek (`com.mediatek.wwtv.tvcenter`, `.plus`) terpasang tetapi activity-nya tidak ada untuk pengguna ini.
 
-**Percobaan per channel (gagal, jadi hanya satu tile):**
+**Membuka satu channel lewat Intent (gagal; yang akhirnya dipakai adalah `TvView`, di bawah):**
 
-- `adb shell content query --uri content://android.media.tv/channel` mengembalikan **kosong** dari shell: TvProvider menyaring hasil bagi pemanggil yang tidak punya izin. Izin yang dibutuhkan, `android.permission.READ_TV_LISTINGS`, berstatus **`dangerous`** (izin runtime biasa) dan **bisa diberikan** ke app kita (`pm grant` berhasil setelah dideklarasikan). Dengan izin itu app membaca **55 channel hasil scan** dari TvProvider, tetapi izin dan pembacanya saya buang lagi karena tidak jadi dipakai.
+- `adb shell content query --uri content://android.media.tv/channel` mengembalikan **kosong** dari shell: TvProvider menyaring hasil bagi pemanggil yang tidak punya izin. Izin yang dibutuhkan, `android.permission.READ_TV_LISTINGS`, berstatus **`dangerous`** (izin runtime biasa) dan **bisa diberikan** ke app kita (`pm grant` berhasil setelah dideklarasikan). Dengan izin itu app membaca **55 channel hasil scan** dari TvProvider (izin ini sekarang dipakai app, lihat TvView di bawah).
 - Hasil scan di TV ini (nomor Live TV; bisa berubah setelah scan ulang): Trans TV HD 20, Trans 7 HD 21, Metro TV HD 22, SCTV HD 23, Indosiar HD 24, ANTV HD 26, tvOne HD 27, RCTI HD 28, MNCTV HD 29, GTV HD 30, iNews HD 31; juga TVRI, Kompas TV, CNN/CNBC Indonesia, Garuda TV, Nusantara TV, MDTV, dan lainnya.
 - `ACTION_VIEW` dengan `content://android.media.tv/channel/<id>` (id TvProvider, mis. RCTI HD = 452): satu-satunya penangan adalah LiveTV (`com.cltv.hybrid`). Ia menerima intent dan membawa dirinya ke depan, tetapi **hanya membuka berandanya dan tidak menyetel channel** (diuji 4 kali, termasuk dari kondisi bersih dan menunggu 28 detik). Lognya menunjukkan ia memakai id internal MediaTek (`channelId 7864449`), bukan `_id` TvProvider. Activity lain yang dideklarasikan (`CanaliTvActivity`, Live TV Plus MediaTek) tidak ada ("Activity class does not exist").
-- Belum dicoba: menanam `TvView` di app untuk menyetel channel antena langsung ke preview kita lewat `TvInputManager`. Itu akan menampilkan antena di layout dua kolom, tetapi pekerjaan terpisah dan belum tentu diizinkan untuk input tuner.
+- **`TvView` berhasil** (2026-11-03). `TvView.tune(inputId, TvContract.buildChannelUri(id))` dari app kita pada input `com.mediatek.tvinput/.tuner.TunerInputService/HW0`: `dumpsys tv_input` mencatat sesi milik uid app (`callingUid`), callback `onVideoAvailable` terpanggil, dan tidak ada `onConnectionFailed`. Jadi Android TV ini mengizinkan app pihak ketiga memakai tuner lewat API resmi, tanpa izin istimewa selain `READ_TV_LISTINGS`.
+- **Yang tidak bisa diperiksa dari VPS:** gambarnya. `screencap` mengembalikan kosong (0 byte, atau gambar hitam) begitu ada `TvView` di jendela, dan lapisan `SurfaceView`-nya tidak menerima buffer lewat Surface kita (jalur video tuner perangkat keras). Yang dipakai sebagai bukti: callback, sesi di `dumpsys tv_input`, dan pohon aksesibilitas (`uiautomator dump`) untuk isi UI. Posisi dan ukuran video di slot preview perlu dilihat langsung di TV.
 
 ## Menjalankan
 

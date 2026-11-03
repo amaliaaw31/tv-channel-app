@@ -86,7 +86,7 @@ private const val PREVIEW_DEBOUNCE_MS = 700L
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: ForYou? = null) {
+fun MainScreen(channels: List<Channel>, controller: PlayerController, antenna: AntennaController, forYou: ForYou? = null) {
     val context = LocalContext.current
     val categories = remember(channels) { categoriesOf(channels) }
     var category by remember { mutableStateOf<String?>(null) }
@@ -105,8 +105,13 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: Fo
     var slot by remember { mutableStateOf<Rect?>(null) }
     val focused = channels.firstOrNull { it.id == focusedId }
 
+    // The preview slot shows either the ExoPlayer stream or the antenna TvView, depending on what is focused.
+    val focusedAntenna = focused?.antenna
+    val shownStatus = if (focusedAntenna != null) antenna.status else controller.status
+
     fun exitFullscreen() {
         controller.setFullscreen(false)
+        antenna.setVolume(0f)
         fullscreen = false
     }
 
@@ -116,6 +121,13 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: Fo
             if (!launchLiveTv(context, channel.launch)) {
                 Toast.makeText(context, "Aplikasi Live TV tidak ditemukan di TV ini.", Toast.LENGTH_LONG).show()
             }
+            return
+        }
+        // An antenna channel goes fullscreen with sound, through the same TvView.
+        if (channel.antenna != null) {
+            antenna.ensure(channel.antenna)
+            antenna.setVolume(1f)
+            fullscreen = true
             return
         }
         // A failed channel is not worth a fullscreen: reload it in the preview instead.
@@ -131,13 +143,24 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: Fo
     // Debounced preview: a newer focus change cancels this effect, and select() drops the old load at once.
     LaunchedEffect(focused?.id) {
         val channel = focused ?: return@LaunchedEffect
-        if (channel.launch.isNotEmpty()) { // a tile has no stream: empty preview instead of a spinner
-            controller.stop()
-            return@LaunchedEffect
+        when {
+            channel.launch.isNotEmpty() -> { // a tile has no stream: empty preview instead of a spinner
+                controller.stop()
+                antenna.stop()
+            }
+            channel.antenna != null -> { // the tuner is slow to switch, so the same debounce applies
+                controller.stop()
+                antenna.select(channel.antenna)
+                delay(PREVIEW_DEBOUNCE_MS)
+                antenna.ensure(channel.antenna)
+            }
+            else -> {
+                antenna.stop()
+                controller.select(channel)
+                delay(PREVIEW_DEBOUNCE_MS)
+                controller.ensure(channel)
+            }
         }
-        controller.select(channel)
-        delay(PREVIEW_DEBOUNCE_MS)
-        controller.ensure(channel)
     }
 
     // Fullscreen takes D-pad focus; on exit focus returns to the last focused channel if the filter
@@ -213,8 +236,13 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: Fo
                     }
                 },
             )
+            // Antenna video: same slot, above the player surface; zero-sized (and reset) when not in use.
+            AndroidView(
+                modifier = if (focusedAntenna != null) Modifier.fillMaxSize() else Modifier.size(0.dp),
+                factory = { antenna.view },
+            )
             StatusOverlay(
-                status = controller.status,
+                status = shownStatus,
                 fullscreen = fullscreen,
                 onRetry = controller::retry,
                 onBack = ::exitFullscreen,
@@ -351,7 +379,13 @@ private fun rowKey(section: Section, channel: Channel) = "${section.key}/${chann
 private fun ChannelInfo(channel: Channel) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(channel.name, style = MaterialTheme.typography.headlineMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-        if (channel.launch.isEmpty()) {
+        if (channel.antenna != null) {
+            Text(
+                "Siaran antena (tuner TV) · Live TV ${channel.note.orEmpty()}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        } else if (channel.launch.isEmpty()) {
             Text(
                 "${countryName(channel.country)} · ${channel.category}",
                 style = MaterialTheme.typography.bodyLarge,
@@ -404,7 +438,7 @@ private fun ChannelRow(
         ) {
             Text(channel.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
             // Yellow marks "not verified"; a tile's note is just a hint, so it stays neutral.
-            val noteColor = if (channel.launch.isEmpty()) NOTE_COLOR else MaterialTheme.colorScheme.onSurfaceVariant
+            val noteColor = if (channel.launch.isEmpty() && channel.antenna == null) NOTE_COLOR else MaterialTheme.colorScheme.onSurfaceVariant
             channel.note?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = noteColor, maxLines = 1) }
         }
     }
@@ -426,6 +460,13 @@ private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean, onRetry: 
                 val info = describeError(status.errorCode, status.httpStatus)
                 if (fullscreen) DroppedBroadcast(info, onRetry, onBack) else PreviewError(info)
             }
+            is PlaybackStatus.Notice -> Text(
+                status.title,
+                color = status.severity.color(),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(24.dp),
+            )
             PlaybackStatus.Playing, PlaybackStatus.Idle -> Unit
         }
     }

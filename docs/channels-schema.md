@@ -51,7 +51,8 @@ File terpisah: `data/antenna.json`, ikut di APK sebagai `assets/antenna.json`. B
   "tile": {"name": "TV Antena", "note": "membuka Live TV bawaan"},
   "liveTv": [
     {"package": "com.cltv.hybrid", "activity": "com.iwedia.cltv.MainActivity"}
-  ]
+  ],
+  "channels": ["RCTI", "GTV", "MNCTV", "iNews", "Indosiar", "SCTV", "ANTV", "tvOne", "Metro TV", "Trans TV", "Trans7"]
 }
 ```
 
@@ -60,8 +61,9 @@ File terpisah: `data/antenna.json`, ikut di APK sebagai `assets/antenna.json`. B
 | `liveTv` | **Wajib.** Daftar aplikasi Live TV (package + activity) yang dicoba berurutan; dipakai yang pertama ada di TV. Elemen yang tidak lengkap dibuang. Daftar kosong atau file hilang berarti tile tidak ditampilkan. |
 | `tile.name` | Opsional, bawaan "TV Antena". |
 | `tile.note` | Opsional, teks kecil di samping nama di daftar. |
+| `channels` | Opsional. Nama channel antena yang dicari di hasil scan TV; tiap elemen berupa nama atau `{"name", "aliases": [...]}`. Pencocokan toleran: huruf besar/kecil, spasi, tanda baca, dan akhiran "HD" diabaikan ("Trans7" cocok dengan "TRANS 7 HD"). Yang tidak ada di scan dilewati. **Id channel tidak disimpan**: dibaca dari TvProvider saat berjalan (izin `READ_TV_LISTINGS`), karena berubah setelah scan ulang. |
 
-Isi `liveTv` **dideteksi di TV, bukan ditebak** (caranya di `sources.md`). Untuk TV lain tambahkan entri di sini. Tile masuk ke grup `TV Nasional (Antena)` (konstanta `ANTENNA_GROUP`), selalu sebagai grup pertama setelah "Untuk Anda". Di kode ia berupa `Channel` dengan `launch` berisi kandidat itu dan `streamUrl` kosong, jadi ikut tersaring oleh pencarian dan tab kategori "Umum".
+Isi `liveTv` **dideteksi di TV, bukan ditebak** (caranya di `sources.md`). Untuk TV lain tambahkan entri di sini. Tile dan channel antena masuk ke grup `TV Nasional (Antena)` (konstanta `ANTENNA_GROUP`), selalu grup pertama setelah "Untuk Anda". Di kode keduanya berupa `Channel` dengan `streamUrl` kosong: tile punya `launch` (kandidat Live TV), channel antena punya `antenna` (`AntennaRef`: id kanal TvProvider dan id input tuner) dan `note` "no. N". Keduanya ikut tersaring oleh pencarian dan tab kategori "Umum".
 
 ## Perilaku pembacaan
 

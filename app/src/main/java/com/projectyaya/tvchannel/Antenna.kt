@@ -1,19 +1,27 @@
 package com.projectyaya.tvchannel
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.media.tv.TvContract
+import android.util.Log
 import org.json.JSONObject
 
-/** List section that holds the antenna tile. */
+/** List section that holds the antenna tile and the antenna channels. */
 const val ANTENNA_GROUP = "TV Nasional (Antena)"
 
-/**
- * The "TV Antena" tile, built from assets/antenna.json. It opens the TV's own Live TV app, where the
- * antenna channels (RCTI, SCTV, ...) live. Null when the file is missing or names no Live TV app.
- */
-fun loadAntennaTile(context: Context): Channel? =
-    runCatching { parseAntennaTile(context.assets.open("antenna.json").bufferedReader().use { it.readText() }) }.getOrNull()
+private const val TAG = "Antenna"
+
+// ---- config (assets/antenna.json) ------------------------------------------------------------
+
+private fun readAsset(context: Context) = context.assets.open("antenna.json").bufferedReader().use { it.readText() }
+
+/** The "TV Antena" tile: opens the TV's own Live TV app. Null when the file is missing or names no Live TV app. */
+fun loadAntennaTile(context: Context): Channel? = runCatching { parseAntennaTile(readAsset(context)) }.getOrNull()
+
+/** Names of the antenna channels to look for in the TV's scan. */
+fun loadWantedChannels(context: Context): List<WantedChannel> = runCatching { parseWantedChannels(readAsset(context)) }.getOrDefault(emptyList())
 
 /** Parses antenna.json: `tile.name`/`tile.note` and the `liveTv` candidates (package + activity), tried in order. */
 fun parseAntennaTile(json: String): Channel? {
@@ -31,6 +39,77 @@ fun parseAntennaTile(json: String): Channel? {
     val note = tile?.optString("note")?.trim().orEmpty().ifEmpty { null }
     return Channel("antena:tv", name, "ID", "general", null, "", emptyMap(), listOf(ANTENNA_GROUP), note, candidates)
 }
+
+/** A channel to find in the scan, by display name; [aliases] are other names the scan may use for it. */
+data class WantedChannel(val name: String, val aliases: List<String> = emptyList())
+
+/** Parses `channels`: each element is a name or `{"name", "aliases": [...]}`. Blank names are dropped. */
+fun parseWantedChannels(json: String): List<WantedChannel> {
+    val arr = JSONObject(json).optJSONArray("channels") ?: return emptyList()
+    return (0 until arr.length()).mapNotNull { i ->
+        val item = arr.opt(i)
+        when (item) {
+            is String -> item.trim().takeIf { it.isNotEmpty() }?.let { WantedChannel(it) }
+            is JSONObject -> item.optString("name").trim().takeIf { it.isNotEmpty() }?.let { name ->
+                val aliases = item.optJSONArray("aliases")?.let { a -> (0 until a.length()).map { a.optString(it).trim() }.filter { it.isNotEmpty() } }.orEmpty()
+                WantedChannel(name, aliases)
+            }
+            else -> null
+        }
+    }
+}
+
+// ---- the TV's scan (TvProvider) --------------------------------------------------------------
+
+/** One channel from the TV's antenna scan. */
+data class ScanChannel(val id: Long, val number: String, val name: String, val inputId: String)
+
+/**
+ * Channels found by the TV's antenna scan. Needs READ_TV_LISTINGS (runtime permission); without it,
+ * or when nothing was scanned, the list is empty. IDs are read fresh because a rescan renumbers them.
+ */
+@SuppressLint("MissingPermission")
+fun readScan(context: Context): List<ScanChannel> = runCatching {
+    val projection = arrayOf(
+        TvContract.Channels._ID,
+        TvContract.Channels.COLUMN_DISPLAY_NUMBER,
+        TvContract.Channels.COLUMN_DISPLAY_NAME,
+        TvContract.Channels.COLUMN_INPUT_ID,
+        TvContract.Channels.COLUMN_TYPE,
+    )
+    context.contentResolver.query(TvContract.Channels.CONTENT_URI, projection, null, null, null)?.use { c ->
+        buildList {
+            while (c.moveToNext()) {
+                val type = c.getString(4).orEmpty()
+                val inputId = c.getString(3).orEmpty()
+                // Home-screen preview rows and other apps' channels have no tuner input.
+                if (inputId.isEmpty() || type == TvContract.Channels.TYPE_PREVIEW || type == TvContract.Channels.TYPE_OTHER) continue
+                add(ScanChannel(c.getLong(0), c.getString(1).orEmpty(), c.getString(2).orEmpty(), inputId))
+            }
+        }
+    }.orEmpty()
+}.onFailure { Log.w(TAG, "cannot read the TV scan: ${it.javaClass.simpleName}") }.getOrDefault(emptyList())
+
+// Letters and digits only, lowercase, trailing "hd" dropped: "TRANS 7 HD" == "Trans7", "tvOne" == "TVONE HD".
+private fun squash(name: String) = name.lowercase().filter { it.isLetterOrDigit() }.removeSuffix("hd")
+
+fun matchesScanName(wanted: WantedChannel, scanName: String): Boolean {
+    val scan = squash(scanName)
+    return scan.isNotEmpty() && (listOf(wanted.name) + wanted.aliases).any { squash(it) == scan }
+}
+
+/** The wanted channels that the scan has, in the wanted order, as list items played through a TvView. */
+fun antennaChannels(scan: List<ScanChannel>, wanted: List<WantedChannel>): List<Channel> =
+    wanted.mapNotNull { w ->
+        scan.firstOrNull { matchesScanName(w, it.name) }?.let { s ->
+            Channel(
+                id = "antena:${s.id}", name = w.name, country = "ID", category = "general", logo = null, streamUrl = "",
+                headers = emptyMap(), groups = listOf(ANTENNA_GROUP), note = "no. ${s.number}", antenna = AntennaRef(s.id, s.inputId),
+            )
+        }
+    }
+
+// ---- Live TV tile ----------------------------------------------------------------------------
 
 /** Starts the first Live TV app that exists on this TV; false when none could be started. */
 fun launchLiveTv(context: Context, targets: List<AppTarget>): Boolean {

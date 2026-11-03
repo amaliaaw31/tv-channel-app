@@ -26,10 +26,15 @@ data class Channel(
     val note: String? = null,
     /** Non-empty for a tile that opens another app (Live TV) instead of playing [streamUrl]; tried in order. */
     val launch: List<AppTarget> = emptyList(),
+    /** Set for a channel from the TV's own antenna tuner: played in a TvView, not from [streamUrl]. */
+    val antenna: AntennaRef? = null,
 )
 
 /** An activity to start: package and fully qualified activity class. */
 data class AppTarget(val pkg: String, val activity: String)
+
+/** A tuner channel as the system TvProvider knows it; the id changes after a rescan, so it is read at runtime. */
+data class AntennaRef(val channelId: Long, val inputId: String)
 
 private val ISO2 = Regex("[A-Z]{2}")
 
@@ -100,7 +105,9 @@ fun buildSections(channels: List<Channel>, forYou: ForYou? = null): List<Section
         if (c.groups.isEmpty()) byCountry.getOrPut(c.country) { ArrayList() } += c
         else c.groups.forEach { byGroup.getOrPut(it) { ArrayList() } += c }
     }
-    val groups = byGroup.map { (g, list) -> Section("g:$g", g, list.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })) }
+    // Inside a group: tiles that open another app first, then channels by name.
+    val inGroup = compareBy<Channel> { it.launch.isEmpty() }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+    val groups = byGroup.map { (g, list) -> Section("g:$g", g, list.sortedWith(inGroup)) }
         .sortedWith(compareBy({ GROUP_ORDER.indexOf(it.title).takeIf { i -> i >= 0 } ?: Int.MAX_VALUE }, { it.title.lowercase() }))
     val countries = byCountry.map { (code, list) -> Section("c:$code", countryName(code), list) }
         .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })

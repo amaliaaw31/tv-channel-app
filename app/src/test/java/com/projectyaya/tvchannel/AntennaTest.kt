@@ -43,6 +43,54 @@ class AntennaTest {
     }
 
     @Test
+    fun parsesWantedChannelNamesAndAliases() {
+        val json = """{"channels": ["RCTI", " ", {"name": "Trans7", "aliases": ["Trans 7", ""]}, {"aliases": ["x"]}, 5, "tvOne"]}"""
+        assertEquals(
+            listOf(WantedChannel("RCTI"), WantedChannel("Trans7", listOf("Trans 7")), WantedChannel("tvOne")),
+            parseWantedChannels(json),
+        )
+        assertEquals(emptyList<WantedChannel>(), parseWantedChannels("""{"liveTv": []}"""))
+        assertTrue(parseWantedChannels(File("../data/antenna.json").readText()).isNotEmpty())
+    }
+
+    @Test
+    fun scanNamesMatchLooselyButNotLoosely() {
+        fun m(wanted: String, scan: String) = matchesScanName(WantedChannel(wanted), scan)
+        assertTrue(m("RCTI", "RCTI HD"))
+        assertTrue(m("Trans7", "TRANS 7 HD"))
+        assertTrue(m("tvOne", "TVONE HD"))
+        assertTrue(m("Metro TV", "METRO TV HD"))
+        assertTrue(m("iNews", "iNews HD"))
+        assertTrue(!m("RCTI", "RCTI Plus"))          // a different channel is not a match
+        assertTrue(!m("MNCTV", "MAGNA CHANNEL"))
+        assertTrue(!m("RCTI", ""))
+        assertTrue(matchesScanName(WantedChannel("Kompas", listOf("Kompas TV")), "KOMPASTV HD")) // alias
+    }
+
+    @Test
+    fun antennaChannelsFollowWantedOrderAndSkipMissingOnes() {
+        val scan = listOf(
+            ScanChannel(445, "21", "TRANS 7 HD", "tuner/HW0"),
+            ScanChannel(452, "28", "RCTI HD", "tuner/HW0"),
+            ScanChannel(454, "30", "GTV HD", "tuner/HW0"),
+        )
+        val items = antennaChannels(scan, listOf(WantedChannel("RCTI"), WantedChannel("SCTV"), WantedChannel("Trans7")))
+        assertEquals(listOf("RCTI", "Trans7"), items.map { it.name })                 // SCTV is not in this TV's scan
+        assertEquals(AntennaRef(452, "tuner/HW0"), items[0].antenna)
+        assertEquals("no. 28", items[0].note)
+        assertEquals(listOf(ANTENNA_GROUP), items[0].groups)
+        assertEquals("", items[0].streamUrl)
+    }
+
+    @Test
+    fun antennaGroupHoldsTheTileFirstThenChannels() {
+        val tile = parseAntennaTile("""{"liveTv": [{"package": "a", "activity": "a.B"}]}""")!!
+        val scan = listOf(ScanChannel(1, "1", "ANTV HD", "in"), ScanChannel(2, "2", "RCTI HD", "in"))
+        val sections = buildSections(listOf(tile) + antennaChannels(scan, listOf(WantedChannel("RCTI"), WantedChannel("ANTV"))))
+        assertEquals(listOf("TV Antena", "ANTV", "RCTI"), sections.single().channels.map { it.name })
+    }
+
+    @Test
     fun antennaGroupComesFirstAmongGroups() {
         val tile = parseAntennaTile("""{"liveTv": [{"package": "a", "activity": "a.B"}]}""")!!
         val nasional = Channel("n", "Garuda TV", "ID", "general", null, "https://x/n.m3u8", emptyMap(), listOf("Nasional"))
