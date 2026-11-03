@@ -249,11 +249,11 @@ fun MainScreen(
                     }
                 },
             )
-            // Antenna video: same slot, above the player surface; zero-sized (and reset) when not in use.
-            AndroidView(
-                modifier = if (antennaViewVisible) Modifier.fillMaxSize() else Modifier.size(0.dp),
-                factory = { antenna.view },
-            )
+            // Antenna video: same slot, above the player surface. Only in the hierarchy while it is shown: a TvView
+            // that stays attached (even at size 0) leaves the rest of the window blank on this TV.
+            if (antennaViewVisible) {
+                AndroidView(modifier = Modifier.fillMaxSize(), factory = { antenna.view })
+            }
             if (focusedAntenna != null && !antennaViewVisible) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("Tekan OK untuk menonton siaran antena", textAlign = TextAlign.Center, modifier = Modifier.padding(24.dp))
