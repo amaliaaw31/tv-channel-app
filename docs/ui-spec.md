@@ -44,6 +44,16 @@ Bagian pertama di daftar kanan, dengan header "Untuk Anda · <provinsi>", berisi
 - **Perilaku daftar:** channel yang sama tetap ada juga di grup normalnya (TVRI Daerah). Bagian ini ikut tersaring oleh tab kategori dan pencarian, dan tidak tampil bila tidak ada isinya. Lokasi biasanya didapat dalam sekejap (lokasi terakhir dari sistem), tetapi bila datang setelah daftar tampil, daftar digulir ke atas agar bagian ini terlihat (kecuali pengguna sudah menggulir ke bawah).
 - Belum ada tombol untuk memilih provinsi manual atau mematikan fitur dari dalam app.
 
+## TV Antena (Live TV bawaan)
+
+Grup **"TV Nasional (Antena)"** berisi satu tile **"TV Antena"** yang membuka aplikasi Live TV bawaan TV. Di sanalah siaran antena (RCTI, SCTV, Indosiar, MNCTV, GTV, ...) berada. Grup ini selalu yang pertama setelah "Untuk Anda". Konfigurasi: `data/antenna.json` (lihat `channels-schema.md`).
+
+- **OK pada tile** membuka Live TV lewat Intent (`ACTION_MAIN` + `LEANBACK_LAUNCHER`, package/activity dari konfigurasi). Preview dikosongkan (tanpa spinner) dan panel info menjelaskan fungsinya.
+- **Tombol Kembali** di Live TV (halaman utamanya) mengembalikan ke app ini, dengan fokus tetap di tile (diuji di TV). Saat app ini ke belakang, pemutaran stream dijeda; saat kembali, dilanjutkan. Remote D-pad di dalam Live TV ditangani aplikasi Live TV sendiri.
+- **Live TV tidak ada** di TV (tidak ada kandidat yang bisa dibuka): muncul pesan "Aplikasi Live TV tidak ditemukan di TV ini." (diuji dengan menonaktifkan aplikasinya sementara).
+- **Per channel tidak bisa** (RCTI, GTV, ...): tidak ada tile per channel. Alasannya di `sources.md` ("Siaran antena"); pengguna memilih channel di dalam Live TV, atau mengetik nomornya.
+- Tile tidak punya stream, jadi tidak ikut debounce/preview, dan tidak bisa masuk fullscreen.
+
 ## Preview dan player
 
 - **Satu ExoPlayer** (`PlayerController`) dan **satu `PlayerView`** untuk preview dan fullscreen. View hanya diubah ukurannya (slot preview ↔ layar penuh), sehingga OK ke fullscreen tidak memuat ulang stream.

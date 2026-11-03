@@ -13,6 +13,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 
 sealed interface PlaybackStatus {
+    /** Nothing is loaded on purpose (the focused item is a tile that opens another app). */
+    data object Idle : PlaybackStatus
     data object Loading : PlaybackStatus
     data object Playing : PlaybackStatus
     data class Failed(val errorCode: Int, val httpStatus: Int?) : PlaybackStatus
@@ -83,6 +85,13 @@ class PlayerController(context: Context) {
         player.stop()
         loadedId = null
         status = PlaybackStatus.Loading
+    }
+
+    /** Stops playback and shows an empty preview. */
+    fun stop() {
+        player.stop()
+        loadedId = null
+        status = PlaybackStatus.Idle
     }
 
     /** Loads [channel] unless it is already loaded. */

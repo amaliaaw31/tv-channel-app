@@ -66,6 +66,29 @@ Domain yang **tidak** dianggap resmi (alasan masuk Tier C): alamat IP mentah, da
 3. Tambahkan id-nya ke `A` atau `B` di `tiers.json` (mereka yang belum dipilih otomatis Tier C), jalankan `finalize.py`.
 4. Catat domain barunya di tabel di atas bila dianggap resmi.
 
+## Siaran antena (tuner TV)
+
+RCTI, GTV, MNCTV, Indosiar, SCTV, ANTV, tvOne, dan lainnya tidak punya sumber stream resmi yang berfungsi (lihat Tier C di atas), tetapi disiarkan **gratis lewat udara** dan TV ini punya tuner. Itu sumber legal yang tidak bergantung pada stream pihak ketiga. App hanya membuka aplikasi Live TV bawaan lewat tile "TV Antena".
+
+**Mendeteksi aplikasi Live TV di sebuah TV** (jangan menebak; dilakukan 2026-11-03 di SWTV_24AE_FHD):
+
+```bash
+adb -s $T shell pm list packages -f | grep -i -E 'cltv|livetv|tvcenter|tvinput'     # kandidat paket
+adb -s $T shell cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER
+adb -s $T shell dumpsys package <paket> | grep -E 'Action: |Category: '             # filter intent yang dideklarasikan
+adb -s $T shell input keyevent KEYCODE_TV                                            # yang dibuka tombol TV = Live TV sebenarnya
+adb -s $T shell dumpsys activity activities | grep topResumedActivity               # lihat package/activity-nya
+```
+
+Hasil di TV ini: tombol TV membuka **`com.cltv.hybrid/com.iwedia.cltv.MainActivity`** (LiveTV by iWedia, v3.6 dari Play Store, di atas `CommonLiveTvO21` bawaan). Paket MediaTek (`com.mediatek.wwtv.tvcenter`, `.plus`) terpasang tetapi activity-nya tidak ada untuk pengguna ini.
+
+**Percobaan per channel (gagal, jadi hanya satu tile):**
+
+- `adb shell content query --uri content://android.media.tv/channel` mengembalikan **kosong** dari shell: TvProvider menyaring hasil bagi pemanggil yang tidak punya izin. Izin yang dibutuhkan, `android.permission.READ_TV_LISTINGS`, berstatus **`dangerous`** (izin runtime biasa) dan **bisa diberikan** ke app kita (`pm grant` berhasil setelah dideklarasikan). Dengan izin itu app membaca **55 channel hasil scan** dari TvProvider, tetapi izin dan pembacanya saya buang lagi karena tidak jadi dipakai.
+- Hasil scan di TV ini (nomor Live TV; bisa berubah setelah scan ulang): Trans TV HD 20, Trans 7 HD 21, Metro TV HD 22, SCTV HD 23, Indosiar HD 24, ANTV HD 26, tvOne HD 27, RCTI HD 28, MNCTV HD 29, GTV HD 30, iNews HD 31; juga TVRI, Kompas TV, CNN/CNBC Indonesia, Garuda TV, Nusantara TV, MDTV, dan lainnya.
+- `ACTION_VIEW` dengan `content://android.media.tv/channel/<id>` (id TvProvider, mis. RCTI HD = 452): satu-satunya penangan adalah LiveTV (`com.cltv.hybrid`). Ia menerima intent dan membawa dirinya ke depan, tetapi **hanya membuka berandanya dan tidak menyetel channel** (diuji 4 kali, termasuk dari kondisi bersih dan menunggu 28 detik). Lognya menunjukkan ia memakai id internal MediaTek (`channelId 7864449`), bukan `_id` TvProvider. Activity lain yang dideklarasikan (`CanaliTvActivity`, Live TV Plus MediaTek) tidak ada ("Activity class does not exist").
+- Belum dicoba: menanam `TvView` di app untuk menyetel channel antena langsung ke preview kita lewat `TvInputManager`. Itu akan menampilkan antena di layout dua kolom, tetapi pekerjaan terpisah dan belum tentu diizinkan untuk input tuner.
+
 ## Menjalankan
 
 ```bash

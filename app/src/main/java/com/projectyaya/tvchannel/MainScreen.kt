@@ -60,7 +60,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import android.widget.Toast
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -85,6 +87,7 @@ private const val PREVIEW_DEBOUNCE_MS = 700L
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: ForYou? = null) {
+    val context = LocalContext.current
     val categories = remember(channels) { categoriesOf(channels) }
     var category by remember { mutableStateOf<String?>(null) }
     var query by remember { mutableStateOf("") }
@@ -108,6 +111,13 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: Fo
     }
 
     fun onOk(channel: Channel) {
+        // A tile opens another app (Live TV) instead of playing a stream.
+        if (channel.launch.isNotEmpty()) {
+            if (!launchLiveTv(context, channel.launch)) {
+                Toast.makeText(context, "Aplikasi Live TV tidak ditemukan di TV ini.", Toast.LENGTH_LONG).show()
+            }
+            return
+        }
         // A failed channel is not worth a fullscreen: reload it in the preview instead.
         if (controller.loadedId == channel.id && controller.status is PlaybackStatus.Failed) {
             controller.start(channel)
@@ -121,6 +131,10 @@ fun MainScreen(channels: List<Channel>, controller: PlayerController, forYou: Fo
     // Debounced preview: a newer focus change cancels this effect, and select() drops the old load at once.
     LaunchedEffect(focused?.id) {
         val channel = focused ?: return@LaunchedEffect
+        if (channel.launch.isNotEmpty()) { // a tile has no stream: empty preview instead of a spinner
+            controller.stop()
+            return@LaunchedEffect
+        }
         controller.select(channel)
         delay(PREVIEW_DEBOUNCE_MS)
         controller.ensure(channel)
@@ -337,12 +351,21 @@ private fun rowKey(section: Section, channel: Channel) = "${section.key}/${chann
 private fun ChannelInfo(channel: Channel) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(channel.name, style = MaterialTheme.typography.headlineMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-        Text(
-            "${countryName(channel.country)} · ${channel.category}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        channel.note?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = NOTE_COLOR) }
+        if (channel.launch.isEmpty()) {
+            Text(
+                "${countryName(channel.country)} · ${channel.category}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            channel.note?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = NOTE_COLOR) }
+        } else {
+            // A tile: say what OK does and how to come back.
+            Text(
+                "Tekan OK untuk membuka Live TV (siaran antena). Tekan Kembali di sana untuk kembali ke app ini.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -380,7 +403,9 @@ private fun ChannelRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(channel.name, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
-            channel.note?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = NOTE_COLOR, maxLines = 1) }
+            // Yellow marks "not verified"; a tile's note is just a hint, so it stays neutral.
+            val noteColor = if (channel.launch.isEmpty()) NOTE_COLOR else MaterialTheme.colorScheme.onSurfaceVariant
+            channel.note?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = noteColor, maxLines = 1) }
         }
     }
 }
@@ -401,7 +426,7 @@ private fun StatusOverlay(status: PlaybackStatus, fullscreen: Boolean, onRetry: 
                 val info = describeError(status.errorCode, status.httpStatus)
                 if (fullscreen) DroppedBroadcast(info, onRetry, onBack) else PreviewError(info)
             }
-            PlaybackStatus.Playing -> Unit
+            PlaybackStatus.Playing, PlaybackStatus.Idle -> Unit
         }
     }
 }

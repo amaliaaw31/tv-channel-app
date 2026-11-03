@@ -42,6 +42,27 @@ Nilai string dipangkas spasi di tepi. Nilai `null` atau key yang tidak ada diang
 
 `finalize.py` hanya menulis `groups` untuk negara di `group_countries` (`tiers.json`, sekarang `ID`). Channel internasional tanpa `groups` muncul di bagian negaranya; topiknya dicari lewat tab kategori.
 
+## antenna.json (tile "TV Antena")
+
+File terpisah: `data/antenna.json`, ikut di APK sebagai `assets/antenna.json`. Bukan bagian dari `channels.json` dan tidak berisi stream atau id channel.
+
+```json
+{
+  "tile": {"name": "TV Antena", "note": "membuka Live TV bawaan"},
+  "liveTv": [
+    {"package": "com.cltv.hybrid", "activity": "com.iwedia.cltv.MainActivity"}
+  ]
+}
+```
+
+| Field | Aturan |
+|---|---|
+| `liveTv` | **Wajib.** Daftar aplikasi Live TV (package + activity) yang dicoba berurutan; dipakai yang pertama ada di TV. Elemen yang tidak lengkap dibuang. Daftar kosong atau file hilang berarti tile tidak ditampilkan. |
+| `tile.name` | Opsional, bawaan "TV Antena". |
+| `tile.note` | Opsional, teks kecil di samping nama di daftar. |
+
+Isi `liveTv` **dideteksi di TV, bukan ditebak** (caranya di `sources.md`). Untuk TV lain tambahkan entri di sini. Tile masuk ke grup `TV Nasional (Antena)` (konstanta `ANTENNA_GROUP`), selalu sebagai grup pertama setelah "Untuk Anda". Di kode ia berupa `Channel` dengan `launch` berisi kandidat itu dan `streamUrl` kosong, jadi ikut tersaring oleh pencarian dan tab kategori "Umum".
+
 ## Perilaku pembacaan
 
 - JSON yang rusak (bukan array, sintaks salah) membuat pembacaan gagal. UI menampilkan "Gagal membaca channels.json".

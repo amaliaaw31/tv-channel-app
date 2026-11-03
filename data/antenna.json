@@ -1,0 +1,9 @@
+{
+  "tile": {
+    "name": "TV Antena",
+    "note": "membuka Live TV bawaan"
+  },
+  "liveTv": [
+    {"package": "com.cltv.hybrid", "activity": "com.iwedia.cltv.MainActivity"}
+  ]
+}

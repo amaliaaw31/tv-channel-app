@@ -24,7 +24,12 @@ data class Channel(
     val groups: List<String> = emptyList(),
     /** Short remark shown next to the channel, e.g. "perlu dicek di TV". */
     val note: String? = null,
+    /** Non-empty for a tile that opens another app (Live TV) instead of playing [streamUrl]; tried in order. */
+    val launch: List<AppTarget> = emptyList(),
 )
+
+/** An activity to start: package and fully qualified activity class. */
+data class AppTarget(val pkg: String, val activity: String)
 
 private val ISO2 = Regex("[A-Z]{2}")
 
@@ -80,7 +85,7 @@ fun countryName(code: String): String {
 }
 
 // Display order of the curated groups; groups not listed here follow alphabetically.
-private val GROUP_ORDER = listOf("Nasional", "MNC", "Berita", "Publik", "TVRI Daerah", "Daerah")
+private val GROUP_ORDER = listOf(ANTENNA_GROUP, "Nasional", "MNC", "Berita", "Publik", "TVRI Daerah", "Daerah")
 
 /**
  * List sections: curated groups first (in [GROUP_ORDER], channels by name), then one section per country

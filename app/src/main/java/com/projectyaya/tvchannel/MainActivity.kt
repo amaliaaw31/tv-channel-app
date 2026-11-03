@@ -105,7 +105,12 @@ private fun App(result: Result<List<Channel>>) {
             when {
                 channels == null -> Centered("Gagal membaca channels.json: ${result.exceptionOrNull()?.message}")
                 channels.isEmpty() -> Centered("Tidak ada channel yang valid di channels.json.")
-                else -> MainScreen(channels, controller, forYou)
+                else -> {
+                    // The antenna tile comes from assets/antenna.json, separate from the stream list.
+                    val tile = remember { loadAntennaTile(context) }
+                    val all = remember(channels, tile) { channels + listOfNotNull(tile) }
+                    MainScreen(all, controller, forYou)
+                }
             }
         }
     }

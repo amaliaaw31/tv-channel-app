@@ -30,6 +30,10 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - Posisi hanya dipakai di perangkat untuk memilih provinsi: **jangan disimpan, dicatat di log, atau dikirim** (log hanya nama provinsi/alasan gagal).
 - Nama feed TVRI di `Regions.kt` harus selaras dengan `data/channels.json` (dijaga `RegionsTest`). Detail di `docs/ui-spec.md`.
 
+## Antena (tile "TV Antena")
+- TV nasional (RCTI, SCTV, dll.) dari antena **tidak** dimasukkan sebagai stream; app hanya punya satu tile yang membuka Live TV bawaan. Package/activity Live TV ada di `data/antenna.json` dan **dideteksi di TV** dengan `pm`/`dumpsys` (cara di `docs/sources.md`), jangan ditebak atau di-hardcode di kode.
+- Tidak ada tile per channel (Intent ke channel tidak menyetel di Live TV ini) dan app tidak meminta `READ_TV_LISTINGS`. Jangan menambah izin itu tanpa keputusan baru; alasannya di `docs/sources.md`.
+
 ## Channel (kurasi)
 - **Hanya Tier A dan B yang masuk app** (`data/channels.json`). Tier C (IP mentah, agregator, tanpa stream, mati, tidak dipilih) hanya ada di `data/excluded.json` dan tidak boleh masuk app.
 - **Channel baru wajib cek domain sumber** (kolom Domain di `python3 tools/build-channels/curate.py --report`): IP mentah atau agregator berarti Tier C; domain milik stasiun, grup medianya, atau mitra distribusi resmi boleh Tier A; ragu berarti Tier B (label "perlu dicek di TV"). Catat domain barunya di `docs/sources.md`.
@@ -43,7 +47,7 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - Push hanya atas permintaan user.
 
 ## Dokumen
-- `docs/ui-spec.md`: layout, daftar berbagian (grup/negara), "Untuk Anda" (lokasi), tab kategori, pencarian, preview, navigasi remote, penanganan error, kinerja start.
+- `docs/ui-spec.md`: layout, daftar berbagian (grup/negara), "Untuk Anda" (lokasi), "TV Antena" (Live TV), tab kategori, pencarian, preview, navigasi remote, penanganan error, kinerja start.
 - `docs/channels-schema.md`: skema `channels.json` (termasuk `groups`, `note`, `tier`), pemuatan remote/cache/bundled, contoh.
 - `docs/sources.md`: alur kurasi (iptv-org), definisi Tier A/B/C, domain yang dianggap resmi, cara menambah channel, cara menjalankan `tools/build-channels`, batasan legal.
 - Aturan: setiap keputusan desain baru (UI, navigasi, error, skema) wajib diperbarui di docs/ pada commit yang sama dengan perubahan kodenya.
