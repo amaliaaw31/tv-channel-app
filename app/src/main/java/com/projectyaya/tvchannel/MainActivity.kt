@@ -1,6 +1,7 @@
 package com.projectyaya.tvchannel
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -11,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,6 +54,8 @@ class MainActivity : ComponentActivity() {
         // Must run before super.onCreate. Splash stays until channels.json is parsed (success or failure).
         installSplashScreen().setKeepOnScreenCondition { loaded == null }
         super.onCreate(savedInstanceState)
+        // Phones draw edge to edge and handle the insets themselves (status bar, keyboard); the TV layout does not.
+        if (!isTelevision(this)) WindowCompat.setDecorFitsSystemWindows(window, false)
         lifecycleScope.launch {
             val last = async { readLastWatched(applicationContext) }
             val channels = withContext(Dispatchers.IO) { runCatching { loadChannels(applicationContext) } }
@@ -66,8 +70,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
     val context = LocalContext.current
+    // TV: D-pad UI with antenna channels. Phone: touch UI, internet streams only (no tuner). A debug build can force
+    // either with `adb shell am start ... --ez phone true|false`.
+    val isTv = remember {
+        val forced = if (BuildConfig.DEBUG) (context as? Activity)?.intent?.takeIf { it.hasExtra("phone") }?.getBooleanExtra("phone", false) else null
+        if (forced != null) !forced else isTelevision(context)
+    }
     val controller = remember { PlayerController(context) }
-    val antennaController = remember { AntennaController(context) }
+    val antennaController = remember { if (isTv) AntennaController(context) else null }
     val subtitleScope = rememberCoroutineScope()
     val subtitleController = remember { SubtitleController(context, controller.player, subtitleScope) }
 
@@ -88,9 +98,10 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
     LaunchedEffect(Unit) {
         val prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE)
         val toAsk = mutableListOf<String>()
-        for ((permission, askedFlag, load) in listOf(
+        for ((permission, askedFlag, load) in listOfNotNull(
             Triple(locationPermission, "location_prompted", ::loadLocation),
-            Triple(listingsPermission, "tv_listings_prompted", ::loadScan),
+            // The antenna scan only exists on a TV.
+            if (isTv) Triple(listingsPermission, "tv_listings_prompted", ::loadScan) else null,
         )) {
             when {
                 ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> load()
@@ -111,12 +122,12 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
             when (event) {
                 Lifecycle.Event.ON_STOP -> {
                     controller.pause()
-                    antennaController.suspend()
+                    antennaController?.suspend()
                     subtitleController.trim()
                 }
                 Lifecycle.Event.ON_START -> {
                     controller.resume()
-                    antennaController.resume()
+                    antennaController?.resume()
                 }
                 else -> Unit
             }
@@ -126,7 +137,7 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
             lifecycleOwner.lifecycle.removeObserver(observer)
             subtitleController.release()
             controller.release()
-            antennaController.stop()
+            antennaController?.stop()
         }
     }
 
@@ -136,6 +147,7 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
             when {
                 channels == null -> Centered("Gagal membaca channels.json: ${result.exceptionOrNull()?.message}")
                 channels.isEmpty() -> Centered("Tidak ada channel yang valid di channels.json.")
+                !isTv -> PhoneScreen(channels, controller, subtitleController, forYou, lastWatched)
                 else -> {
                     // The antenna tile and the names of the antenna channels come from assets/antenna.json, separate
                     // from the stream list; the channel ids come from the TV's scan, read at runtime.
@@ -144,7 +156,7 @@ private fun App(result: Result<List<Channel>>, lastWatched: LastWatched?) {
                     val antennaPreview = remember { loadAntennaPreview(context) }
                     val antennaItems = remember(scan, wanted) { antennaChannels(scan, wanted) }
                     val all = remember(channels, tile, antennaItems) { channels + listOfNotNull(tile) + antennaItems }
-                    MainScreen(all, controller, antennaController, subtitleController, forYou, antennaPreview, lastWatched)
+                    MainScreen(all, controller, antennaController!!, subtitleController, forYou, antennaPreview, lastWatched)
                 }
             }
         }

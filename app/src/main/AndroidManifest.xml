@@ -13,9 +13,10 @@
         android:name="android.hardware.location.gps"
         android:required="false" />
 
+    <!-- Not required: the same APK also runs on phones (touch UI, no antenna). -->
     <uses-feature
         android:name="android.software.leanback"
-        android:required="true" />
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -30,9 +31,12 @@
         android:theme="@style/Theme.TVChannel.Splash">
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|keyboard|navigation|uiMode"
             android:exported="true">
+            <!-- configChanges: rotating a phone must not recreate the activity (and the player with it). -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>

@@ -94,6 +94,18 @@ Grup ini selalu yang pertama setelah "Untuk Anda" dan berisi dua jenis item. Kon
 - Saat fullscreen, pencarian, tab, dan baris daftar dinonaktifkan agar D-pad tidak memindahkan fokus di bawah video.
 - Fokus awal: channel pertama pada urutan tampil. Setelah fullscreen, fokus kembali ke channel terakhir jika masih lolos filter, jika tidak ke channel pertama yang tampil.
 
+## Versi HP (layar sentuh)
+
+APK yang sama dipakai di HP dan TV. `isTelevision()` (`UiModeManager`, `Device.kt`) memilih: TV memakai UI D-pad di atas, HP memakai `PhoneScreen.kt`. Manifest: `leanback` tidak lagi wajib, ada kategori `LAUNCHER` selain `LEANBACK_LAUNCHER`, dan `configChanges` supaya memutar HP tidak membuat ulang activity (dan pemutarnya). Di build debug, `adb shell am start -n com.projectyaya.tvchannel/.MainActivity --ez phone true|false` memaksa salah satu UI (untuk menguji di perangkat lain).
+
+- **Tata letak portrait:** player 16:9 di atas (muncul setelah channel diketuk), lalu kolom pencarian (ketik langsung, tombol × menghapus), chip kategori (ketuk memilih), dan daftar berbagian yang sama dengan TV: "Lanjutkan", "Untuk Anda", grup, lalu negara. Baris yang sedang diputar disorot; baris `caption` memakai ikon CC. Ketuk baris = putar (bersuara, reconnect otomatis 1× seperti fullscreen TV).
+- **Fullscreen = landscape.** Memutar HP ke landscape (atau tombol layar penuh, yang meminta orientasi landscape) membuat player memenuhi layar dan menyembunyikan bilah sistem (geser dari tepi menampilkannya sebentar); portrait mengembalikan daftar. Kembali atau panah kembali di fullscreen meminta portrait. Permintaan orientasi dilepas lagi 1,5 detik setelah putar selesai, jadi rotasi otomatis HP tetap berlaku. Player tidak dimuat ulang saat pindah mode.
+- **Kontrol** (bilah atas dengan nama channel, tombol CC, tombol layar penuh) selalu tampil di portrait; di landscape tampil saat diketuk dan hilang setelah 3 detik. Ketuk di fullscreen menampilkan/menyembunyikan kontrol. Di landscape ada tombol **sebelumnya/berikutnya** di tepi kiri/kanan: berputar di bagian daftar tempat channel dibuka (`zapTarget`, sama dengan zapping TV).
+- **Error:** sama dengan TV (kuning/merah, `describeError`), petunjuknya "Ketuk untuk coba lagi"; mengetuk player yang gagal memuat ulang.
+- **Subtitle:** sama dengan TV (`SubtitleController`, aturan keputusan, terjemahan ML Kit), aktif untuk channel yang diputar baik portrait maupun landscape. Overlay lebih kecil di portrait (14 sp, jarak 12 dp) dan 22 sp di landscape. Tombol **CC** membuka pemilih mode (Otomatis/Mati/Asli/Selalu terjemahkan) di tengah layar; ketuk di luar menutupnya.
+- **Tidak ada di HP:** channel dan tile antena (HP tidak punya tuner; `READ_TV_LISTINGS` tidak diminta), zapping D-pad, banner pojok, tombol kanan. Lokasi kasar tetap diminta sekali untuk "Untuk Anda".
+- **Belum diverifikasi di perangkat HP** (hanya kompilasi dan tes unit): tata letak, rotasi, bilah sistem, keyboard. Satu-satunya perangkat uji, TV, offline saat dibuat.
+
 ## Zapping di fullscreen
 
 - **Atas / Channel Up** = channel berikutnya, **Bawah / Channel Down** = sebelumnya, di dalam **bagian daftar tempat channel dibuka** (urutan sama dengan daftar; tile Live TV dilewati). Di ujung daftar kembali ke sisi seberang (wrap-around). Bagian dengan satu channel tidak berpindah. Channel yang dibuka dari baris "Lanjutkan" memakai bagian asalnya terakhir ditonton.

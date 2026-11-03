@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.ExperimentalTvMaterial3Api
@@ -26,10 +28,16 @@ import androidx.tv.material3.Text
  */
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
-fun BoxScope.SubtitleOverlay(text: String?, status: String?) {
+fun BoxScope.SubtitleOverlay(
+    text: String?,
+    status: String?,
+    fontSize: TextUnit = 28.sp,
+    sideInset: Dp = 64.dp,
+    bottomInset: Dp = 48.dp,
+) {
     if (text == null && status == null) return
     Column(
-        Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = 64.dp, end = 64.dp, bottom = 48.dp),
+        Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = sideInset, end = sideInset, bottom = bottomInset),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -38,7 +46,7 @@ fun BoxScope.SubtitleOverlay(text: String?, status: String?) {
                 modifier = Modifier.background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(8.dp)).padding(horizontal = 12.dp, vertical = 4.dp))
         }
         text?.let {
-            Text(it, fontSize = 28.sp, lineHeight = 34.sp, color = Color.White, textAlign = TextAlign.Center,
+            Text(it, fontSize = fontSize, lineHeight = fontSize * 1.2f, color = Color.White, textAlign = TextAlign.Center,
                 modifier = Modifier.background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(8.dp)).padding(horizontal = 16.dp, vertical = 8.dp))
         }
     }
