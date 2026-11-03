@@ -53,7 +53,7 @@ File terpisah: `data/antenna.json`, ikut di APK sebagai `assets/antenna.json`. B
     {"package": "com.cltv.hybrid", "activity": "com.iwedia.cltv.MainActivity"}
   ],
   "channels": ["RCTI", "GTV", "MNCTV", "iNews", "Indosiar", "SCTV", "ANTV", "tvOne", "Metro TV", "Trans TV", "Trans7"],
-  "antennaPreview": false
+  "antennaPreview": true
 }
 ```
 
@@ -63,7 +63,7 @@ File terpisah: `data/antenna.json`, ikut di APK sebagai `assets/antenna.json`. B
 | `tile.name` | Opsional, bawaan "TV Antena". |
 | `tile.note` | Opsional, teks kecil di samping nama di daftar. |
 | `channels` | Opsional. Nama channel antena yang dicari di hasil scan TV; tiap elemen berupa nama atau `{"name", "aliases": [...]}`. Pencocokan toleran: huruf besar/kecil, spasi, tanda baca, dan akhiran "HD" diabaikan ("Trans7" cocok dengan "TRANS 7 HD"). Yang tidak ada di scan dilewati. Nama yang tampil di daftar adalah `display_name` dari scan (di-trim), bukan nama di config. |
-| `antennaPreview` | Opsional, bawaan `false` (juga bila bukan boolean). `true` memasang `TvView` di slot preview setelah debounce 700 ms (percobaan; hasil uji dan risiko layar hilang di `ui-spec.md`); `false` hanya fullscreen lewat OK. **Id channel tidak disimpan**: dibaca dari TvProvider saat berjalan (izin `READ_TV_LISTINGS`), karena berubah setelah scan ulang. |
+| `antennaPreview` | Opsional; bila tidak ada atau bukan boolean dianggap `false`. File bawaan repo memakai `true`. `true` memasang `TvView` di slot preview setelah debounce 700 ms ( hasil uji dan risiko layar hilang di `ui-spec.md`); `false` hanya fullscreen lewat OK. **Id channel tidak disimpan**: dibaca dari TvProvider saat berjalan (izin `READ_TV_LISTINGS`), karena berubah setelah scan ulang. |
 
 Isi `liveTv` **dideteksi di TV, bukan ditebak** (caranya di `sources.md`). Untuk TV lain tambahkan entri di sini. Tile dan channel antena masuk ke grup `TV Nasional (Antena)` (konstanta `ANTENNA_GROUP`), selalu grup pertama setelah "Untuk Anda". Di kode keduanya berupa `Channel` dengan `streamUrl` kosong: tile punya `launch` (kandidat Live TV), channel antena punya `antenna` (`AntennaRef`: id kanal TvProvider dan id input tuner) dan `note` "no. N". Keduanya ikut tersaring oleh pencarian dan tab kategori "Umum".
 

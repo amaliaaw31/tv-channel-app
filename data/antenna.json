@@ -4,9 +4,23 @@
     "note": "membuka Live TV bawaan"
   },
   "liveTv": [
-    {"package": "com.cltv.hybrid", "activity": "com.iwedia.cltv.MainActivity"}
+    {
+      "package": "com.cltv.hybrid",
+      "activity": "com.iwedia.cltv.MainActivity"
+    }
   ],
   "channels": [
-    "RCTI", "GTV", "MNCTV", "iNews", "Indosiar", "SCTV", "ANTV", "tvOne", "Metro TV", "Trans TV", "Trans7"
-  ]
+    "RCTI",
+    "GTV",
+    "MNCTV",
+    "iNews",
+    "Indosiar",
+    "SCTV",
+    "ANTV",
+    "tvOne",
+    "Metro TV",
+    "Trans TV",
+    "Trans7"
+  ],
+  "antennaPreview": true
 }
