@@ -6,3 +6,8 @@ local.properties
 .idea/
 .kotlin/
 __pycache__/
+*.jks
+keystore.properties
+release/
+*secret*
+*password*

@@ -34,12 +34,29 @@ android {
     // The other files in data/ are tooling output and must not end up in the APK.
     sourceSets.getByName("main").assets.srcDir(rootProject.file("data"))
     androidResources {
-        ignoreAssetsPattern = "!curated.json:!excluded.json"
+        ignoreAssetsPattern = "!curated.json:!excluded.json:!captions.json"
+    }
+
+    // Release signing comes from the git-ignored local.properties (release.keystore, release.alias, release.password);
+    // without it assembleRelease still builds, just unsigned.
+    val localProps = Properties().also { props ->
+        rootProject.file("local.properties").takeIf { it.exists() }?.reader()?.use(props::load)
+    }
+    signingConfigs {
+        if (localProps.getProperty("release.keystore") != null) {
+            create("release") {
+                storeFile = file(localProps.getProperty("release.keystore"))
+                keyAlias = localProps.getProperty("release.alias", "tvchannel")
+                storePassword = localProps.getProperty("release.password")
+                keyPassword = localProps.getProperty("release.password")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfigs.findByName("release")?.let { signingConfig = it }
         }
     }
 
