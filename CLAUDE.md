@@ -53,7 +53,7 @@ Daftar channel per grup/negara dengan filter kategori dan pencarian, player, fav
 - `languages` di `channels.json` diisi `curate.py` dari iptv-org `feeds.json` (jangan edit manual; `curate.py --languages` lalu `finalize.py`).
 
 ## Git & GitHub
-- Repo GitHub **private**: `amaliaaw31/tv-channel-app`. Jangan ubah jadi publik. (Pada 2026-11-03 API GitHub melaporkan `visibility: public` dan `raw.githubusercontent.com` terbuka tanpa token: periksa Settings repo.)
+- Repo GitHub **publik** (keputusan pengguna 2026-11-04): `amaliaaw31/tv-channel-app`. Karena itu **jangan pernah commit rahasia** (keystore, `local.properties`, kata sandi, token, key SSH) dan jangan menaruh data pribadi di repo; `.gitignore` sudah menutup `*.jks`, `*.keystore`, `local.properties`, `keystore.properties`, `release/`. App membaca daftar channel dari `raw.githubusercontent.com` tanpa token, jadi `channels.token` tidak dipakai.
 - Rilis: `tools/release.sh` (keystore di `~/.tvchannel-release`, bukan di repo; jangan di-commit). Kesehatan channel: `tools/health-check/check.py`. Detail di `docs/sources.md`.
 - Branch utama `main` (lokal dan remote sama namanya); push dengan `git push`.
 - Remote `origin` memakai alias SSH `github-tvchannel` (key khusus repo ini `~/.ssh/id_ed25519_tvchannel`). Jangan pakai key lain di `~/.ssh`, itu milik proyek lain.
